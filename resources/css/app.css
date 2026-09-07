@@ -1,7 +1,41 @@
 @import "tailwindcss";
 
 @layer base {
+    html {
+        scroll-behavior: smooth;
+    }
     body {
         font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        background-color: #f8fafc;
+        color: #0f172a;
     }
+}
+
+/* Subtle developer grid backgrounds for light theme */
+.bg-grid-pattern {
+    background-size: 32px 32px;
+    background-image: 
+        linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+    background-size: 24px 24px;
+    background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+}
+
+/* Custom scrollbars for code editor windows */
+.code-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.code-scrollbar::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+.code-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}
+.code-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569;
 }

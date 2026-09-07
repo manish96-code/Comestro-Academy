@@ -1,361 +1,1412 @@
+import { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
+import ApplicationLogo from '@/Components/ApplicationLogo';
+import {
+    Terminal,
+    Code2,
+    Play,
+    CheckCircle2,
+    ArrowRight,
+    Sparkles,
+    Users,
+    Clock,
+    Laptop,
+    Layers,
+    Server,
+    Shield,
+    Flame,
+    GitBranch,
+    Star,
+    ExternalLink,
+    ChevronRight,
+    Send,
+    Video,
+    MessageSquare,
+    BookOpen,
+    Compass,
+    Cpu,
+    Database,
+    Zap,
+    HelpCircle,
+    Check,
+    Menu,
+    X
+} from 'lucide-react';
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
-    const handleImageError = () => {
-        document
-            .getElementById('screenshot-container')
-            ?.classList.add('!hidden');
-        document.getElementById('docs-card')?.classList.add('!row-span-1');
-        document
-            .getElementById('docs-card-content')
-            ?.classList.add('!flex-row');
-        document.getElementById('background')?.classList.add('!hidden');
-    };
+export default function Welcome({ auth }) {
+    const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [activeTerminalTab, setActiveTerminalTab] = useState('terminal');
+    const [selectedTech, setSelectedTech] = useState(null);
+    const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const LEARNING_PATHS = [
+        {
+            title: 'Java Backend Developer',
+            level: 'Beginner to Advanced',
+            duration: '14 Weeks',
+            modules: 16,
+            projects: 6,
+            flow: ['Java', 'OOP', 'SQL', 'Spring Boot', 'REST API', 'Docker', 'AWS'],
+            description: 'Master core Java, enterprise architectures with Spring Boot, microservices, relational databases, and cloud deployments.',
+            badge: 'High Demand',
+        },
+        {
+            title: 'Full Stack Developer',
+            level: 'Beginner to Pro',
+            duration: '18 Weeks',
+            modules: 20,
+            projects: 8,
+            flow: ['HTML/CSS', 'JavaScript', 'React', 'Node.js', 'Database', 'Deployment'],
+            description: 'Build complete end-to-end web applications with React 19, modern state machines, resilient APIs, and CI/CD pipelines.',
+            badge: 'Most Popular',
+        },
+        {
+            title: 'Python Developer',
+            level: 'Beginner Friendly',
+            duration: '12 Weeks',
+            modules: 14,
+            projects: 5,
+            flow: ['Python', 'OOP', 'SQL', 'Django/FastAPI', 'APIs', 'Projects'],
+            description: 'Learn idiomatic Python, build asynchronous APIs with FastAPI, automate workflows, and write high-throughput web backends.',
+            badge: 'Fast Track',
+        },
+        {
+            title: 'AI / ML Developer',
+            level: 'Intermediate',
+            duration: '16 Weeks',
+            modules: 18,
+            projects: 6,
+            flow: ['Python', 'NumPy', 'Pandas', 'ML', 'Deep Learning', 'AI Projects'],
+            description: 'Develop intelligent systems, generative AI integrations, LLM pipelines with LangChain, and production vector search models.',
+            badge: 'Cutting Edge',
+        },
+    ];
+
+    const TECHNOLOGIES = [
+        { name: 'Java', role: 'Backend & Enterprise', courses: 12, projects: 8, icon: '☕' },
+        { name: 'Python', role: 'Backend, AI & Automation', courses: 14, projects: 9, icon: '🐍' },
+        { name: 'JavaScript', role: 'Modern Web Engineering', courses: 16, projects: 12, icon: '⚡' },
+        { name: 'React', role: 'Frontend & Reactive UI', courses: 10, projects: 7, icon: '⚛️' },
+        { name: 'Node.js', role: 'Event-Driven Backends', courses: 8, projects: 6, icon: '🟢' },
+        { name: 'Spring Boot', role: 'Enterprise Microservices', courses: 9, projects: 7, icon: '🍃' },
+        { name: 'SQL', role: 'Relational Database Design', courses: 7, projects: 5, icon: '🗄️' },
+        { name: 'Git', role: 'Version Control & Workflows', courses: 5, projects: 4, icon: '🌿' },
+        { name: 'Docker', role: 'Containerization & DevOps', courses: 6, projects: 5, icon: '🐳' },
+        { name: 'AWS', role: 'Cloud Infrastructure & SRE', courses: 8, projects: 6, icon: '☁️' },
+        { name: 'AI / ML', role: 'Applied Models & LLMs', courses: 11, projects: 8, icon: '🧠' },
+    ];
+
+    const PROJECTS = [
+        {
+            title: 'E-Commerce Platform',
+            stack: 'Java · Spring Boot · MySQL · React',
+            difficulty: 'Production Level',
+            skills: ['Microservices', 'Stripe Payments', 'Transactional Outbox', 'Distributed Cache'],
+            stats: { commits: 48, prs: 14, stars: '1.2k' },
+            snippet: `@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
+    @PostMapping("/checkout")
+    public ResponseEntity<OrderReceipt> checkout(@RequestBody OrderPayload payload) {
+        return ResponseEntity.ok(orderService.processIdempotentOrder(payload));
+    }
+}`,
+        },
+        {
+            title: 'Real-Time Chat Application',
+            stack: 'React · Node.js · WebSocket',
+            difficulty: 'Intermediate',
+            skills: ['WebSockets', 'Redis Pub/Sub', 'Presence Tracking', 'End-to-End Encryption'],
+            stats: { commits: 36, prs: 9, stars: '890' },
+            snippet: `const socket = new WebSocketServer({ port: 8080 });
+socket.on('connection', (client, req) => {
+    client.on('message', async (data) => {
+        await redisPub.publish('chat_stream', data);
+    });
+});`,
+        },
+        {
+            title: 'Banking Management System',
+            stack: 'Java · Spring Boot · PostgreSQL',
+            difficulty: 'Advanced',
+            skills: ['ACID Transactions', 'Double-Entry Ledger', 'Audit Trail', 'JWT & OAuth2'],
+            stats: { commits: 54, prs: 16, stars: '1.5k' },
+            snippet: `@Transactional(isolation = Isolation.SERIALIZABLE)
+public void transferFunds(Account from, Account to, BigDecimal amount) {
+    ledger.recordDebit(from, amount);
+    ledger.recordCredit(to, amount);
+}`,
+        },
+        {
+            title: 'AI-Powered Application',
+            stack: 'Python · AI · FastAPI',
+            difficulty: 'Cutting-Edge',
+            skills: ['RAG Pipeline', 'Vector Embeddings', 'LLM Function Calling', 'Streaming SSE'],
+            stats: { commits: 32, prs: 8, stars: '2.1k' },
+            snippet: `@app.post("/v1/agent/query")
+async def run_query(request: PromptRequest):
+    docs = await vector_store.similarity_search(request.query, k=5)
+    return StreamingResponse(llm.stream_answer(request.query, docs))`,
+        },
+    ];
+
+    const PHILOSOPHY_STEPS = [
+        {
+            phase: 'LEARN',
+            title: 'Live Classes & Structured Lessons',
+            desc: 'Interactive lectures with staff engineers break down tough concepts from the ground up.',
+            command: 'comestro learn --live',
+        },
+        {
+            phase: 'CODE',
+            title: 'Direct Code Practice',
+            desc: 'Write code immediately following lessons. Solidify syntax and core logic without friction.',
+            command: 'comestro sandbox --init',
+        },
+        {
+            phase: 'PRACTICE',
+            title: 'Algorithmic & Design Labs',
+            desc: 'Solve edge cases, concurrency hurdles, and performance bottlenecks with automated testing.',
+            command: 'comestro test --suite dsa',
+        },
+        {
+            phase: 'BUILD',
+            title: 'Real-World Production Projects',
+            desc: 'Architect full applications that resemble real enterprise systems, not toy todo apps.',
+            command: 'comestro project --create',
+        },
+        {
+            phase: 'DEPLOY',
+            title: 'Deploy to Cloud & Production',
+            desc: 'Containerize, set up CI/CD, and push your work live with real domains and monitoring.',
+            command: 'git push origin main && deploy --prod',
+        },
+    ];
+
+    const INSTRUCTORS = [
+        {
+            name: 'Rahul Sharma',
+            role: 'Senior Backend Engineer',
+            experience: '8+ Years Experience',
+            tech: 'Java · Spring Boot · AWS',
+            students: '2,400+ Students',
+            rating: '4.9',
+            avatarText: 'RS',
+        },
+        {
+            name: 'Ananya Verma',
+            role: 'Staff Frontend Architect',
+            experience: '7+ Years Experience',
+            tech: 'React · TypeScript · Next.js',
+            students: '1,900+ Students',
+            rating: '4.95',
+            avatarText: 'AV',
+        },
+        {
+            name: 'Vikramaditya Das',
+            role: 'Principal Cloud & DevOps',
+            experience: '10+ Years Experience',
+            tech: 'Kubernetes · Docker · AWS',
+            students: '3,100+ Students',
+            rating: '4.9',
+            avatarText: 'VD',
+        },
+    ];
+
+    const WHY_CARDS = [
+        {
+            icon: Laptop,
+            title: 'Live Coding',
+            desc: 'Learn directly from instructors writing code and resolving errors on screen in real time.',
+        },
+        {
+            icon: Layers,
+            title: 'Real Projects',
+            desc: 'Build scalable applications with databases, authentication, and external APIs for your portfolio.',
+        },
+        {
+            icon: HelpCircle,
+            title: 'Doubt Support',
+            desc: 'Get unstuck fast. Senior teaching assistants and mentors review your code and resolve roadblocks.',
+        },
+        {
+            icon: Compass,
+            title: 'Structured Paths',
+            desc: 'Follow a clear roadmap from fundamental programming syntax to production-level architecture.',
+        },
+        {
+            icon: Code2,
+            title: 'Interactive Practice',
+            desc: 'Turn theoretical concepts into muscle memory through hundreds of practical coding exercises.',
+        },
+        {
+            icon: Clock,
+            title: 'Learn at Your Pace',
+            desc: 'Attend live classes or watch high-definition recordings with code timestamps at your convenience.',
+        },
+    ];
+
+    const TESTIMONIALS = [
+        {
+            quote: 'Comestro changed the way I learned backend development. I stopped just watching tutorials and actually started building production systems.',
+            author: 'Aman K.',
+            role: 'Java Backend Student',
+            stars: 5,
+        },
+        {
+            quote: 'The live coding sessions with Rahul were a game changer. Seeing an experienced engineer debug distributed transactions in real time is invaluable.',
+            author: 'Sneha Roy',
+            role: 'Full Stack Engineer',
+            stars: 5,
+        },
+        {
+            quote: 'The projects I built here were the exact reason I stood out in technical rounds. The interviewers were impressed by the architecture depth.',
+            author: 'Tanmay Patel',
+            role: 'Software Developer',
+            stars: 5,
+        },
+    ];
 
     return (
-        <>
-            <Head title="Welcome" />
-            <div className="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-                <img
-                    id="background"
-                    className="absolute -left-20 top-0 max-w-[877px]"
-                    src="https://laravel.com/assets/img/welcome/background.svg"
-                />
-                <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
-                    <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                        <header className="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
-                            <div className="flex lg:col-start-2 lg:justify-center">
-                                <svg
-                                    className="h-12 w-auto text-white lg:h-16 lg:text-[#FF2D20]"
-                                    viewBox="0 0 62 65"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M61.8548 14.6253C61.8778 14.7102 61.8895 14.7978 61.8897 14.8858V28.5615C61.8898 28.737 61.8434 28.9095 61.7554 29.0614C61.6675 29.2132 61.5409 29.3392 61.3887 29.4265L49.9104 36.0351V49.1337C49.9104 49.4902 49.7209 49.8192 49.4118 49.9987L25.4519 63.7916C25.3971 63.8227 25.3372 63.8427 25.2774 63.8639C25.255 63.8714 25.2338 63.8851 25.2101 63.8913C25.0426 63.9354 24.8666 63.9354 24.6991 63.8913C24.6716 63.8838 24.6467 63.8689 24.6205 63.8589C24.5657 63.8389 24.5084 63.8215 24.456 63.7916L0.501061 49.9987C0.348882 49.9113 0.222437 49.7853 0.134469 49.6334C0.0465019 49.4816 0.000120578 49.3092 0 49.1337L0 8.10652C0 8.01678 0.0124642 7.92953 0.0348998 7.84477C0.0423783 7.8161 0.0598282 7.78993 0.0697995 7.76126C0.0884958 7.70891 0.105946 7.65531 0.133367 7.6067C0.152063 7.5743 0.179485 7.54812 0.20192 7.51821C0.230588 7.47832 0.256763 7.43719 0.290416 7.40229C0.319084 7.37362 0.356476 7.35243 0.388883 7.32751C0.425029 7.29759 0.457436 7.26518 0.498568 7.2415L12.4779 0.345059C12.6296 0.257786 12.8015 0.211853 12.9765 0.211853C13.1515 0.211853 13.3234 0.257786 13.475 0.345059L25.4531 7.2415H25.4556C25.4955 7.26643 25.5292 7.29759 25.5653 7.32626C25.5977 7.35119 25.6339 7.37362 25.6625 7.40104C25.6974 7.43719 25.7224 7.47832 25.7523 7.51821C25.7735 7.54812 25.8021 7.5743 25.8196 7.6067C25.8483 7.65656 25.8645 7.70891 25.8844 7.76126C25.8944 7.78993 25.9118 7.8161 25.9193 7.84602C25.9423 7.93096 25.954 8.01853 25.9542 8.10652V33.7317L35.9355 27.9844V14.8846C35.9355 14.7973 35.948 14.7088 35.9704 14.6253C35.9792 14.5954 35.9954 14.5692 36.0053 14.5405C36.0253 14.4882 36.0427 14.4346 36.0702 14.386C36.0888 14.3536 36.1163 14.3274 36.1375 14.2975C36.1674 14.2576 36.1923 14.2165 36.2272 14.1816C36.2559 14.1529 36.292 14.1317 36.3244 14.1068C36.3618 14.0769 36.3942 14.0445 36.4341 14.0208L48.4147 7.12434C48.5663 7.03694 48.7383 6.99094 48.9133 6.99094C49.0883 6.99094 49.2602 7.03694 49.4118 7.12434L61.3899 14.0208C61.4323 14.0457 61.4647 14.0769 61.5021 14.1055C61.5333 14.1305 61.5694 14.1529 61.5981 14.1803C61.633 14.2165 61.6579 14.2576 61.6878 14.2975C61.7103 14.3274 61.7377 14.3536 61.7551 14.386C61.7838 14.4346 61.8 14.4882 61.8199 14.5405C61.8312 14.5692 61.8474 14.5954 61.8548 14.6253ZM59.893 27.9844V16.6121L55.7013 19.0252L49.9104 22.3593V33.7317L59.8942 27.9844H59.893ZM47.9149 48.5566V37.1768L42.2187 40.4299L25.953 49.7133V61.2003L47.9149 48.5566ZM1.99677 9.83281V48.5566L23.9562 61.199V49.7145L12.4841 43.2219L12.4804 43.2194L12.4754 43.2169C12.4368 43.1945 12.4044 43.1621 12.3682 43.1347C12.3371 43.1097 12.3009 43.0898 12.2735 43.0624L12.271 43.0586C12.2386 43.0275 12.2162 42.9888 12.1887 42.9539C12.1638 42.9203 12.1339 42.8916 12.114 42.8567L12.1127 42.853C12.0903 42.8156 12.0766 42.7707 12.0604 42.7283C12.0442 42.6909 12.023 42.656 12.013 42.6161C12.0005 42.5688 11.998 42.5177 11.9931 42.4691C11.9881 42.4317 11.9781 42.3943 11.9781 42.3569V15.5801L6.18848 12.2446L1.99677 9.83281ZM12.9777 2.36177L2.99764 8.10652L12.9752 13.8513L22.9541 8.10527L12.9752 2.36177H12.9777ZM18.1678 38.2138L23.9574 34.8809V9.83281L19.7657 12.2459L13.9749 15.5801V40.6281L18.1678 38.2138ZM48.9133 9.14105L38.9344 14.8858L48.9133 20.6305L58.8909 14.8846L48.9133 9.14105ZM47.9149 22.3593L42.124 19.0252L37.9323 16.6121V27.9844L43.7219 31.3174L47.9149 33.7317V22.3593ZM24.9533 47.987L39.59 39.631L46.9065 35.4555L36.9352 29.7145L25.4544 36.3242L14.9907 42.3482L24.9533 47.987Z"
-                                        fill="currentColor"
-                                    />
-                                </svg>
-                            </div>
-                            <nav className="-mx-3 flex flex-1 justify-end">
-                                {auth.user ? (
-                                    <Link
-                                        href={route('dashboard')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                    >
-                                        Dashboard
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link
-                                            href={route('login')}
-                                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                        >
-                                            Log in
-                                        </Link>
-                                        <Link
-                                            href={route('register')}
-                                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                        >
-                                            Register
-                                        </Link>
-                                    </>
-                                )}
-                            </nav>
-                        </header>
+        <div className="min-h-screen bg-[#f8fafc] text-slate-800 selection:bg-emerald-500/20 selection:text-emerald-900 font-sans antialiased">
+            <Head title="Comestro Academy | From Hello World to Production" />
 
-                        <main className="mt-6">
-                            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-                                <a
-                                    href="https://laravel.com/docs"
-                                    id="docs-card"
-                                    className="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+            {/* 1. Navigation Bar (Light Theme) */}
+            <header
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+                    scrolled
+                        ? 'border-b border-slate-200/80 bg-white/90 backdrop-blur-md shadow-sm shadow-slate-200/50'
+                        : 'border-b border-transparent bg-transparent'
+                }`}
+            >
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+                    {/* Brand */}
+                    <Link href="/" className="group flex items-center">
+                        <ApplicationLogo />
+                    </Link>
+
+                    {/* Nav Links Desktop */}
+                    <nav className="hidden items-center gap-7 lg:flex">
+                        <a href="#paths" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
+                            Learning Paths
+                        </a>
+                        <a href="#live" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
+                            Live Classes
+                        </a>
+                        <a href="#projects" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
+                            Projects
+                        </a>
+                        <a href="#tech" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
+                            Technologies
+                        </a>
+                        <a href="#instructors" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
+                            Instructors
+                        </a>
+                    </nav>
+
+                    {/* Right CTAs */}
+                    <div className="hidden items-center gap-3 sm:flex">
+                        {auth?.user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className="inline-flex items-center gap-2 rounded-lg border border-emerald-600/30 bg-emerald-50 px-4 py-2 text-xs font-mono font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100"
+                            >
+                                <Terminal className="h-3.5 w-3.5" />
+                                <span>Dashboard →</span>
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route('login')}
+                                    className="rounded-lg px-3.5 py-2 text-xs font-mono font-medium text-slate-700 transition hover:text-slate-950"
                                 >
-                                    <div
-                                        id="screenshot-container"
-                                        className="relative flex w-full flex-1 items-stretch"
-                                    >
-                                        <img
-                                            src="https://laravel.com/assets/img/welcome/docs-light.svg"
-                                            alt="Laravel documentation screenshot"
-                                            className="aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.06)] dark:hidden"
-                                            onError={handleImageError}
-                                        />
-                                        <img
-                                            src="https://laravel.com/assets/img/welcome/docs-dark.svg"
-                                            alt="Laravel documentation screenshot"
-                                            className="hidden aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.25)] dark:block"
-                                        />
-                                        <div className="absolute -bottom-16 -left-16 h-40 w-[calc(100%+8rem)] bg-gradient-to-b from-transparent via-white to-white dark:via-zinc-900 dark:to-zinc-900"></div>
+                                    Log in
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-600 bg-emerald-600 px-4 py-2 text-xs font-mono font-bold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700 hover:border-emerald-700"
+                                >
+                                    <span>Get Started →</span>
+                                </Link>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Mobile menu button */}
+                    <button
+                        type="button"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+                        aria-label="Toggle Menu"
+                    >
+                        {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
+                </div>
+
+                {/* Mobile Dropdown */}
+                {mobileMenuOpen && (
+                    <div className="border-b border-slate-200 bg-white px-4 py-4 lg:hidden shadow-lg">
+                        <div className="flex flex-col space-y-3 font-mono text-sm">
+                            <a
+                                href="#paths"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-slate-700 hover:text-emerald-600"
+                            >
+                                // Learning Paths
+                            </a>
+                            <a
+                                href="#live"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-slate-700 hover:text-emerald-600"
+                            >
+                                // Live Classes
+                            </a>
+                            <a
+                                href="#projects"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-slate-700 hover:text-emerald-600"
+                            >
+                                // Projects
+                            </a>
+                            <a
+                                href="#tech"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-slate-700 hover:text-emerald-600"
+                            >
+                                // Technologies
+                            </a>
+                            <a
+                                href="#instructors"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-slate-700 hover:text-emerald-600"
+                            >
+                                // Instructors
+                            </a>
+                            <div className="pt-3 border-t border-slate-200 flex flex-col gap-2">
+                                <Link
+                                    href={route('login')}
+                                    className="text-center py-2 rounded-lg border border-slate-300 text-slate-700"
+                                >
+                                    Log in
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="text-center py-2 rounded-lg bg-emerald-600 font-bold text-white"
+                                >
+                                    Get Started →
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </header>
+
+            {/* 2. Hero Section (Light Theme) */}
+            <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden bg-grid-pattern">
+                {/* Glow backdrop */}
+                <div className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-500/10 blur-[130px] rounded-full" />
+
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
+                    <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+                        {/* Left column: Messaging */}
+                        <div className="lg:col-span-6 space-y-6">
+                            <div className="inline-flex items-center gap-2 rounded-md border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-mono text-emerald-800">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-ping" />
+                                <span>Cohorts for 2026 Developer Careers Now Open</span>
+                            </div>
+
+                            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 leading-tight">
+                                From{' '}
+                                <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
+                                    `Hello World`
+                                </span>{' '}
+                                to Production.
+                            </h1>
+
+                            <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
+                                Learn to code through <span className="text-slate-900 font-semibold">live classes</span>, hands-on practice, and <span className="text-slate-900 font-semibold">real-world projects</span>. Built by developers, for developers.
+                            </p>
+
+                            {/* CTAs */}
+                            <div className="flex flex-wrap items-center gap-4 pt-2">
+                                <Link
+                                    href={route('register')}
+                                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3.5 text-sm font-mono font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30"
+                                >
+                                    <span>Start Coding →</span>
+                                </Link>
+
+                                <a
+                                    href="#paths"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3.5 text-sm font-mono font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:border-slate-400"
+                                >
+                                    <span>Explore Courses</span>
+                                </a>
+                            </div>
+
+                            {/* Trust Statement */}
+                            <div className="pt-3 flex items-center gap-3 text-xs font-mono text-slate-600">
+                                <span className="text-emerald-600 font-bold">✓</span>
+                                <span>Live + Recorded · Hands-on Projects · Expert Mentorship</span>
+                            </div>
+                        </div>
+
+                        {/* Right column: Hero Visual — High-contrast Code Editor / Terminal */}
+                        <div className="lg:col-span-6">
+                            <div className="relative rounded-xl border border-slate-700/60 bg-[#0d131f] shadow-2xl shadow-slate-900/20 ring-1 ring-black/5 overflow-hidden">
+                                {/* Editor Header */}
+                                <div className="flex items-center justify-between border-b border-slate-800 bg-[#0a0f19] px-4 py-2.5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-3 w-3 rounded-full bg-red-500/80" />
+                                        <div className="h-3 w-3 rounded-full bg-amber-500/80" />
+                                        <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
+                                        <span className="ml-2 font-mono text-xs text-slate-400">
+                                            comestro-terminal
+                                        </span>
                                     </div>
 
-                                    <div className="relative flex items-center gap-6 lg:items-end">
-                                        <div
-                                            id="docs-card-content"
-                                            className="flex items-start gap-6 lg:flex-col"
+                                    {/* Tabs */}
+                                    <div className="flex items-center gap-1 font-mono text-xs">
+                                        <button
+                                            onClick={() => setActiveTerminalTab('terminal')}
+                                            className={`px-2.5 py-1 rounded transition ${
+                                                activeTerminalTab === 'terminal'
+                                                    ? 'bg-slate-800 text-emerald-400 border border-slate-700'
+                                                    : 'text-slate-400 hover:text-slate-200'
+                                            }`}
                                         >
-                                            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                                <svg
-                                                    className="size-5 sm:size-6"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        fill="#FF2D20"
-                                                        d="M23 4a1 1 0 0 0-1.447-.894L12.224 7.77a.5.5 0 0 1-.448 0L2.447 3.106A1 1 0 0 0 1 4v13.382a1.99 1.99 0 0 0 1.105 1.79l9.448 4.728c.14.065.293.1.447.1.154-.005.306-.04.447-.105l9.453-4.724a1.99 1.99 0 0 0 1.1-1.789V4ZM3 6.023a.25.25 0 0 1 .362-.223l7.5 3.75a.251.251 0 0 1 .138.223v11.2a.25.25 0 0 1-.362.224l-7.5-3.75a.25.25 0 0 1-.138-.22V6.023Zm18 11.2a.25.25 0 0 1-.138.224l-7.5 3.75a.249.249 0 0 1-.329-.099.249.249 0 0 1-.033-.12V9.772a.251.251 0 0 1 .138-.224l7.5-3.75a.25.25 0 0 1 .362.224v11.2Z"
-                                                    />
-                                                    <path
-                                                        fill="#FF2D20"
-                                                        d="m3.55 1.893 8 4.048a1.008 1.008 0 0 0 .9 0l8-4.048a1 1 0 0 0-.9-1.785l-7.322 3.706a.506.506 0 0 1-.452 0L4.454.108a1 1 0 0 0-.9 1.785H3.55Z"
-                                                    />
-                                                </svg>
+                                            terminal.sh
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTerminalTab('code')}
+                                            className={`px-2.5 py-1 rounded transition ${
+                                                activeTerminalTab === 'code'
+                                                    ? 'bg-slate-800 text-emerald-400 border border-slate-700'
+                                                    : 'text-slate-400 hover:text-slate-200'
+                                            }`}
+                                        >
+                                            Course.java
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Editor Body */}
+                                <div className="p-5 font-mono text-xs sm:text-sm leading-relaxed min-h-[320px] bg-[#070b14]/95 code-scrollbar overflow-x-auto text-slate-200">
+                                    {activeTerminalTab === 'terminal' ? (
+                                        <div className="space-y-2">
+                                            <p className="text-slate-500"># Welcome to Comestro Academy Engine v2.6</p>
+                                            <div className="flex items-center gap-2 text-slate-200">
+                                                <span className="text-emerald-400 font-bold">$</span>
+                                                <span className="text-emerald-300 font-semibold">whoami</span>
                                             </div>
+                                            <p className="text-slate-300 pl-4">aspiring_developer</p>
 
-                                            <div className="pt-3 sm:pt-5 lg:pt-0">
-                                                <h2 className="text-xl font-semibold text-black dark:text-white">
-                                                    Documentation
-                                                </h2>
+                                            <div className="flex items-center gap-2 text-slate-200 pt-2">
+                                                <span className="text-emerald-400 font-bold">$</span>
+                                                <span className="text-emerald-300 font-semibold">comestro start</span>
+                                            </div>
+                                            <p className="text-slate-400 pl-4">Initializing learning environment...</p>
 
-                                                <p className="mt-4 text-sm/relaxed">
-                                                    Laravel has wonderful
-                                                    documentation covering every
-                                                    aspect of the framework.
-                                                    Whether you are a newcomer
-                                                    or have prior experience
-                                                    with Laravel, we recommend
-                                                    reading our documentation
-                                                    from beginning to end.
+                                            <div className="space-y-1 pl-4 pt-1 text-slate-300">
+                                                <p className="flex items-center gap-2">
+                                                    <span className="text-emerald-400">✓</span> Programming fundamentals
+                                                </p>
+                                                <p className="flex items-center gap-2">
+                                                    <span className="text-emerald-400">✓</span> Data Structures & Algorithms
+                                                </p>
+                                                <p className="flex items-center gap-2">
+                                                    <span className="text-emerald-400">✓</span> Backend Development
+                                                </p>
+                                                <p className="flex items-center gap-2">
+                                                    <span className="text-emerald-400">✓</span> Full Stack Development
+                                                </p>
+                                                <p className="flex items-center gap-2">
+                                                    <span className="text-emerald-400">✓</span> Real-world Projects
                                                 </p>
                                             </div>
+
+                                            <div className="flex items-center gap-2 text-slate-200 pt-2">
+                                                <span className="text-emerald-400 font-bold">$</span>
+                                                <span className="text-emerald-300 font-semibold">build-future</span>
+                                            </div>
+                                            <div className="pl-4">
+                                                <div className="text-emerald-400 tracking-tight">
+                                                    ████████████████████ 100%
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 pt-2 text-emerald-400 font-bold">
+                                                <span>&gt; Environment ready</span>
+                                                <span className="inline-block h-4 w-2 bg-emerald-400 animate-pulse" />
+                                            </div>
                                         </div>
+                                    ) : (
+                                        <div className="space-y-1 text-slate-300">
+                                            <p><span className="text-purple-400">package</span> com.comestro.academy;</p>
+                                            <br />
+                                            <p><span className="text-purple-400">public class</span> <span className="text-amber-300">Developer</span> &#123;</p>
+                                            <p className="pl-4"><span className="text-purple-400">private final</span> String status = <span className="text-emerald-300">"Production Ready"</span>;</p>
+                                            <p className="pl-4"><span className="text-purple-400">private int</span> projectsShipped = <span className="text-amber-300">8</span>;</p>
+                                            <br />
+                                            <p className="pl-4"><span className="text-purple-400">public void</span> <span className="text-blue-300">buildFuture</span>() &#123;</p>
+                                            <p className="pl-8 text-slate-400">// Learn Live. Build Real Systems.</p>
+                                            <p className="pl-8">System.out.println(<span className="text-emerald-300">"Hello, World! -&gt; Production"</span>);</p>
+                                            <p className="pl-4">&#125;</p>
+                                            <p>&#125;</p>
+                                        </div>
+                                    )}
+                                </div>
 
-                                        <svg
-                                            className="size-6 shrink-0 stroke-[#FF2D20]"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                            />
-                                        </svg>
+                                {/* Status bar */}
+                                <div className="flex items-center justify-between border-t border-slate-800 bg-[#080d17] px-4 py-1.5 font-mono text-[11px] text-slate-400">
+                                    <div className="flex items-center gap-3">
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                                            <span className="text-slate-300">ONLINE</span>
+                                        </span>
+                                        <span>UTF-8</span>
                                     </div>
-                                </a>
+                                    <span className="text-emerald-400">ready for input_</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                                <a
-                                    href="https://laracasts.com"
-                                    className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
-                                >
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M24 8.25a.5.5 0 0 0-.5-.5H.5a.5.5 0 0 0-.5.5v12a2.5 2.5 0 0 0 2.5 2.5h19a2.5 2.5 0 0 0 2.5-2.5v-12Zm-7.765 5.868a1.221 1.221 0 0 1 0 2.264l-6.626 2.776A1.153 1.153 0 0 1 8 18.123v-5.746a1.151 1.151 0 0 1 1.609-1.035l6.626 2.776ZM19.564 1.677a.25.25 0 0 0-.177-.427H15.6a.106.106 0 0 0-.072.03l-4.54 4.543a.25.25 0 0 0 .177.427h3.783c.027 0 .054-.01.073-.03l4.543-4.543ZM22.071 1.318a.047.047 0 0 0-.045.013l-4.492 4.492a.249.249 0 0 0 .038.385.25.25 0 0 0 .14.042h5.784a.5.5 0 0 0 .5-.5v-2a2.5 2.5 0 0 0-1.925-2.432ZM13.014 1.677a.25.25 0 0 0-.178-.427H9.101a.106.106 0 0 0-.073.03l-4.54 4.543a.25.25 0 0 0 .177.427H8.4a.106.106 0 0 0 .073-.03l4.54-4.543ZM6.513 1.677a.25.25 0 0 0-.177-.427H2.5A2.5 2.5 0 0 0 0 3.75v2a.5.5 0 0 0 .5.5h1.4a.106.106 0 0 0 .073-.03l4.54-4.543Z" />
-                                            </g>
-                                        </svg>
+            {/* 3. Learning Philosophy Section (Light Theme) */}
+            <section className="py-20 border-t border-slate-200 bg-white relative">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Learning Philosophy</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Don't Just Watch Code. Build With It.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            The conventional tutorial cycle keeps developers stuck. Comestro Academy structures your journey like an engineering pipeline.
+                        </p>
+                    </div>
+
+                    {/* Developer Pipeline Flow */}
+                    <div className="mt-14 grid grid-cols-1 md:grid-cols-5 gap-4 relative">
+                        {PHILOSOPHY_STEPS.map((step, idx) => (
+                            <div
+                                key={step.phase}
+                                onClick={() => setActiveStep(idx)}
+                                className={`cursor-pointer rounded-xl border p-5 transition-all ${
+                                    activeStep === idx
+                                        ? 'border-emerald-500 bg-emerald-50/40 shadow-sm'
+                                        : 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
+                                }`}
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                        0{idx + 1}
+                                    </span>
+                                    <span className="font-mono text-[11px] text-slate-500 uppercase">
+                                        Step
+                                    </span>
+                                </div>
+
+                                <h3 className="font-mono text-base font-bold text-slate-900 mb-2">
+                                    {step.phase}
+                                </h3>
+
+                                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                                    {step.title}
+                                </p>
+
+                                <div className="rounded bg-slate-900 border border-slate-800 p-2 font-mono text-[11px] text-emerald-400 overflow-x-auto">
+                                    <code>$ {step.command}</code>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. Live Learning Section (Light Theme) */}
+            <section id="live" className="py-20 border-t border-slate-200 bg-slate-50 relative overflow-hidden">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                        <div>
+                            <div className="inline-flex items-center gap-2 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                                <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                                <span>Real-Time Interactive Engineering</span>
+                            </div>
+                            <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl mt-2">
+                                Learn Live. Build Together.
+                            </h2>
+                            <p className="text-slate-600 text-sm mt-1 max-w-xl">
+                                Join interactive live coding masterclasses. Code along with senior engineers and ask questions in real time.
+                            </p>
+                        </div>
+
+                        <div className="text-xs font-mono text-slate-600 bg-white border border-slate-200 shadow-sm rounded-lg p-3 max-w-sm">
+                            <span className="text-emerald-700 font-bold">Can't attend live?</span> Every class is recorded in HD and available inside your course dashboard with code repositories.
+                        </div>
+                    </div>
+
+                    {/* Realistic Mock Live Classroom Interface */}
+                    <div className="rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+                        {/* Classroom Header */}
+                        <div className="flex flex-wrap items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 gap-3">
+                            <div className="flex items-center gap-3">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-0.5 font-mono text-xs font-bold text-red-700 border border-red-200">
+                                    <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                                    <span>LIVE CLASS</span>
+                                </span>
+                                <h3 className="font-mono text-sm font-semibold text-slate-900">
+                                    Spring Boot REST API: Building a production-ready API
+                                </h3>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs font-mono text-slate-600">
+                                <span className="flex items-center gap-1.5">
+                                    <Clock className="h-3.5 w-3.5 text-emerald-600" />
+                                    <span>42:15</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <Users className="h-3.5 w-3.5 text-emerald-600" />
+                                    <span>128 students learning</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Classroom Body Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12">
+                            {/* Main Stage: Video + Code Editor (8 cols) */}
+                            <div className="lg:col-span-8 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col">
+                                {/* Top: Instructor Screen */}
+                                <div className="bg-slate-100/70 p-4 flex items-center justify-between border-b border-slate-200">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center font-mono text-emerald-800 font-bold text-sm">
+                                            RS
+                                        </div>
+                                        <div>
+                                            <div className="font-mono text-xs font-bold text-slate-900 flex items-center gap-2">
+                                                <span>Rahul Sharma</span>
+                                                <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">
+                                                    Instructor
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 font-mono">
+                                                Ex-Staff Engineer · Sharing Screen & Terminal
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Laracasts
-                                        </h2>
+                                    <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-emerald-700 font-semibold">
+                                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                                        <span>Stream: 1080p 60fps</span>
+                                    </div>
+                                </div>
 
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laracasts offers thousands of video
-                                            tutorials on Laravel, PHP, and
-                                            JavaScript development. Check them
-                                            out, see for yourself, and massively
-                                            level up your development skills in
-                                            the process.
+                                {/* Code Editor Area (High contrast dark code box) */}
+                                <div className="p-5 font-mono text-xs sm:text-sm bg-[#090d16] code-scrollbar overflow-x-auto flex-1 min-h-[300px] text-slate-200">
+                                    <div className="text-slate-500 mb-2">// Active Editor: OrderService.java</div>
+                                    <div className="space-y-1">
+                                        <p><span className="text-purple-400">@Service</span></p>
+                                        <p><span className="text-purple-400">public class</span> <span className="text-amber-300">OrderService</span> &#123;</p>
+                                        <p className="pl-4"><span className="text-purple-400">private final</span> OrderRepository orderRepo;</p>
+                                        <p className="pl-4"><span className="text-purple-400">private final</span> KafkaTemplate&lt;String, OrderEvent&gt; kafkaTemplate;</p>
+                                        <br />
+                                        <p className="pl-4"><span className="text-purple-400">@Transactional</span></p>
+                                        <p className="pl-4"><span className="text-purple-400">public</span> Order <span className="text-blue-300">createOrder</span>(OrderRequest req) &#123;</p>
+                                        <p className="pl-8 text-slate-400">// Validating payload idempotency key...</p>
+                                        <p className="pl-8">Order order = orderRepo.save(Order.from(req));</p>
+                                        <p className="pl-8">kafkaTemplate.send(<span className="text-emerald-300">"orders.created"</span>, <span className="text-purple-400">new</span> OrderEvent(order.getId()));</p>
+                                        <p className="pl-8"><span className="text-purple-400">return</span> order;</p>
+                                        <p className="pl-4">&#125;</p>
+                                        <p>&#125;</p>
+                                    </div>
+                                </div>
+
+                                {/* Class Action bar */}
+                                <div className="border-t border-slate-200 bg-slate-50 p-3 flex items-center justify-between">
+                                    <span className="font-mono text-xs text-slate-600">
+                                        Lesson 8 of 14 · Microservices Module
+                                    </span>
+                                    <Link
+                                        href={route('register')}
+                                        className="inline-flex items-center gap-1.5 rounded bg-emerald-600 px-3.5 py-1.5 font-mono text-xs font-bold text-white hover:bg-emerald-700 transition shadow-sm"
+                                    >
+                                        <span>Join Live Class →</span>
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Chat Panel (4 cols - Light Theme) */}
+                            <div className="lg:col-span-4 bg-white flex flex-col justify-between">
+                                <div className="border-b border-slate-200 p-3 font-mono text-xs font-bold text-slate-800 flex items-center justify-between bg-slate-50/50">
+                                    <span className="flex items-center gap-1.5">
+                                        <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
+                                        <span>Live Student Chat</span>
+                                    </span>
+                                    <span className="text-[11px] text-emerald-600 font-semibold">● Active</span>
+                                </div>
+
+                                {/* Chat Messages */}
+                                <div className="p-4 space-y-3 font-mono text-xs overflow-y-auto max-h-[300px] lg:max-h-[360px] code-scrollbar bg-slate-50/40">
+                                    <div className="rounded-lg bg-white border border-slate-200 p-2.5 shadow-xs">
+                                        <div className="flex items-center justify-between text-[11px] text-slate-400">
+                                            <span className="text-emerald-700 font-bold">@aditya_m</span>
+                                            <span>2m ago</span>
+                                        </div>
+                                        <p className="text-slate-700 mt-1">
+                                            How do we handle JWT token expiration on the client during long sessions?
                                         </p>
                                     </div>
 
-                                    <svg
-                                        className="size-6 shrink-0 self-center stroke-[#FF2D20]"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                        />
-                                    </svg>
-                                </a>
-
-                                <a
-                                    href="https://laravel-news.com"
-                                    className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
-                                >
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M8.75 4.5H5.5c-.69 0-1.25.56-1.25 1.25v4.75c0 .69.56 1.25 1.25 1.25h3.25c.69 0 1.25-.56 1.25-1.25V5.75c0-.69-.56-1.25-1.25-1.25Z" />
-                                                <path d="M24 10a3 3 0 0 0-3-3h-2V2.5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2V20a3.5 3.5 0 0 0 3.5 3.5h17A3.5 3.5 0 0 0 24 20V10ZM3.5 21.5A1.5 1.5 0 0 1 2 20V3a.5.5 0 0 1 .5-.5h14a.5.5 0 0 1 .5.5v17c0 .295.037.588.11.874a.5.5 0 0 1-.484.625L3.5 21.5ZM22 20a1.5 1.5 0 1 1-3 0V9.5a.5.5 0 0 1 .5-.5H21a1 1 0 0 1 1 1v10Z" />
-                                                <path d="M12.751 6.047h2a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-2A.75.75 0 0 1 12 7.3v-.5a.75.75 0 0 1 .751-.753ZM12.751 10.047h2a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-2A.75.75 0 0 1 12 11.3v-.5a.75.75 0 0 1 .751-.753ZM4.751 14.047h10a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-10A.75.75 0 0 1 4 15.3v-.5a.75.75 0 0 1 .751-.753ZM4.75 18.047h7.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-7.5A.75.75 0 0 1 4 19.3v-.5a.75.75 0 0 1 .75-.753Z" />
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Laravel News
-                                        </h2>
-
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laravel News is a community driven
-                                            portal and newsletter aggregating
-                                            all of the latest and most important
-                                            news in the Laravel ecosystem,
-                                            including new package releases and
-                                            tutorials.
+                                    <div className="rounded-lg bg-emerald-50/60 border border-emerald-200 p-2.5 shadow-xs">
+                                        <div className="flex items-center justify-between text-[11px] text-slate-500">
+                                            <span className="text-emerald-800 font-bold">@rahul_instructor</span>
+                                            <span>1m ago</span>
+                                        </div>
+                                        <p className="text-slate-800 mt-1">
+                                            We use refresh token rotation with an HttpOnly cookie. We'll code that in the next 10 mins!
                                         </p>
                                     </div>
 
-                                    <svg
-                                        className="size-6 shrink-0 self-center stroke-[#FF2D20]"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                        />
-                                    </svg>
-                                </a>
-
-                                <div className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800">
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M16.597 12.635a.247.247 0 0 0-.08-.237 2.234 2.234 0 0 1-.769-1.68c.001-.195.03-.39.084-.578a.25.25 0 0 0-.09-.267 8.8 8.8 0 0 0-4.826-1.66.25.25 0 0 0-.268.181 2.5 2.5 0 0 1-2.4 1.824.045.045 0 0 0-.045.037 12.255 12.255 0 0 0-.093 3.86.251.251 0 0 0 .208.214c2.22.366 4.367 1.08 6.362 2.118a.252.252 0 0 0 .32-.079 10.09 10.09 0 0 0 1.597-3.733ZM13.616 17.968a.25.25 0 0 0-.063-.407A19.697 19.697 0 0 0 8.91 15.98a.25.25 0 0 0-.287.325c.151.455.334.898.548 1.328.437.827.981 1.594 1.619 2.28a.249.249 0 0 0 .32.044 29.13 29.13 0 0 0 2.506-1.99ZM6.303 14.105a.25.25 0 0 0 .265-.274 13.048 13.048 0 0 1 .205-4.045.062.062 0 0 0-.022-.07 2.5 2.5 0 0 1-.777-.982.25.25 0 0 0-.271-.149 11 11 0 0 0-5.6 2.815.255.255 0 0 0-.075.163c-.008.135-.02.27-.02.406.002.8.084 1.598.246 2.381a.25.25 0 0 0 .303.193 19.924 19.924 0 0 1 5.746-.438ZM9.228 20.914a.25.25 0 0 0 .1-.393 11.53 11.53 0 0 1-1.5-2.22 12.238 12.238 0 0 1-.91-2.465.248.248 0 0 0-.22-.187 18.876 18.876 0 0 0-5.69.33.249.249 0 0 0-.179.336c.838 2.142 2.272 4 4.132 5.353a.254.254 0 0 0 .15.048c1.41-.01 2.807-.282 4.117-.802ZM18.93 12.957l-.005-.008a.25.25 0 0 0-.268-.082 2.21 2.21 0 0 1-.41.081.25.25 0 0 0-.217.2c-.582 2.66-2.127 5.35-5.75 7.843a.248.248 0 0 0-.09.299.25.25 0 0 0 .065.091 28.703 28.703 0 0 0 2.662 2.12.246.246 0 0 0 .209.037c2.579-.701 4.85-2.242 6.456-4.378a.25.25 0 0 0 .048-.189 13.51 13.51 0 0 0-2.7-6.014ZM5.702 7.058a.254.254 0 0 0 .2-.165A2.488 2.488 0 0 1 7.98 5.245a.093.093 0 0 0 .078-.062 19.734 19.734 0 0 1 3.055-4.74.25.25 0 0 0-.21-.41 12.009 12.009 0 0 0-10.4 8.558.25.25 0 0 0 .373.281 12.912 12.912 0 0 1 4.826-1.814ZM10.773 22.052a.25.25 0 0 0-.28-.046c-.758.356-1.55.635-2.365.833a.25.25 0 0 0-.022.48c1.252.43 2.568.65 3.893.65.1 0 .2 0 .3-.008a.25.25 0 0 0 .147-.444c-.526-.424-1.1-.917-1.673-1.465ZM18.744 8.436a.249.249 0 0 0 .15.228 2.246 2.246 0 0 1 1.352 2.054c0 .337-.08.67-.23.972a.25.25 0 0 0 .042.28l.007.009a15.016 15.016 0 0 1 2.52 4.6.25.25 0 0 0 .37.132.25.25 0 0 0 .096-.114c.623-1.464.944-3.039.945-4.63a12.005 12.005 0 0 0-5.78-10.258.25.25 0 0 0-.373.274c.547 2.109.85 4.274.901 6.453ZM9.61 5.38a.25.25 0 0 0 .08.31c.34.24.616.561.8.935a.25.25 0 0 0 .3.127.631.631 0 0 1 .206-.034c2.054.078 4.036.772 5.69 1.991a.251.251 0 0 0 .267.024c.046-.024.093-.047.141-.067a.25.25 0 0 0 .151-.23A29.98 29.98 0 0 0 15.957.764a.25.25 0 0 0-.16-.164 11.924 11.924 0 0 0-2.21-.518.252.252 0 0 0-.215.076A22.456 22.456 0 0 0 9.61 5.38Z" />
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Vibrant Ecosystem
-                                        </h2>
-
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laravel's robust library of
-                                            first-party tools and libraries,
-                                            such as{' '}
-                                            <a
-                                                href="https://forge.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white dark:focus-visible:ring-[#FF2D20]"
-                                            >
-                                                Forge
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://vapor.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Vapor
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://nova.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Nova
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://envoyer.io"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Envoyer
-                                            </a>
-                                            , and{' '}
-                                            <a
-                                                href="https://herd.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Herd
-                                            </a>{' '}
-                                            help you take your projects to the
-                                            next level. Pair them with powerful
-                                            open source libraries like{' '}
-                                            <a
-                                                href="https://laravel.com/docs/billing"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Cashier
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/dusk"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Dusk
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/broadcasting"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Echo
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/horizon"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Horizon
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/sanctum"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Sanctum
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/telescope"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Telescope
-                                            </a>
-                                            , and more.
+                                    <div className="rounded-lg bg-white border border-slate-200 p-2.5 shadow-xs">
+                                        <div className="flex items-center justify-between text-[11px] text-slate-400">
+                                            <span className="text-blue-700 font-bold">@kavita_dev</span>
+                                            <span>Just now</span>
+                                        </div>
+                                        <p className="text-slate-700 mt-1">
+                                            Great explanation on the @Transactional rollback semantics!
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                        </main>
 
-                        <footer className="py-16 text-center text-sm text-black dark:text-white/70">
-                            Laravel v{laravelVersion} (PHP v{phpVersion})
-                        </footer>
+                                {/* Chat Input mockup */}
+                                <div className="p-3 border-t border-slate-200 bg-slate-50">
+                                    <div className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-400 shadow-xs">
+                                        <input
+                                            type="text"
+                                            placeholder="Ask a technical question..."
+                                            className="bg-transparent border-0 outline-none w-full text-xs text-slate-800"
+                                            disabled
+                                        />
+                                        <Send className="h-3.5 w-3.5 text-slate-400" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </>
+            </section>
+
+            {/* 5. Learning Paths Section (Light Theme) */}
+            <section id="paths" className="py-20 border-t border-slate-200 bg-white">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Career-Oriented Roadmaps</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Choose Your Developer Path.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            Instead of disconnected tutorials, follow industry-vetted curriculums that take you from syntax to architecture.
+                        </p>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {LEARNING_PATHS.map((path) => (
+                            <div
+                                key={path.title}
+                                className="group relative rounded-xl border border-slate-200 bg-slate-50/50 p-6 sm:p-7 shadow-sm transition hover:border-emerald-500/50 hover:bg-white hover:shadow-md flex flex-col justify-between"
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="font-mono text-xs text-emerald-700 font-semibold">
+                                            {path.level}
+                                        </span>
+                                        <span className="font-mono text-[11px] px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold">
+                                            {path.badge}
+                                        </span>
+                                    </div>
+
+                                    <h3 className="text-xl font-bold text-slate-900 font-mono group-hover:text-emerald-600 transition">
+                                        {path.title}
+                                    </h3>
+
+                                    <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                                        {path.description}
+                                    </p>
+
+                                    {/* Tech Flow Breadcrumb */}
+                                    <div className="mt-5 p-3 rounded-lg bg-white border border-slate-200 font-mono text-xs overflow-x-auto code-scrollbar">
+                                        <div className="flex items-center gap-1.5 text-slate-700 whitespace-nowrap">
+                                            {path.flow.map((tech, idx) => (
+                                                <span key={tech} className="flex items-center gap-1.5">
+                                                    <span className="text-emerald-700 font-semibold">{tech}</span>
+                                                    {idx < path.flow.length - 1 && (
+                                                        <span className="text-slate-400">→</span>
+                                                    )}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Stats row */}
+                                    <div className="mt-6 flex flex-wrap items-center gap-6 font-mono text-xs text-slate-600">
+                                        <span className="flex items-center gap-1.5">
+                                            <BookOpen className="h-3.5 w-3.5 text-emerald-600" />
+                                            <span>{path.modules} Modules</span>
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <Layers className="h-3.5 w-3.5 text-emerald-600" />
+                                            <span>{path.projects} Projects</span>
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <Clock className="h-3.5 w-3.5 text-emerald-600" />
+                                            <span>{path.duration}</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-7 pt-4 border-t border-slate-200 flex items-center justify-between">
+                                    <span className="font-mono text-xs text-slate-500">
+                                        Live Classes + Recorded Access
+                                    </span>
+                                    <Link
+                                        href={route('register')}
+                                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-emerald-700 group-hover:text-emerald-600 transition"
+                                    >
+                                        <span>Explore Path</span>
+                                        <ArrowRight className="h-3.5 w-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 6. Technology Stack Section (Light Theme) */}
+            <section id="tech" className="py-20 border-t border-slate-200 bg-slate-50">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Modern Developer Tooling</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Learn the Technologies That Build the Web.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            Hover over any stack badge to inspect curriculum depth, live courses, and real capstone projects.
+                        </p>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {TECHNOLOGIES.map((tech) => (
+                            <div
+                                key={tech.name}
+                                onMouseEnter={() => setSelectedTech(tech)}
+                                onMouseLeave={() => setSelectedTech(null)}
+                                className="group relative rounded-xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-md cursor-pointer text-center"
+                            >
+                                <div className="text-2xl mb-2">{tech.icon}</div>
+                                <h3 className="font-mono text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition">
+                                    {tech.name}
+                                </h3>
+                                <p className="text-[11px] text-slate-500 font-mono mt-1 truncate">
+                                    {tech.role}
+                                </p>
+
+                                {/* Tooltip popover on hover */}
+                                {selectedTech?.name === tech.name && (
+                                    <div className="absolute left-1/2 -top-16 -translate-x-1/2 z-20 w-44 rounded-lg border border-slate-800 bg-slate-950 p-2.5 shadow-xl font-mono text-[11px] text-left text-white">
+                                        <div className="font-bold text-emerald-400">{tech.name}</div>
+                                        <div className="text-slate-400">{tech.role}</div>
+                                        <div className="text-slate-300 mt-1">
+                                            {tech.courses} Courses · {tech.projects} Projects
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 7. Real-World Projects Section (Light Theme) */}
+            <section id="projects" className="py-20 border-t border-slate-200 bg-white">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Portfolio Proof</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Don't Finish With a Certificate.<br />
+                            Finish With Something You Built.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            Recruiters hire engineers who can demonstrate working software. Every student graduates with production-grade capstones.
+                        </p>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {PROJECTS.map((proj) => (
+                            <div
+                                key={proj.title}
+                                className="rounded-xl border border-slate-200 bg-slate-50/40 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between"
+                            >
+                                {/* Top code preview window (high-contrast terminal look) */}
+                                <div className="border-b border-slate-800 bg-[#080d17] p-3 flex items-center justify-between text-white">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+                                        <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+                                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                                        <span className="font-mono text-xs text-slate-400 ml-1">
+                                            {proj.title}.repo
+                                        </span>
+                                    </div>
+                                    <span className="font-mono text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                        {proj.difficulty}
+                                    </span>
+                                </div>
+
+                                <div className="p-4 font-mono text-xs bg-[#090d16] code-scrollbar overflow-x-auto text-slate-200">
+                                    <pre><code>{proj.snippet}</code></pre>
+                                </div>
+
+                                {/* Project details */}
+                                <div className="p-6 flex-1 flex flex-col justify-between bg-white">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-slate-900 font-mono">
+                                            {proj.title}
+                                        </h3>
+                                        <p className="text-xs font-mono text-emerald-700 font-semibold mt-1">
+                                            {proj.stack}
+                                        </p>
+
+                                        {/* Skills tags */}
+                                        <div className="mt-4 flex flex-wrap gap-1.5">
+                                            {proj.skills.map((skill) => (
+                                                <span
+                                                    key={skill}
+                                                    className="font-mono text-[11px] rounded bg-slate-100 border border-slate-200 px-2 py-0.5 text-slate-700"
+                                                >
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* GitHub-style indicators and button */}
+                                    <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between">
+                                        <div className="flex items-center gap-4 font-mono text-xs text-slate-600">
+                                            <span className="flex items-center gap-1">
+                                                <GitBranch className="h-3.5 w-3.5 text-emerald-600" />
+                                                <span>{proj.stats.commits} commits</span>
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Star className="h-3.5 w-3.5 text-amber-500" />
+                                                <span>{proj.stats.stars}</span>
+                                            </span>
+                                        </div>
+
+                                        <Link
+                                            href={route('register')}
+                                            className="inline-flex items-center gap-1 font-mono text-xs font-bold text-emerald-700 hover:text-emerald-600 transition"
+                                        >
+                                            <span>View Project</span>
+                                            <ChevronRight className="h-3.5 w-3.5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 8. "How Comestro Works" Section (Light Theme) */}
+            <section className="py-20 border-t border-slate-200 bg-slate-50">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Workflow</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            How Comestro Works
+                        </h2>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { num: '01', title: 'Choose Your Path', desc: 'Select from Java, Full Stack, Python, or AI tracks based on your career ambitions.' },
+                            { num: '02', title: 'Learn With Experts', desc: 'Attend interactive live coding sessions or catch up with indexed HD recordings.' },
+                            { num: '03', title: 'Build Real Projects', desc: 'Write production code, solve architectural bugs, and get detailed PR reviews.' },
+                            { num: '04', title: 'Become Job Ready', desc: 'Prepare with senior mock interviews, resume optimization, and referral networks.' },
+                        ].map((step) => (
+                            <div
+                                key={step.num}
+                                className="rounded-xl border border-slate-200 bg-white p-6 relative group hover:border-emerald-300 hover:shadow-sm transition"
+                            >
+                                <div className="text-3xl font-mono font-black text-emerald-600/30 group-hover:text-emerald-600 transition mb-3">
+                                    {step.num}
+                                </div>
+                                <h3 className="font-mono text-base font-bold text-slate-900 mb-2">
+                                    {step.title}
+                                </h3>
+                                <p className="text-xs text-slate-600 leading-relaxed">
+                                    {step.desc}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 9. Instructor Section (Light Theme) */}
+            <section id="instructors" className="py-20 border-t border-slate-200 bg-white">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Practitioner-Led</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Learn From People Who Build.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            Our instructors are active practitioners and tech leads who design and maintain production systems.
+                        </p>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {INSTRUCTORS.map((inst) => (
+                            <div
+                                key={inst.name}
+                                className="rounded-xl border border-slate-200 bg-slate-50/60 p-6 text-left shadow-sm hover:border-slate-300 hover:bg-white hover:shadow-md transition"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="h-12 w-12 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center font-mono font-bold text-emerald-800">
+                                        {inst.avatarText}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-mono text-base font-bold text-slate-900">
+                                            {inst.name}
+                                        </h3>
+                                        <p className="text-xs text-emerald-700 font-mono font-semibold">
+                                            {inst.role}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 space-y-2 font-mono text-xs text-slate-600 border-t border-slate-200 pt-4">
+                                    <p className="text-slate-800 font-semibold">{inst.tech}</p>
+                                    <p>{inst.experience}</p>
+                                    <div className="flex items-center justify-between text-slate-600 pt-1">
+                                        <span>{inst.students}</span>
+                                        <span className="flex items-center gap-1 text-amber-500 font-bold">
+                                            <Star className="h-3 w-3 fill-current" />
+                                            {inst.rating}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-10 text-center">
+                        <Link
+                            href={route('register')}
+                            className="inline-flex items-center gap-2 font-mono text-xs font-bold text-emerald-700 hover:text-emerald-800 transition"
+                        >
+                            <span>Meet Our Instructors →</span>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* 10. Student Progress Section (Dashboard Mockup - Light Theme) */}
+            <section className="py-20 border-t border-slate-200 bg-slate-50">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Learning Experience</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Designed Like a Modern Engineering Tool.
+                        </h2>
+                        <p className="text-slate-600 text-sm sm:text-base">
+                            Track your coding streaks, module completion, code submissions, and live sessions in one integrated workspace.
+                        </p>
+                    </div>
+
+                    {/* Dashboard Mockup */}
+                    <div className="max-w-4xl mx-auto rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl font-mono">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                    <span>Good evening</span>
+                                    <span>👋</span>
+                                </h3>
+                                <p className="text-xs text-slate-500 mt-0.5">
+                                    Welcome back to your workspace.
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs">
+                                <span className="flex items-center gap-1.5 text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded border border-amber-200">
+                                    <Flame className="h-3.5 w-3.5 fill-current text-amber-500" />
+                                    <span>12 Day Streak</span>
+                                </span>
+                                <span className="text-slate-600">24h Learning Time</span>
+                                <span className="text-emerald-700 font-bold">18 Projects</span>
+                            </div>
+                        </div>
+
+                        {/* Active Course Card */}
+                        <div className="mt-6 rounded-lg bg-slate-50 border border-slate-200 p-5">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Continue Learning
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                                <div>
+                                    <h4 className="text-base font-bold text-slate-900">
+                                        Java Backend Development
+                                    </h4>
+                                    <p className="text-xs text-emerald-700 font-semibold mt-1">
+                                        Next: Spring Boot REST API (Module 13)
+                                    </p>
+                                </div>
+
+                                <Link
+                                    href={route('register')}
+                                    className="inline-flex items-center justify-center gap-1.5 rounded bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition shadow-sm"
+                                >
+                                    <span>Continue Learning →</span>
+                                </Link>
+                            </div>
+
+                            {/* Progress bar */}
+                            <div className="mt-5">
+                                <div className="flex items-center justify-between text-xs text-slate-600 mb-1.5">
+                                    <span>Progress: 78%</span>
+                                    <span>12 / 15 modules completed</span>
+                                </div>
+                                <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                                    <div className="h-full rounded-full bg-emerald-600 w-[78%]" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 11. Why Comestro? (Light Theme) */}
+            <section className="py-20 border-t border-slate-200 bg-white">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Developer Value</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Why Comestro Academy?
+                        </h2>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {WHY_CARDS.map((card) => {
+                            const IconComponent = card.icon;
+                            return (
+                                <div
+                                    key={card.title}
+                                    className="rounded-xl border border-slate-200 bg-slate-50/50 p-6 hover:border-slate-300 hover:bg-white hover:shadow-sm transition"
+                                >
+                                    <div className="h-10 w-10 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-4">
+                                        <IconComponent className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="font-mono text-base font-bold text-slate-900 mb-2">
+                                        {card.title}
+                                    </h3>
+                                    <p className="text-xs text-slate-600 leading-relaxed">
+                                        {card.desc}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* 12. Student Testimonials (Light Theme) */}
+            <section className="py-20 border-t border-slate-200 bg-slate-50">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-3">
+                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                            <span>// Student Feedback</span>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            Trusted by Aspiring Engineers
+                        </h2>
+                    </div>
+
+                    <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {TESTIMONIALS.map((t, idx) => (
+                            <div
+                                key={idx}
+                                className="rounded-xl border border-slate-200 bg-white p-6 font-mono flex flex-col justify-between shadow-sm"
+                            >
+                                <div>
+                                    <div className="flex gap-1 text-amber-400 mb-4">
+                                        {[...Array(t.stars)].map((_, i) => (
+                                            <Star key={i} className="h-3.5 w-3.5 fill-current text-amber-400" />
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-slate-700 leading-relaxed">
+                                        "{t.quote}"
+                                    </p>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-slate-100">
+                                    <p className="text-xs font-bold text-slate-900">— {t.author}</p>
+                                    <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">{t.role}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 13. Statistics Section (Light Theme) */}
+            <section className="py-16 border-t border-slate-200 bg-white">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center font-mono">
+                        <div>
+                            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900">10K+</div>
+                            <div className="text-xs text-emerald-700 font-semibold mt-1 uppercase tracking-wider">Students</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900">50+</div>
+                            <div className="text-xs text-emerald-700 font-semibold mt-1 uppercase tracking-wider">Courses</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900">200+</div>
+                            <div className="text-xs text-emerald-700 font-semibold mt-1 uppercase tracking-wider">Live Classes</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900">100+</div>
+                            <div className="text-xs text-emerald-700 font-semibold mt-1 uppercase tracking-wider">Projects</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 14. Final CTA (Light Theme) */}
+            <section className="py-24 border-t border-slate-200 bg-gradient-to-b from-white to-emerald-50/50 relative overflow-hidden">
+                <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-40" />
+
+                <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8 relative space-y-6">
+                    <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+                        Your IDE Is Waiting.
+                    </h2>
+
+                    <p className="text-lg text-slate-600 max-w-xl mx-auto font-sans">
+                        Stop watching tutorials. Start building. Join live classes, receive expert code reviews, and ship portfolio-ready applications.
+                    </p>
+
+                    {/* High-contrast terminal block */}
+                    <div className="max-w-sm mx-auto rounded-lg border border-slate-700/80 bg-[#090d16] p-4 font-mono text-xs text-left text-slate-300 shadow-xl">
+                        <p className="text-slate-500">$ git init future</p>
+                        <p className="text-slate-500">$ comestro learn</p>
+                        <p className="text-slate-500">$ comestro build</p>
+                        <p className="text-slate-500">$ comestro deploy</p>
+                        <p className="text-emerald-400 pt-1">✓ Future initialized</p>
+                    </div>
+
+                    <div className="pt-2">
+                        <Link
+                            href={route('register')}
+                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-8 py-4 font-mono text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 hover:shadow-lg"
+                        >
+                            <span>Start Your Coding Journey →</span>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* 15. Footer (Light Theme) */}
+            <footer className="border-t border-slate-200 bg-white py-14 font-mono text-xs text-slate-600">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+                        {/* Brand info */}
+                        <div className="col-span-2 space-y-3">
+                            <ApplicationLogo />
+                            <p className="text-slate-600 mt-2 max-w-sm font-sans text-sm">
+                                From `Hello World` to Production. Live coding, real projects, and career-ready developer skills.
+                            </p>
+                            <div className="pt-2 flex items-center gap-4 text-slate-600">
+                                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
+                                    GitHub
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
+                                    LinkedIn
+                                </a>
+                                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
+                                    YouTube
+                                </a>
+                                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
+                                    Instagram
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Platform Links */}
+                        <div className="space-y-2.5">
+                            <p className="font-bold text-slate-900 uppercase text-[11px] tracking-wider">Platform</p>
+                            <ul className="space-y-2">
+                                <li><a href="#paths" className="hover:text-emerald-600 transition">Learning Paths</a></li>
+                                <li><a href="#live" className="hover:text-emerald-600 transition">Live Classes</a></li>
+                                <li><a href="#projects" className="hover:text-emerald-600 transition">Projects</a></li>
+                                <li><a href="#tech" className="hover:text-emerald-600 transition">Technologies</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Company Links */}
+                        <div className="space-y-2.5">
+                            <p className="font-bold text-slate-900 uppercase text-[11px] tracking-wider">Company</p>
+                            <ul className="space-y-2">
+                                <li><a href="#instructors" className="hover:text-emerald-600 transition">Instructors</a></li>
+                                <li><a href="#about" className="hover:text-emerald-600 transition">About</a></li>
+                                <li><a href="#careers" className="hover:text-emerald-600 transition">Careers</a></li>
+                                <li><a href="#contact" className="hover:text-emerald-600 transition">Contact</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Legal */}
+                        <div className="space-y-2.5">
+                            <p className="font-bold text-slate-900 uppercase text-[11px] tracking-wider">Legal</p>
+                            <ul className="space-y-2">
+                                <li><a href="#privacy" className="hover:text-emerald-600 transition">Privacy Policy</a></li>
+                                <li><a href="#terms" className="hover:text-emerald-600 transition">Terms & Conditions</a></li>
+                                <li><a href="#refund" className="hover:text-emerald-600 transition">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+                        <p>© 2026 Comestro Academy. All rights reserved.</p>
+                        <p className="text-slate-500">Built with Laravel, React & Inertia.js.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
     );
 }
