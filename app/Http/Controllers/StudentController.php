@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +19,12 @@ class StudentController extends Controller
     public function dashboard(Request $request): Response
     {
         $user = $request->user();
+        $enrolledCoursesCount = $user->enrollments()->where('status', 'active')->count();
+        $recentEnrollments = $user->enrollments()
+            ->with(['course.category', 'course.instructor.user'])
+            ->latest('enrolled_at')
+            ->take(3)
+            ->get();
 
         return Inertia::render('Student/Dashboard', [
             'student' => $user->only([
@@ -28,7 +37,98 @@ class StudentController extends Controller
                 'created_at',
                 'last_login_at',
             ]),
+            'enrolledCoursesCount' => $enrolledCoursesCount,
+            'recentEnrollments' => $recentEnrollments,
         ]);
+    }
+
+    // Display list of published courses for students to browse and enroll
+    public function courses(Request $request): Response
+    {
+        $user = $request->user();
+        $search = $request->query('search');
+        $categoryId = $request->query('category_id');
+
+        $query = Course::query()
+            ->where('status', 'published')
+            ->with(['category', 'instructor.user']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('instructor.user', function ($iq) use ($search) {
+                        $iq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        $courses = $query->latest()->paginate(9)->withQueryString();
+
+        $enrolledCourseIds = $user->enrollments()->pluck('course_id')->toArray();
+
+        $courses->through(function ($course) use ($enrolledCourseIds) {
+            $course->is_enrolled = in_array($course->id, $enrolledCourseIds, true);
+
+            return $course;
+        });
+
+        $categories = Category::where('status', 'active')->get(['id', 'name']);
+
+        return Inertia::render('Student/Courses/Index', [
+            'courses' => $courses,
+            'categories' => $categories,
+            'filters' => [
+                'search' => $search,
+                'category_id' => $categoryId,
+            ],
+        ]);
+    }
+
+    // Display courses the student has enrolled in
+    public function enrolledCourses(Request $request): Response
+    {
+        $user = $request->user();
+
+        $enrollments = $user->enrollments()
+            ->with(['course.category', 'course.instructor.user'])
+            ->latest('enrolled_at')
+            ->paginate(9);
+
+        return Inertia::render('Student/Courses/Enrolled', [
+            'enrollments' => $enrollments,
+        ]);
+    }
+
+    // Enroll the authenticated student in a course
+    public function enroll(Request $request, Course $course): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($course->status !== 'published') {
+            return redirect()->back()->with('error', 'This course is currently not open for enrollment.');
+        }
+
+        $existingEnrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+
+        if ($existingEnrollment) {
+            return redirect()->back()->with('error', 'You are already enrolled in this course.');
+        }
+
+        Enrollment::create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'status' => 'active',
+            'enrolled_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', "Congratulations! You have successfully enrolled in {$course->title}.");
     }
 
     // Display the student profile view and edit form

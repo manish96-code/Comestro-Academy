@@ -55,6 +55,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [StudentController::class, 'courses'])->name('courses.index');
+    Route::get('/enrolled-courses', [StudentController::class, 'enrolledCourses'])->name('courses.enrolled');
+    Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::patch('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');

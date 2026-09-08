@@ -6,6 +6,7 @@ import {
     LayoutDashboard,
     User,
     BookOpen,
+    Compass,
     Video,
     LogOut,
     Menu,
@@ -37,17 +38,22 @@ export default function StudentLayout({ header, children }) {
             icon: LayoutDashboard,
         },
         {
+            name: 'Explore Courses',
+            href: route('student.courses.index'),
+            active: route().current('student.courses.index'),
+            icon: Compass,
+        },
+        {
+            name: 'Enrolled Courses',
+            href: route('student.courses.enrolled'),
+            active: route().current('student.courses.enrolled'),
+            icon: BookOpen,
+        },
+        {
             name: 'My Profile',
             href: route('student.profile'),
             active: route().current('student.profile*'),
             icon: User,
-        },
-        {
-            name: 'Enrolled Courses',
-            href: '#',
-            active: false,
-            icon: BookOpen,
-            badge: 'Soon',
         },
         {
             name: 'Live Interactive Classes',
