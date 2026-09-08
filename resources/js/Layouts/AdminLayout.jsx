@@ -16,7 +16,8 @@ import {
     Shield,
     User,
     ChevronDown,
-    FolderTree
+    FolderTree,
+    BookOpen
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
@@ -59,11 +60,10 @@ export default function AdminLayout({ header, children }) {
             icon: FolderTree,
         },
         {
-            name: 'Courses & Batches',
-            href: '#',
-            active: false,
-            icon: GraduationCap,
-            badge: 'Soon',
+            name: 'Courses',
+            href: route('admin.courses.index'),
+            active: route().current('admin.courses.*'),
+            icon: BookOpen,
         },
         {
             name: 'Live Class Control',

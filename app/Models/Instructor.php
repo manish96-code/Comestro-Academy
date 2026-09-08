@@ -6,6 +6,7 @@ use Database\Factories\InstructorFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Instructor extends Model
 {
@@ -27,11 +28,15 @@ class Instructor extends Model
         'experience_years' => 'integer',
     ];
 
-    /**
-     * Get the associated user account.
-     */
+    // Get the associated user account.
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Courses taught by this instructor
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Course::class);
     }
 }

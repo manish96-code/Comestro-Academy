@@ -70,5 +70,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'User interface design, prototyping with Figma, and visual aesthetics.',
             'status' => 'active',
         ]);
+
+        $this->call(CourseSeeder::class);
     }
 }

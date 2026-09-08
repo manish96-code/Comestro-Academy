@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
     Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
+    Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+    Route::patch('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
