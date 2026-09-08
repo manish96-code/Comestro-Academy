@@ -67,17 +67,26 @@ class AdminController extends Controller
     // Display single Student profile details.
     public function showStudent(User $student): Response
     {
+        $student->load('studentProfile');
+
         return Inertia::render('Admin/Students/Show', [
-            'student' => $student->only([
-                'id',
-                'name',
-                'email',
-                'phone',
-                'role',
-                'status',
-                'created_at',
-                'last_login_at',
-            ]),
+            'student' => [
+                'id' => $student->id,
+                'name' => $student->name,
+                'email' => $student->email,
+                'phone' => $student->phone,
+                'role' => $student->role,
+                'status' => $student->status,
+                'created_at' => $student->created_at,
+                'last_login_at' => $student->last_login_at,
+                'qualification' => $student->studentProfile?->qualification ?? '',
+                'college_name' => $student->studentProfile?->college_name ?? '',
+                'bio' => $student->studentProfile?->bio ?? '',
+                'github_url' => $student->studentProfile?->github_url ?? '',
+                'linkedin_url' => $student->studentProfile?->linkedin_url ?? '',
+                'city' => $student->studentProfile?->city ?? '',
+                'state' => $student->studentProfile?->state ?? '',
+            ],
         ]);
     }
 

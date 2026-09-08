@@ -8,7 +8,9 @@ import {
     User,
     Calendar,
     Clock,
-    Save
+    Save,
+    GraduationCap,
+    ExternalLink
 } from 'lucide-react';
 
 export default function StudentShow({ student }) {
@@ -171,6 +173,79 @@ export default function StudentShow({ student }) {
                                 </PrimaryButton>
                             </div>
                         </form>
+                    </div>
+
+                    {/* Academic & Professional Background Card */}
+                    <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-4">
+                        <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <GraduationCap className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Academic & Professional Background</h3>
+                                <p className="text-xs text-gray-500">College qualifications and developer portfolio submitted by student</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Qualification</p>
+                                <p className="text-xs font-bold text-gray-900 mt-1">{student.qualification || 'Not specified'}</p>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">College / Institute</p>
+                                <p className="text-xs font-bold text-gray-900 mt-1">{student.college_name || 'Not specified'}</p>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Location</p>
+                                <p className="text-xs font-bold text-gray-900 mt-1">
+                                    {student.city || student.state ? `${student.city || ''}${student.city && student.state ? ', ' : ''}${student.state || ''}` : 'Not specified'}
+                                </p>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">GitHub Profile</p>
+                                {student.github_url ? (
+                                    <a
+                                        href={student.github_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-indigo-600 hover:text-indigo-800 mt-1 inline-flex items-center gap-1 truncate max-w-full"
+                                    >
+                                        <span className="truncate">{student.github_url}</span>
+                                        <ExternalLink className="h-3 w-3 shrink-0" />
+                                    </a>
+                                ) : (
+                                    <p className="text-xs text-gray-400 mt-1">Not linked</p>
+                                )}
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">LinkedIn Profile</p>
+                                {student.linkedin_url ? (
+                                    <a
+                                        href={student.linkedin_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-indigo-600 hover:text-indigo-800 mt-1 inline-flex items-center gap-1 truncate max-w-full"
+                                    >
+                                        <span className="truncate">{student.linkedin_url}</span>
+                                        <ExternalLink className="h-3 w-3 shrink-0" />
+                                    </a>
+                                ) : (
+                                    <p className="text-xs text-gray-400 mt-1">Not linked</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {student.bio && (
+                            <div className="bg-gray-50 rounded-lg p-3.5 border border-gray-200 mt-3">
+                                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Student Bio</p>
+                                <p className="text-xs text-gray-700 mt-1 leading-relaxed">{student.bio}</p>
+                            </div>
+                        )}
                     </div>
 
                 </div>
