@@ -15,7 +15,8 @@ import {
     Bell,
     Shield,
     User,
-    ChevronDown
+    ChevronDown,
+    FolderTree
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
@@ -50,6 +51,12 @@ export default function AdminLayout({ header, children }) {
             href: route('admin.instructors.index'),
             active: route().current('admin.instructors.*'),
             icon: Users,
+        },
+        {
+            name: 'Course Categories',
+            href: route('admin.categories.index'),
+            active: route().current('admin.categories.*'),
+            icon: FolderTree,
         },
         {
             name: 'Courses & Batches',

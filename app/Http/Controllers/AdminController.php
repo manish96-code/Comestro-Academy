@@ -14,9 +14,7 @@ use Inertia\Response;
 
 class AdminController extends Controller
 {
-    /**
-     * Display the Admin Dashboard.
-     */
+    // Display the Admin Dashboard.
     public function dashboard(): Response
     {
         $totalStudents = User::where('role', 'student')->count();
@@ -41,9 +39,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display Students list for Admin.
-     */
+    // Display Students list for Admin.
     public function students(Request $request): Response
     {
         $search = $request->query('search');
@@ -68,9 +64,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display single Student profile details.
-     */
+    // Display single Student profile details.
     public function showStudent(User $student): Response
     {
         return Inertia::render('Admin/Students/Show', [
@@ -87,9 +81,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Update Student profile details.
-     */
+    // Update Student profile details.
     public function updateStudent(Request $request, User $student): RedirectResponse
     {
         $validated = $request->validate([
@@ -104,9 +96,7 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Student details updated successfully.');
     }
 
-    /**
-     * Display Instructors list for Admin.
-     */
+    // Display Instructors list for Admin.
     public function instructors(Request $request): Response
     {
         $search = $request->query('search');
@@ -135,17 +125,13 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display Create Instructor form.
-     */
+    // Display Create Instructor form.
     public function createInstructor(): Response
     {
         return Inertia::render('Admin/Instructors/Create');
     }
 
-    /**
-     * Store new Instructor.
-     */
+    // Store new Instructor.
     public function storeInstructor(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -181,9 +167,7 @@ class AdminController extends Controller
         return redirect()->route('admin.instructors.index')->with('success', 'Instructor created successfully.');
     }
 
-    /**
-     * Display single Instructor profile details.
-     */
+    // Display single Instructor profile details.
     public function showInstructor(User $instructor): Response
     {
         $instructor->load('instructorProfile');
@@ -207,9 +191,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Update Instructor details.
-     */
+    // Update Instructor details.
     public function updateInstructor(Request $request, User $instructor): RedirectResponse
     {
         $validated = $request->validate([
