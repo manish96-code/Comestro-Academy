@@ -21,8 +21,15 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('users.status');
+    Route::get('/instructors', [AdminController::class, 'instructors'])->name('instructors.index');
+    Route::get('/instructors/create', [AdminController::class, 'createInstructor'])->name('instructors.create');
+    Route::post('/instructors', [AdminController::class, 'storeInstructor'])->name('instructors.store');
+    Route::get('/instructors/{instructor}', [AdminController::class, 'showInstructor'])->name('instructors.show');
+    Route::patch('/instructors/{instructor}', [AdminController::class, 'updateInstructor'])->name('instructors.update');
+
+    Route::get('/students', [AdminController::class, 'students'])->name('students.index');
+    Route::get('/students/{student}', [AdminController::class, 'showStudent'])->name('students.show');
+    Route::patch('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {

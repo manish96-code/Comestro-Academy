@@ -1,5 +1,5 @@
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     GraduationCap,
     Users,
@@ -7,18 +7,11 @@ import {
     Video,
     ShieldCheck,
     TrendingUp,
-    ArrowRight
+    ArrowRight,
+    Eye
 } from 'lucide-react';
 
 export default function AdminDashboard({ stats, recent_users }) {
-    const handleStatusChange = (userId, newStatus) => {
-        router.patch(
-            route('admin.users.status', userId),
-            { status: newStatus },
-            { preserveScroll: true }
-        );
-    };
-
     const getStatusBadge = (status) => {
         switch (status) {
             case 'active':
@@ -80,12 +73,14 @@ export default function AdminDashboard({ stats, recent_users }) {
                                     </h3>
                                 </div>
                                 <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600">
-                                    <Users className="h-6 w-6" />
+                                    <GraduationCap className="h-6 w-6" />
                                 </div>
                             </div>
-                            <div className="mt-4 flex items-center text-xs text-emerald-600 font-semibold">
-                                <TrendingUp className="h-4 w-4 mr-1" />
-                                <span>+12% from last month</span>
+                            <div className="mt-4 flex items-center text-xs text-indigo-600 font-semibold">
+                                <Link href={route('admin.students.index')} className="hover:underline flex items-center gap-1">
+                                    <span>Manage Students</span>
+                                    <ArrowRight className="h-3 w-3" />
+                                </Link>
                             </div>
                         </div>
 
@@ -104,8 +99,11 @@ export default function AdminDashboard({ stats, recent_users }) {
                                     <UserCheck className="h-6 w-6" />
                                 </div>
                             </div>
-                            <div className="mt-4 flex items-center text-xs text-gray-500 font-medium">
-                                <span>Verified Teaching Staff</span>
+                            <div className="mt-4 flex items-center text-xs text-purple-600 font-semibold">
+                                <Link href={route('admin.instructors.index')} className="hover:underline flex items-center gap-1">
+                                    <span>Manage Instructors</span>
+                                    <ArrowRight className="h-3 w-3" />
+                                </Link>
                             </div>
                         </div>
 
@@ -151,7 +149,7 @@ export default function AdminDashboard({ stats, recent_users }) {
 
                     </div>
 
-                    {/* Main Content Area: Recent Users + Quick Actions */}
+                    {/* Main Content Area: Recent Registrations + Quick Actions */}
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         
                         {/* Table Column: Recent Registrations */}
@@ -166,10 +164,10 @@ export default function AdminDashboard({ stats, recent_users }) {
                                     </p>
                                 </div>
                                 <Link
-                                    href={route('admin.users')}
+                                    href={route('admin.students.index')}
                                     className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1"
                                 >
-                                    <span>View All Users</span>
+                                    <span>View Students List</span>
                                     <ArrowRight className="h-3.5 w-3.5" />
                                 </Link>
                             </div>
@@ -181,7 +179,7 @@ export default function AdminDashboard({ stats, recent_users }) {
                                             <th className="py-3 px-4 rounded-l-lg font-semibold">User</th>
                                             <th className="py-3 px-4 font-semibold">Role</th>
                                             <th className="py-3 px-4 font-semibold">Status</th>
-                                            <th className="py-3 px-4 text-right rounded-r-lg font-semibold">Actions</th>
+                                            <th className="py-3 px-4 text-right rounded-r-lg font-semibold">Profile</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -211,15 +209,23 @@ export default function AdminDashboard({ stats, recent_users }) {
                                                         {getStatusBadge(u.status)}
                                                     </td>
                                                     <td className="py-3.5 px-4 text-right">
-                                                        <select
-                                                            value={u.status}
-                                                            onChange={(e) => handleStatusChange(u.id, e.target.value)}
-                                                            className="text-xs rounded-lg border-gray-300 bg-white text-gray-700 py-1 px-2.5 shadow-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                                        >
-                                                            <option value="active">Active</option>
-                                                            <option value="inactive">Inactive</option>
-                                                            <option value="suspended">Suspend</option>
-                                                        </select>
+                                                        {u.role === 'instructor' ? (
+                                                            <Link
+                                                                href={route('admin.instructors.show', u.id)}
+                                                                className="inline-flex items-center px-2.5 py-1 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-md border border-purple-200 transition"
+                                                            >
+                                                                <Eye className="h-3.5 w-3.5 mr-1" />
+                                                                View Profile
+                                                            </Link>
+                                                        ) : (
+                                                            <Link
+                                                                href={route('admin.students.show', u.id)}
+                                                                className="inline-flex items-center px-2.5 py-1 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition"
+                                                            >
+                                                                <Eye className="h-3.5 w-3.5 mr-1" />
+                                                                View Profile
+                                                            </Link>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))
@@ -245,43 +251,30 @@ export default function AdminDashboard({ stats, recent_users }) {
                                 </h3>
                                 <div className="space-y-3">
                                     <Link
-                                        href={route('admin.users')}
+                                        href={route('admin.students.index')}
                                         className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-indigo-50/70 border border-gray-100 hover:border-indigo-100 text-gray-800 transition group"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <div className="p-2 rounded-lg bg-indigo-100 text-indigo-600">
-                                                <Users className="h-5 w-5" />
+                                                <GraduationCap className="h-5 w-5" />
                                             </div>
-                                            <span className="text-sm font-medium">Manage All Users</span>
+                                            <span className="text-sm font-medium">Students List</span>
                                         </div>
                                         <ArrowRight className="h-4 w-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
                                     </Link>
 
-                                    <button
-                                        onClick={() => alert('Course management coming in next module!')}
-                                        className="w-full flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-purple-50/70 border border-gray-100 hover:border-purple-100 text-gray-800 transition group text-left"
+                                    <Link
+                                        href={route('admin.instructors.index')}
+                                        className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-purple-50/70 border border-gray-100 hover:border-purple-100 text-gray-800 transition group"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
-                                                <GraduationCap className="h-5 w-5" />
+                                                <UserCheck className="h-5 w-5" />
                                             </div>
-                                            <span className="text-sm font-medium">Manage Courses & Batches</span>
+                                            <span className="text-sm font-medium">Instructors Management</span>
                                         </div>
                                         <ArrowRight className="h-4 w-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
-                                    </button>
-
-                                    <button
-                                        onClick={() => alert('Live Stream credentials configured')}
-                                        className="w-full flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-rose-50/70 border border-gray-100 hover:border-rose-100 text-gray-800 transition group text-left"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <div className="p-2 rounded-lg bg-rose-100 text-rose-600">
-                                                <Video className="h-5 w-5" />
-                                            </div>
-                                            <span className="text-sm font-medium">Live Class Control</span>
-                                        </div>
-                                        <ArrowRight className="h-4 w-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
 

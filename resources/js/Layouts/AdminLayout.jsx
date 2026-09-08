@@ -1,7 +1,8 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 import {
     LayoutDashboard,
     Users,
@@ -18,8 +19,18 @@ import {
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth, flash } = usePage().props;
+    const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
 
     const navigation = [
         {
@@ -29,9 +40,15 @@ export default function AdminLayout({ header, children }) {
             icon: LayoutDashboard,
         },
         {
-            name: 'Users Management',
-            href: route('admin.users'),
-            active: route().current('admin.users'),
+            name: 'Students',
+            href: route('admin.students.index'),
+            active: route().current('admin.students.*'),
+            icon: GraduationCap,
+        },
+        {
+            name: 'Instructors',
+            href: route('admin.instructors.index'),
+            active: route().current('admin.instructors.*'),
             icon: Users,
         },
         {
@@ -229,6 +246,7 @@ export default function AdminLayout({ header, children }) {
                 {/* Page Content */}
                 <main className="flex-1 bg-gray-50">{children}</main>
 
+                <Toaster position="top-right" reverseOrder={false} />
             </div>
         </div>
     );
