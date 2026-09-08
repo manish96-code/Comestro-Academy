@@ -25,5 +25,8 @@
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
+    },
+    "dependencies": {
+        "@heroicons/react": "^2.2.0"
     }
 }
