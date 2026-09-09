@@ -18,8 +18,11 @@ class Course extends Model
         'category_id',
         'instructor_id',
         'title',
+        'subtitle',
         'slug',
         'description',
+        'curriculum',
+        'course_includes',
         'thumbnail',
         'price',
         'discount_price',
@@ -30,6 +33,8 @@ class Course extends Model
 
     protected $casts = [
         'is_featured' => 'boolean',
+        'curriculum' => 'array',
+        'course_includes' => 'array',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
     ];

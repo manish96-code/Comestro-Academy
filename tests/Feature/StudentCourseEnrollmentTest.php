@@ -303,3 +303,40 @@ test('admin can preview draft course detail page', function () {
     $response->assertOk();
     $response->assertSee('Deep Learning & LLM Fine Tuning');
 });
+
+test('course detail page displays subtitle and curriculum modules', function () {
+    $category = Category::create([
+        'name' => 'Frontend Development',
+        'slug' => 'frontend-dev-tab-test',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'HTML, CSS & Tailwind: Build Modern Websites from Scratch',
+        'subtitle' => 'Master responsive layouts, flexbox, grid, and utility classes from scratch.',
+        'slug' => 'html-css-tailwind-build-modern-websites',
+        'description' => 'This course is a complete hands-on walkthrough of building modern websites.',
+        'curriculum' => [
+            [
+                'title' => 'Module 1: HTML Fundamentals',
+                'subtitle' => 'Introduction to HTML, HTML Document Structure, Create Your First Page',
+            ],
+            [
+                'title' => 'Module 2: CSS Fundamentals',
+                'subtitle' => 'Box Model, Flexbox Layout, CSS Grid, Responsive Design',
+            ],
+        ],
+        'price' => 1599,
+        'discount_price' => 1299,
+        'status' => 'published',
+    ]);
+
+    $response = $this->get(route('courses.show', $course->slug));
+
+    $response->assertOk();
+    $response->assertSee('HTML, CSS &amp; Tailwind', false);
+    $response->assertSee('Master responsive layouts, flexbox, grid, and utility classes from scratch.');
+    $response->assertSee('Module 1: HTML Fundamentals');
+    $response->assertSee('Introduction to HTML, HTML Document Structure, Create Your First Page');
+});

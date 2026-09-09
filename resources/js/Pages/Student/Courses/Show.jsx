@@ -40,9 +40,45 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
 
+    const getInitialTab = () => {
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam === 'curriculum' || tabParam === 'about') {
+                return tabParam;
+            }
+            if (window.location.hash === '#curriculum') return 'curriculum';
+            if (window.location.hash === '#about') return 'about';
+        }
+        return 'about';
+    };
+
+    const [activeTab, setActiveTab] = useState(getInitialTab);
     const [enrolling, setEnrolling] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [openModules, setOpenModules] = useState({ 0: true, 1: true });
+
+    const changeTab = (tab) => {
+        setActiveTab(tab);
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', tab);
+            window.history.replaceState({}, '', url.toString());
+        }
+    };
+
+    useEffect(() => {
+        const onPopState = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam === 'curriculum' || tabParam === 'about') {
+                setActiveTab(tabParam);
+            }
+        };
+
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
+    }, []);
 
     useEffect(() => {
         if (flash?.success) {
@@ -97,255 +133,236 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             ? Math.round(((Number(course.price) - Number(course.discount_price)) / Number(course.price)) * 100)
             : null;
 
-    // Structured curriculum modules
-    const curriculumModules = [
-        {
-            title: 'Module 1: Architecture Overview & Environment Setup',
-            duration: '4 lectures · 1h 45m',
-            lessons: [
-                { title: 'Course Orientation & Architecture Roadmap', duration: '15m', isPreview: true },
-                { title: 'Local Development Tooling & Configuration', duration: '25m', isPreview: true },
-                { title: 'Understanding Production MVC & Clean Code Standards', duration: '35m', isPreview: false },
-                { title: 'Repository Pattern & Service Architecture Foundation', duration: '30m', isPreview: false },
-            ],
-        },
-        {
-            title: 'Module 2: Advanced Eloquent ORM & Relational Modeling',
-            duration: '6 lectures · 3h 15m',
-            lessons: [
-                { title: 'Complex Database Schemas, Indexing & Foreign Keys', duration: '40m', isPreview: true },
-                { title: 'Polymorphic & Many-to-Many Relationships', duration: '35m', isPreview: false },
-                { title: 'Eliminating N+1 Queries & Database Profiling', duration: '30m', isPreview: false },
-                { title: 'Eloquent API Resources & Data Transformations', duration: '25m', isPreview: false },
-                { title: 'Query Scopes, Custom Casts & Attribute Mutators', duration: '35m', isPreview: false },
-                { title: 'Database Transactions & Concurrency Safety', duration: '30m', isPreview: false },
-            ],
-        },
-        {
-            title: 'Module 3: Modern Frontends with Inertia.js & React 19',
-            duration: '6 lectures · 3h 45m',
-            lessons: [
-                { title: 'Inertia v2 Architecture: Zero-API SPA Flow', duration: '35m', isPreview: true },
-                { title: 'Page Components, Persistent Layouts & Shared Props', duration: '40m', isPreview: false },
-                { title: 'Deferred Props, Infinite Scrolling & Optimistic UI', duration: '45m', isPreview: false },
-                { title: 'Form Handling, Validation Errors & Flash Feedback', duration: '35m', isPreview: false },
-                { title: 'Tailwind CSS Modern Design Systems & Dark Mode', duration: '35m', isPreview: false },
-                { title: 'Real-Time State Synchronization', duration: '35m', isPreview: false },
-            ],
-        },
-        {
-            title: 'Module 4: Security, Authentication & Role Authorization',
-            duration: '5 lectures · 2h 50m',
-            lessons: [
-                { title: 'Multi-Role User Authentication & Session Security', duration: '35m', isPreview: false },
-                { title: 'Role-Based Access Control (RBAC) & Custom Middleware', duration: '40m', isPreview: false },
-                { title: 'Policies, Gates & Granular Resource Permissions', duration: '30m', isPreview: false },
-                { title: 'CSRF Protection, Rate Limiting & Input Sanitization', duration: '35m', isPreview: false },
-                { title: 'Password Resets & Two-Factor Authentication Strategy', duration: '30m', isPreview: false },
-            ],
-        },
-        {
-            title: 'Module 5: Real-World Capstone SaaS Project',
-            duration: '7 lectures · 5h 20m',
-            lessons: [
-                { title: 'SaaS Product Architecture & Wireframe Planning', duration: '45m', isPreview: false },
-                { title: 'Building Multi-Tenant Course & Subscription Engines', duration: '50m', isPreview: false },
-                { title: 'Payment Gateway Integration & Webhook Handling', duration: '55m', isPreview: false },
-                { title: 'Background Jobs, Queues & Asynchronous Notifications', duration: '40m', isPreview: false },
-                { title: 'File Storage, Image Optimization & Cloud CDN Integration', duration: '40m', isPreview: false },
-                { title: 'Analytics Dashboard, Exporting Reports & Activity Logs', duration: '50m', isPreview: false },
-            ],
-        },
-        {
-            title: 'Module 6: Automated Testing & Production Deployment',
-            duration: '4 lectures · 2h 15m',
-            lessons: [
-                { title: 'Unit & Feature Testing using Pest PHP', duration: '40m', isPreview: false },
-                { title: 'HTTP Endpoint Testing & Authentication Boundaries', duration: '35m', isPreview: false },
-                { title: 'Dockerizing the Stack & CI/CD GitHub Actions', duration: '40m', isPreview: false },
-                { title: 'Zero-Downtime Production Deployment & Monitoring', duration: '20m', isPreview: false },
-            ],
-        },
-    ];
+    const curriculumModules = Array.isArray(course.curriculum) ? course.curriculum : [];
 
-    // What you'll learn highlights
-    const learningPoints = [
-        'Build production-grade applications following industry best practices and clean architecture.',
-        'Master complex database design, relational modeling, indexing, and high-performance queries.',
-        'Create lightning-fast reactive Single Page Applications with Inertia.js v2 and React 19.',
-        'Implement robust authentication, multi-role authorization (RBAC), and security boundaries.',
-        'Architect scalable RESTful APIs with pagination, rate limiting, and filtering.',
-        'Write comprehensive automated feature and unit tests with Pest PHP to ensure code confidence.',
-        'Integrate payment gateways, asynchronous background jobs, queues, and cloud file storage.',
-        'Deploy scalable cloud systems with Docker, GitHub Actions CI/CD pipelines, and health monitoring.',
-    ];
+    // Automatically format module title with sequential module numbering
+    const getModuleTitle = (title, index) => {
+        if (!title) return `Module ${index + 1}`;
+        const cleanTitle = title.replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim();
+        return `Module ${index + 1}: ${cleanTitle || title}`;
+    };
+
+    // Helper to parse subtitle into individual topics
+    const parseTopics = (subtitle) => {
+        if (!subtitle || typeof subtitle !== 'string') {
+            return [];
+        }
+        if (subtitle.includes('\n')) {
+            return subtitle.split('\n').map((s) => s.trim()).filter(Boolean);
+        }
+        if (subtitle.includes(',')) {
+            return subtitle.split(',').map((s) => s.trim()).filter(Boolean);
+        }
+        return [subtitle.trim()];
+    };
+
+    // Helper to map dynamic feature text to appropriate visual icon
+    const getFeatureIcon = (text) => {
+        const lower = (text || '').toLowerCase();
+        if (lower.includes('week') || lower.includes('hour') || lower.includes('month') || lower.includes('time') || lower.includes('duration') || lower.includes('pace')) {
+            return <Clock className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        if (lower.includes('project') || lower.includes('code') || lower.includes('build') || lower.includes('repo')) {
+            return <Code className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        if (lower.includes('starter') || lower.includes('download') || lower.includes('kit') || lower.includes('slide') || lower.includes('asset') || lower.includes('resource') || lower.includes('token') || lower.includes('template')) {
+            return <Layers className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        if (lower.includes('mentor') || lower.includes('q&a') || lower.includes('review') || lower.includes('instructor') || lower.includes('community') || lower.includes('support') || lower.includes('critique')) {
+            return <User className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        if (lower.includes('certificate') || lower.includes('completion') || lower.includes('diploma') || lower.includes('badge')) {
+            return <Award className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        if (lower.includes('lifetime') || lower.includes('mobile') || lower.includes('web') || lower.includes('access') || lower.includes('device')) {
+            return <Globe className="h-4 w-4 text-indigo-600 shrink-0" />;
+        }
+        return <CheckCircle2 className="h-4 w-4 text-indigo-600 shrink-0" />;
+    };
+
+    const courseIncludesList = Array.isArray(course.course_includes) && course.course_includes.length > 0
+        ? course.course_includes.filter(Boolean)
+        : [];
 
     // Course detail core body
     const mainDetailContent = (
         <div className="space-y-8">
-            {/* 1. What You Will Learn Card */}
-            <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
-                <div className="flex items-center gap-2 mb-6">
-                    <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                        <Zap className="h-5 w-5" />
-                    </div>
-                    <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                            What You'll Learn in This Course
-                        </h2>
-                        <p className="text-xs text-gray-500">
-                            Industry-demanded competencies built through hands-on implementation
-                        </p>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {learningPoints.map((point, idx) => (
-                        <div key={idx} className="flex items-start gap-3">
-                            <div className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
-                                <Check className="h-3 w-3 stroke-[3]" />
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-700 leading-relaxed font-normal">
-                                {point}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* 2. Course Curriculum Accordion */}
-            <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4">
-                    <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                            Comprehensive Course Curriculum
-                        </h2>
-                        <p className="text-xs text-gray-500">
-                            {curriculumModules.length} Modules · 32 Lectures · Full Lifetime Access
-                        </p>
-                    </div>
-
+            {/* Tab Navigation: About vs Curriculum (Matches LearnSyntax UI) */}
+            <div className="border-b border-gray-200">
+                <div className="flex gap-8">
                     <button
-                        onClick={() => {
-                            const allOpen = Object.keys(openModules).length === curriculumModules.length;
-                            if (allOpen) {
-                                setOpenModules({});
-                            } else {
-                                const newObj = {};
-                                curriculumModules.forEach((_, i) => (newObj[i] = true));
-                                setOpenModules(newObj);
-                            }
-                        }}
-                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition self-start sm:self-auto"
+                        type="button"
+                        onClick={() => changeTab('about')}
+                        className={`pb-3.5 text-sm sm:text-base font-bold transition-all relative ${
+                            activeTab === 'about'
+                                ? 'text-indigo-600 border-b-2 border-indigo-600'
+                                : 'text-gray-500 hover:text-gray-900'
+                        }`}
                     >
-                        {Object.keys(openModules).length === curriculumModules.length
-                            ? 'Collapse All Modules'
-                            : 'Expand All Modules'}
+                        About
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => changeTab('curriculum')}
+                        className={`pb-3.5 text-sm sm:text-base font-bold transition-all relative flex items-center gap-2 ${
+                            activeTab === 'curriculum'
+                                ? 'text-indigo-600 border-b-2 border-indigo-600'
+                                : 'text-gray-500 hover:text-gray-900'
+                        }`}
+                    >
+                        <span>Curriculum</span>
+                        {curriculumModules.length > 0 && (
+                            <span
+                                className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                    activeTab === 'curriculum'
+                                        ? 'bg-indigo-100 text-indigo-700'
+                                        : 'bg-gray-100 text-gray-600'
+                                }`}
+                            >
+                                {curriculumModules.length}
+                            </span>
+                        )}
                     </button>
                 </div>
-
-                <div className="space-y-3">
-                    {curriculumModules.map((module, mIdx) => {
-                        const isOpen = !!openModules[mIdx];
-                        return (
-                            <div
-                                key={mIdx}
-                                className="border border-gray-200 rounded-xl overflow-hidden transition"
-                            >
-                                <button
-                                    type="button"
-                                    onClick={() => toggleModule(mIdx)}
-                                    className="w-full flex items-center justify-between p-4 bg-gray-50/80 hover:bg-gray-100/70 transition text-left"
-                                >
-                                    <div className="flex items-center gap-3 pr-2">
-                                        {isOpen ? (
-                                            <ChevronDown className="h-4 w-4 text-indigo-600 shrink-0" />
-                                        ) : (
-                                            <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />
-                                        )}
-                                        <span className="text-xs sm:text-sm font-bold text-gray-900">
-                                            {module.title}
-                                        </span>
-                                    </div>
-                                    <span className="text-[11px] font-medium text-gray-500 shrink-0">
-                                        {module.duration}
-                                    </span>
-                                </button>
-
-                                {isOpen && (
-                                    <div className="divide-y divide-gray-100 bg-white">
-                                        {module.lessons.map((lesson, lIdx) => (
-                                            <div
-                                                key={lIdx}
-                                                className="px-4 py-3 flex items-center justify-between text-xs hover:bg-slate-50/60 transition"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <Play className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                    <span className="text-gray-700 font-medium">
-                                                        {lesson.title}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-3 shrink-0">
-                                                    {lesson.isPreview && (
-                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 uppercase">
-                                                            Preview
-                                                        </span>
-                                                    )}
-                                                    <span className="text-gray-400 text-[11px]">
-                                                        {lesson.duration}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
             </div>
 
-            {/* 3. Description & Detailed Overview */}
-            <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                    Course Description
-                </h2>
-                <div className="text-xs sm:text-sm text-gray-700 leading-relaxed space-y-3 font-normal">
-                    {course.description ? (
-                        <p>{course.description}</p>
-                    ) : (
-                        <p>
-                            This masterclass takes you from fundamental principles straight into building production-ready architectures. You will learn the exact patterns, tools, and practices used by high-output software engineering teams.
+            {/* TAB 1: ABOUT CONTENT (Matches LearnSyntax Screenshot 1) */}
+            {activeTab === 'about' && (
+                <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-5">
+                    <div className="border-l-4 border-indigo-600 pl-3">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                            About This Course
+                        </h2>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                            Comprehensive overview, roadmap, and learning objectives
                         </p>
-                    )}
-                    <p>
-                        Rather than building trivial demo applications, this curriculum focuses on real-world edge cases: data consistency, high-throughput caching, authentication boundaries, automated testing with Pest, and modern declarative frontend integration using Inertia and React.
-                    </p>
+                    </div>
+
+                    <div className="text-sm sm:text-base text-gray-700 leading-relaxed space-y-4 font-normal">
+                        {course.description ? (
+                            course.description.split('\n\n').map((paragraph, pIdx) => (
+                                <p key={pIdx}>{paragraph}</p>
+                            ))
+                        ) : (
+                            <p className="text-gray-500 italic">
+                                No course description provided yet.
+                            </p>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* 4. Requirements & Prerequisites */}
-            <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                    Prerequisites & Requirements
-                </h2>
-                <ul className="space-y-2.5 text-xs sm:text-sm text-gray-600">
-                    <li className="flex items-center gap-2.5">
-                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-600 shrink-0" />
-                        <span>Basic understanding of programming fundamentals and object-oriented principles.</span>
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-600 shrink-0" />
-                        <span>A computer (Windows, macOS, or Linux) with internet connection and a code editor installed.</span>
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-600 shrink-0" />
-                        <span>No prior knowledge of advanced frameworks required — we guide you through each stage.</span>
-                    </li>
-                </ul>
-            </div>
+            {/* TAB 2: CURRICULUM CONTENT (Matches LearnSyntax Screenshot 2) */}
+            {activeTab === 'curriculum' && (
+                <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+                    {/* Curriculum Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-5">
+                        <div className="border-l-4 border-indigo-600 pl-3">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                                Course Curriculum
+                            </h2>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                                A structured step-by-step roadmap to mastery.
+                            </p>
+                        </div>
 
-            {/* 5. Instructor Spotlight */}
+                        <div className="flex items-center gap-3 self-start sm:self-auto">
+                            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                                {curriculumModules.length} Modules
+                            </span>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const allOpen = Object.keys(openModules).length === curriculumModules.length;
+                                    if (allOpen) {
+                                        setOpenModules({});
+                                    } else {
+                                        const newObj = {};
+                                        curriculumModules.forEach((_, i) => (newObj[i] = true));
+                                        setOpenModules(newObj);
+                                    }
+                                }}
+                                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition"
+                            >
+                                {Object.keys(openModules).length === curriculumModules.length
+                                    ? 'Collapse All'
+                                    : 'Expand All'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Modules List */}
+                    {curriculumModules.length > 0 ? (
+                        <div className="space-y-4">
+                            {curriculumModules.map((module, mIdx) => {
+                                const isOpen = !!openModules[mIdx];
+                                const topics = parseTopics(module.subtitle);
+
+                                return (
+                                    <div
+                                        key={mIdx}
+                                        className="border border-gray-200 rounded-xl overflow-hidden transition-all shadow-2xs hover:border-indigo-200"
+                                    >
+                                        {/* Module Header Toggle */}
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleModule(mIdx)}
+                                            className="w-full flex items-center justify-between p-4 bg-gray-50/70 hover:bg-gray-100/70 transition text-left"
+                                        >
+                                            <div className="flex items-center gap-3 pr-2">
+                                                <div className="text-indigo-600 shrink-0">
+                                                    {isOpen ? (
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    ) : (
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    )}
+                                                </div>
+                                                <span className="text-xs sm:text-sm font-bold text-gray-900">
+                                                    {getModuleTitle(module.title, mIdx)}
+                                                </span>
+                                            </div>
+
+                                            <span className="text-[11px] font-medium text-gray-500 shrink-0 ml-2">
+                                                {topics.length > 0 ? `${topics.length} ${topics.length === 1 ? 'Topic' : 'Topics'}` : 'Overview'}
+                                            </span>
+                                        </button>
+
+                                        {/* Expanded Topics List (View Only) */}
+                                        {isOpen && (
+                                            <div className="bg-white divide-y divide-gray-100">
+                                                {topics.length > 0 ? (
+                                                    topics.map((topic, tIdx) => (
+                                                        <div
+                                                            key={tIdx}
+                                                            className="px-4 py-3 flex items-center gap-3 text-xs sm:text-sm hover:bg-slate-50/70 transition"
+                                                        >
+                                                            <FileText className="h-4 w-4 text-indigo-500 shrink-0" />
+                                                            <span className="text-gray-700 font-medium">
+                                                                {topic}
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-4 text-xs text-gray-500 italic">
+                                                        Interactive sessions, theory, and practical tasks included in this module.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center text-gray-500 text-xs sm:text-sm border border-dashed border-gray-200 rounded-xl">
+                            No curriculum modules have been added for this course yet.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Instructor Spotlight */}
             {instructor && (
                 <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-6">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -412,7 +429,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             )}
 
-            {/* 6. Related Courses */}
+            {/* Related Courses */}
             {relatedCourses && relatedCourses.length > 0 && (
                 <div className="space-y-4 pt-4">
                     <div className="flex items-center justify-between">
@@ -600,38 +617,22 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         <span className="font-semibold text-slate-900">7-Day Money-Back Guarantee</span> · Full refund if you're not satisfied.
                     </div>
 
-                    {/* "Course Includes" Feature List */}
-                    <div className="space-y-3 pt-2 border-t border-gray-100">
-                        <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
-                            This Course Includes:
-                        </h4>
-                        <div className="space-y-2.5 text-xs text-gray-600">
-                            <div className="flex items-center gap-2.5">
-                                <Clock className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>{course.duration || 'Self-paced'} of intensive training</span>
-                            </div>
-                            <div className="flex items-center gap-2.5">
-                                <Code className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>Real-world capstone project codebases</span>
-                            </div>
-                            <div className="flex items-center gap-2.5">
-                                <Layers className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>Downloadable starter kits & slide decks</span>
-                            </div>
-                            <div className="flex items-center gap-2.5">
-                                <User className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>Direct mentor Q&A and code reviews</span>
-                            </div>
-                            <div className="flex items-center gap-2.5">
-                                <Award className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>Official Certificate of Completion</span>
-                            </div>
-                            <div className="flex items-center gap-2.5">
-                                <Globe className="h-4 w-4 text-indigo-600 shrink-0" />
-                                <span>Full lifetime access on mobile & web</span>
+                    {/* Dynamic "Course Includes" Feature List */}
+                    {courseIncludesList.length > 0 && (
+                        <div className="space-y-3 pt-2 border-t border-gray-100">
+                            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                This Course Includes:
+                            </h4>
+                            <div className="space-y-2.5 text-xs text-gray-600">
+                                {courseIncludesList.map((feature, fIdx) => (
+                                    <div key={fIdx} className="flex items-center gap-2.5">
+                                        {getFeatureIcon(feature)}
+                                        <span>{feature}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Share Button */}
                     <div className="pt-2 border-t border-gray-100 flex items-center justify-center">
@@ -709,9 +710,9 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     </h1>
 
                     {/* Brief Subtitle / Excerpt */}
-                    {course.description && (
+                    {(course.subtitle || course.description) && (
                         <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-                            {course.description}
+                            {course.subtitle || course.description}
                         </p>
                     )}
 
@@ -746,6 +747,27 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 {instructorUser?.name || 'Comestro Mentor'}
                             </span>
                         </div>
+
+                        {/* Syllabus Modules */}
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                            <BookOpen className="h-4 w-4 text-indigo-400" />
+                            <span>
+                                <strong className="text-white font-semibold">
+                                    {curriculumModules.length}
+                                </strong>{' '}
+                                Syllabus Modules
+                            </span>
+                        </div>
+
+                        {/* Duration */}
+                        {course.duration && (
+                            <div className="flex items-center gap-1.5 text-slate-300">
+                                <Clock className="h-4 w-4 text-indigo-400" />
+                                <span>
+                                    <strong className="text-white font-semibold">{course.duration}</strong>
+                                </span>
+                            </div>
+                        )}
 
                         {/* Language */}
                         <div className="flex items-center gap-1.5 text-slate-400">

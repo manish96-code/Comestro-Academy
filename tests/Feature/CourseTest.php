@@ -66,3 +66,49 @@ test('admin can update a course', function () {
         'status' => 'published',
     ]);
 });
+
+test('admin can save and update course_includes list', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Mobile Development',
+        'slug' => 'mobile-development',
+        'status' => 'active',
+    ]);
+
+    $includes = [
+        '10 Weeks of intensive Flutter training',
+        'Official Certificate of Completion',
+        'Lifetime access to GitHub repos',
+    ];
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.store'), [
+        'title' => 'Flutter & Dart Masterclass',
+        'category_id' => $category->id,
+        'price' => 3999,
+        'status' => 'published',
+        'course_includes' => $includes,
+    ]);
+
+    $response->assertRedirect(route('admin.courses.index'));
+
+    $course = Course::where('slug', 'flutter-dart-masterclass')->first();
+    expect($course)->not->toBeNull()
+        ->and($course->course_includes)->toEqual($includes);
+
+    // Update includes
+    $updatedIncludes = [
+        '12 Weeks of intensive Flutter training',
+        'Direct 1-on-1 mentor guidance',
+    ];
+
+    $this->actingAs($admin)->patch(route('admin.courses.update', $course->id), [
+        'title' => 'Flutter & Dart Masterclass',
+        'category_id' => $category->id,
+        'price' => 3999,
+        'status' => 'published',
+        'course_includes' => $updatedIncludes,
+    ]);
+
+    $course->refresh();
+    expect($course->course_includes)->toEqual($updatedIncludes);
+});

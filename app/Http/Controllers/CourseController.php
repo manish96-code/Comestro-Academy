@@ -77,6 +77,7 @@ class CourseController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'string', 'max:255'],
             'category_id' => ['required', 'exists:categories,id'],
             'instructor_id' => [
                 'nullable',
@@ -85,6 +86,11 @@ class CourseController extends Controller
                 }),
             ],
             'description' => ['nullable', 'string'],
+            'curriculum' => ['nullable', 'array'],
+            'curriculum.*.title' => ['required_with:curriculum', 'string', 'max:255'],
+            'curriculum.*.subtitle' => ['nullable', 'string', 'max:255'],
+            'course_includes' => ['nullable', 'array'],
+            'course_includes.*' => ['nullable', 'string', 'max:500'],
             'thumbnail' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
@@ -108,8 +114,11 @@ class CourseController extends Controller
             'category_id' => $validated['category_id'],
             'instructor_id' => $validated['instructor_id'] ?? null,
             'title' => $validated['title'],
+            'subtitle' => $validated['subtitle'] ?? null,
             'slug' => $slug,
             'description' => $validated['description'] ?? null,
+            'curriculum' => $validated['curriculum'] ?? null,
+            'course_includes' => $validated['course_includes'] ?? null,
             'thumbnail' => $validated['thumbnail'] ?? null,
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
@@ -148,6 +157,7 @@ class CourseController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'string', 'max:255'],
             'category_id' => ['required', 'exists:categories,id'],
             'instructor_id' => [
                 'nullable',
@@ -157,6 +167,11 @@ class CourseController extends Controller
                 }),
             ],
             'description' => ['nullable', 'string'],
+            'curriculum' => ['nullable', 'array'],
+            'curriculum.*.title' => ['required_with:curriculum', 'string', 'max:255'],
+            'curriculum.*.subtitle' => ['nullable', 'string', 'max:1000'],
+            'course_includes' => ['nullable', 'array'],
+            'course_includes.*' => ['nullable', 'string', 'max:500'],
             'thumbnail' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
@@ -180,8 +195,11 @@ class CourseController extends Controller
             'category_id' => $validated['category_id'],
             'instructor_id' => $validated['instructor_id'] ?? null,
             'title' => $validated['title'],
+            'subtitle' => $validated['subtitle'] ?? null,
             'slug' => $slug,
             'description' => $validated['description'] ?? null,
+            'curriculum' => $validated['curriculum'] ?? null,
+            'course_includes' => $validated['course_includes'] ?? null,
             'thumbnail' => $validated['thumbnail'] ?? null,
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
