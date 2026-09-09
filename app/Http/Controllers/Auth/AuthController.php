@@ -40,8 +40,13 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->isInstructor()) {
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        $intended = $request->session()->get('url.intended');
+        if ($intended && str_contains($intended, '/admin')) {
+            $request->session()->forget('url.intended');
         }
 
         return redirect()->intended(route('student.dashboard'));
@@ -75,8 +80,13 @@ class AuthController extends Controller
             'last_login_at' => now(),
         ]);
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->isInstructor()) {
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        $intended = $request->session()->get('url.intended');
+        if ($intended && str_contains($intended, '/admin')) {
+            $request->session()->forget('url.intended');
         }
 
         return redirect()->intended(route('student.dashboard'));

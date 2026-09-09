@@ -21,14 +21,14 @@ Route::get('/', function () {
 Route::get('/dashboard', function (Request $request) {
     $user = $request->user();
 
-    if ($user->isAdmin()) {
+    if ($user->isAdmin() || $user->isInstructor()) {
         return redirect()->route('admin.dashboard');
     }
 
     return redirect()->route('student.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/instructors', [AdminController::class, 'instructors'])->name('instructors.index');
     Route::get('/instructors/create', [AdminController::class, 'createInstructor'])->name('instructors.create');

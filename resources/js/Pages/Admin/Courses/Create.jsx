@@ -71,7 +71,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
 
             <div className="py-6 bg-gray-50">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
-                    
+
                     {/* If Edit Mode: Top Course Summary Badge */}
                     {isEdit && (
                         <div className="rounded-lg bg-white p-5 border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -101,13 +101,12 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 </div>
                             </div>
 
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold shrink-0 ${
-                                course.status === 'published'
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold shrink-0 ${course.status === 'published'
                                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                     : course.status === 'draft'
-                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                    : 'bg-slate-100 text-slate-700 border border-slate-200'
-                            }`}>
+                                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                }`}>
                                 {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
                             </span>
                         </div>

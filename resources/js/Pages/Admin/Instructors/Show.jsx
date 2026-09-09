@@ -85,7 +85,7 @@ export default function InstructorShow({ instructor }) {
 
             <div className="py-6 bg-gray-50">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
-                    
+
                     {/* Top Instructor Banner Card */}
                     <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="flex items-center space-x-4">

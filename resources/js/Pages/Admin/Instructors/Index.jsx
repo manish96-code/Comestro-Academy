@@ -72,10 +72,10 @@ export default function InstructorIndex({ instructors, filters }) {
 
             <div className="py-6 bg-gray-50">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-                    
+
                     {/* Header Filter Bar */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg bg-white p-4 border border-gray-200 shadow-xs">
-                        
+
                         <form onSubmit={handleSearch} className="flex items-center gap-3 w-full sm:w-auto flex-1 max-w-xl">
                             <div className="relative flex-1">
                                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">

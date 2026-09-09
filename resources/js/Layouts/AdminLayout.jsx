@@ -78,7 +78,7 @@ export default function AdminLayout({ header, children }) {
         <div className="min-h-screen bg-gray-50 flex">
             {/* Desktop Left Sidebar */}
             <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-slate-900 text-white border-r border-slate-800 fixed inset-y-0 z-30">
-                
+
                 {/* Brand Logo & Header */}
                 <div className="h-16 flex items-center px-6 border-b border-slate-800 space-x-3">
                     <div className="p-1.5 bg-indigo-600 rounded-xl">
@@ -105,22 +105,20 @@ export default function AdminLayout({ header, children }) {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
-                                    item.active
-                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                                }`}
+                                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition ${item.active
+                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                    }`}
                             >
                                 <div className="flex items-center space-x-3">
                                     <Icon className={`h-4 w-4 ${item.active ? 'text-white' : 'text-slate-400'}`} />
                                     <span>{item.name}</span>
                                 </div>
                                 {item.badge && (
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                        item.badge === 'Live' 
-                                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' 
-                                            : 'bg-slate-800 text-slate-400'
-                                    }`}>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${item.badge === 'Live'
+                                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                        : 'bg-slate-800 text-slate-400'
+                                        }`}>
                                         {item.badge}
                                     </span>
                                 )}
@@ -189,11 +187,10 @@ export default function AdminLayout({ header, children }) {
                                         key={item.name}
                                         href={item.href}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
-                                            item.active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-slate-300 hover:bg-slate-800'
-                                        }`}
+                                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${item.active
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'text-slate-300 hover:bg-slate-800'
+                                            }`}
                                     >
                                         <Icon className="h-4 w-4" />
                                         <span>{item.name}</span>
@@ -207,10 +204,10 @@ export default function AdminLayout({ header, children }) {
 
             {/* Main Content Area */}
             <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-                
+
                 {/* Top Navbar */}
                 <header className="h-16 bg-white border-b border-gray-200/80 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-                    
+
                     {/* Left: Mobile Toggle & Page Header */}
                     <div className="flex items-center space-x-3">
                         <button
@@ -226,7 +223,7 @@ export default function AdminLayout({ header, children }) {
 
                     {/* Right: Quick Tools & Dropdown */}
                     <div className="flex items-center space-x-4">
-                        
+
                         <div className="relative">
                             <Dropdown>
                                 <Dropdown.Trigger>

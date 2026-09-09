@@ -39,3 +39,27 @@ test('users can logout', function () {
     $this->assertGuest();
     $response->assertRedirect('/');
 });
+
+test('student is redirected to student dashboard when trying to access admin panel', function () {
+    $student = User::factory()->create([
+        'role' => 'student',
+    ]);
+
+    $response = $this->actingAs($student)->get(route('admin.dashboard'));
+
+    $response->assertRedirect(route('student.dashboard'));
+});
+
+test('instructor is redirected to admin dashboard on login', function () {
+    $instructor = User::factory()->create([
+        'role' => 'instructor',
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => $instructor->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('admin.dashboard', absolute: false));
+});
