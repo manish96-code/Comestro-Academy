@@ -199,3 +199,107 @@ test('guest is redirected to login when attempting to enroll in a course', funct
     $response->assertRedirect(route('login'));
     $this->assertEquals(0, Enrollment::count());
 });
+
+test('guest can view published course detail page by slug without login', function () {
+    $category = Category::create([
+        'name' => 'Mobile App Development',
+        'slug' => 'mobile-app-development',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Flutter & Dart Cross-Platform Pro',
+        'slug' => 'flutter-dart-cross-platform-pro',
+        'description' => 'Build iOS and Android applications with single codebase.',
+        'price' => 3999,
+        'discount_price' => 2499,
+        'duration' => '10 Weeks',
+        'status' => 'published',
+    ]);
+
+    $response = $this->get(route('courses.show', $course->slug));
+
+    $response->assertOk();
+    $response->assertSee('Flutter & Dart Cross-Platform Pro');
+    $response->assertSee('Mobile App Development');
+});
+
+test('student can view course detail page and see enrolled status', function () {
+    $student = User::factory()->create([
+        'role' => 'student',
+        'status' => 'active',
+    ]);
+
+    $category = Category::create([
+        'name' => 'Data Engineering',
+        'slug' => 'data-engineering',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Apache Spark & Big Data',
+        'slug' => 'apache-spark-big-data',
+        'price' => 5999,
+        'status' => 'published',
+    ]);
+
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $course->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $response = $this->actingAs($student)->get(route('courses.show', $course->slug));
+
+    $response->assertOk();
+    $response->assertSee('Apache Spark & Big Data');
+});
+
+test('guest cannot view draft course detail page', function () {
+    $category = Category::create([
+        'name' => 'Cybersecurity',
+        'slug' => 'cybersecurity-cat',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Ethical Hacking 101',
+        'slug' => 'ethical-hacking-101',
+        'price' => 4999,
+        'status' => 'draft',
+    ]);
+
+    $response = $this->get(route('courses.show', $course->slug));
+
+    $response->assertNotFound();
+});
+
+test('admin can preview draft course detail page', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'status' => 'active',
+    ]);
+
+    $category = Category::create([
+        'name' => 'AI Engineering',
+        'slug' => 'ai-engineering-cat',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Deep Learning & LLM Fine Tuning',
+        'slug' => 'deep-learning-llm-fine-tuning',
+        'price' => 9999,
+        'status' => 'draft',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('courses.show', $course->slug));
+
+    $response->assertOk();
+    $response->assertSee('Deep Learning & LLM Fine Tuning');
+});

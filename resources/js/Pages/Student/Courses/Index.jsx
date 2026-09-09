@@ -189,7 +189,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                             >
                                 <div>
                                     {/* Thumbnail Banner */}
-                                    <div className="relative h-44 bg-gradient-to-tr from-slate-900 via-indigo-950 to-indigo-900 flex items-center justify-center p-4 overflow-hidden">
+                                    <Link
+                                        href={route('courses.show', course.slug || course.id)}
+                                        className="relative h-44 bg-gradient-to-tr from-slate-900 via-indigo-950 to-indigo-900 flex items-center justify-center p-4 overflow-hidden block"
+                                    >
                                         {course.thumbnail ? (
                                             <img
                                                 src={course.thumbnail}
@@ -233,12 +236,17 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                                 </span>
                                             </div>
                                         )}
-                                    </div>
+                                    </Link>
 
                                     {/* Course Details */}
                                     <div className="p-5 space-y-3">
-                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-indigo-600 transition">
-                                            {course.title}
+                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-snug">
+                                            <Link
+                                                href={route('courses.show', course.slug || course.id)}
+                                                className="hover:text-indigo-600 transition"
+                                            >
+                                                {course.title}
+                                            </Link>
                                         </h3>
 
                                         {course.description && (

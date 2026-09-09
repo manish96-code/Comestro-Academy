@@ -89,6 +89,58 @@ class StudentController extends Controller
         ]);
     }
 
+    // Display single course view / detail page (accessible with or without login)
+    public function showCourse(Request $request, string $slug): Response
+    {
+        $user = $request->user();
+
+        $course = Course::where('slug', $slug)
+            ->orWhere('id', $slug)
+            ->with(['category', 'instructor.user'])
+            ->withCount(['enrollments' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->firstOrFail();
+
+        // If course is draft or archived, only admin or instructor can view
+        if ($course->status !== 'published') {
+            if (! $user || (! $user->isAdmin() && ! $user->isInstructor())) {
+                abort(404);
+            }
+        }
+
+        $isEnrolled = false;
+        if ($user) {
+            $isEnrolled = $user->enrollments()
+                ->where('course_id', $course->id)
+                ->where('status', 'active')
+                ->exists();
+        }
+
+        $course->is_enrolled = $isEnrolled;
+
+        // Fetch related courses
+        $relatedCourses = Course::where('status', 'published')
+            ->where('id', '!=', $course->id)
+            ->where('category_id', $course->category_id)
+            ->with(['category', 'instructor.user'])
+            ->take(3)
+            ->get();
+
+        if ($relatedCourses->isEmpty()) {
+            $relatedCourses = Course::where('status', 'published')
+                ->where('id', '!=', $course->id)
+                ->with(['category', 'instructor.user'])
+                ->take(3)
+                ->get();
+        }
+
+        return Inertia::render('Student/Courses/Show', [
+            'course' => $course,
+            'relatedCourses' => $relatedCourses,
+        ]);
+    }
+
     // Display courses the student has enrolled in
     public function enrolledCourses(Request $request): Response
     {
