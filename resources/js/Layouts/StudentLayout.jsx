@@ -39,8 +39,8 @@ export default function StudentLayout({ header, children }) {
         },
         {
             name: 'Explore Courses',
-            href: route('student.courses.index'),
-            active: route().current('student.courses.index'),
+            href: route('courses.index'),
+            active: route().current('courses.index') || route().current('student.courses.index'),
             icon: Compass,
         },
         {

@@ -142,3 +142,60 @@ test('student can view enrolled courses page', function () {
 
     $response->assertOk();
 });
+
+test('guest can view published courses catalog without login', function () {
+    $category = Category::create([
+        'name' => 'Backend Development',
+        'slug' => 'backend-development',
+        'status' => 'active',
+    ]);
+
+    Course::create([
+        'category_id' => $category->id,
+        'title' => 'Mastering Laravel APIs',
+        'slug' => 'mastering-laravel-apis',
+        'price' => 3999,
+        'status' => 'published',
+    ]);
+
+    Course::create([
+        'category_id' => $category->id,
+        'title' => 'Draft API Course',
+        'slug' => 'draft-api-course',
+        'price' => 1999,
+        'status' => 'draft',
+    ]);
+
+    $response = $this->get(route('courses.index'));
+
+    $response->assertOk();
+    $response->assertSee('Mastering Laravel APIs');
+    $response->assertDontSee('Draft API Course');
+});
+
+test('guest can also access courses via student courses url without login', function () {
+    $response = $this->get(route('student.courses.index'));
+
+    $response->assertOk();
+});
+
+test('guest is redirected to login when attempting to enroll in a course', function () {
+    $category = Category::create([
+        'name' => 'DevOps',
+        'slug' => 'devops-category',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Docker & Kubernetes Mastery',
+        'slug' => 'docker-kubernetes-mastery',
+        'price' => 4999,
+        'status' => 'published',
+    ]);
+
+    $response = $this->post(route('courses.enroll', $course->id));
+
+    $response->assertRedirect(route('login'));
+    $this->assertEquals(0, Enrollment::count());
+});

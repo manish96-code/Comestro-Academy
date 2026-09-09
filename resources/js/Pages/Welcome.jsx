@@ -296,6 +296,9 @@ async def run_query(request: PromptRequest):
 
                     {/* Nav Links Desktop */}
                     <nav className="hidden items-center gap-7 lg:flex">
+                        <Link href={route('courses.index')} className="text-sm font-semibold text-emerald-600 transition-colors hover:text-emerald-700">
+                            Courses
+                        </Link>
                         <a href="#paths" className="text-sm font-medium text-slate-600 transition-colors hover:text-emerald-600">
                             Learning Paths
                         </a>
@@ -356,6 +359,13 @@ async def run_query(request: PromptRequest):
                 {mobileMenuOpen && (
                     <div className="border-b border-slate-200 bg-white px-4 py-4 lg:hidden shadow-lg">
                         <div className="flex flex-col space-y-3 font-mono text-sm">
+                            <Link
+                                href={route('courses.index')}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="text-emerald-600 font-semibold hover:text-emerald-700"
+                            >
+                                // All Courses
+                            </Link>
                             <a
                                 href="#paths"
                                 onClick={() => setMobileMenuOpen(false)}
@@ -394,13 +404,13 @@ async def run_query(request: PromptRequest):
                             <div className="pt-3 border-t border-slate-200 flex flex-col gap-2">
                                 <Link
                                     href={route('login')}
-                                    className="text-center py-2 rounded-lg border border-slate-300 text-slate-700"
+                                    className="rounded-lg border border-slate-300 px-4 py-2.5 text-center text-xs font-mono font-medium text-slate-700 hover:bg-slate-50"
                                 >
                                     Log in
                                 </Link>
                                 <Link
                                     href={route('register')}
-                                    className="text-center py-2 rounded-lg bg-emerald-600 font-bold text-white"
+                                    className="rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-xs font-mono font-bold text-white shadow-sm hover:bg-emerald-700"
                                 >
                                     Get Started →
                                 </Link>
@@ -445,12 +455,12 @@ async def run_query(request: PromptRequest):
                                     <span>Start Coding →</span>
                                 </Link>
 
-                                <a
-                                    href="#paths"
+                                <Link
+                                    href={route('courses.index')}
                                     className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-3.5 text-sm font-mono font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:border-slate-400"
                                 >
                                     <span>Explore Courses</span>
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Trust Statement */}

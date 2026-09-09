@@ -69,7 +69,7 @@ class StudentController extends Controller
 
         $courses = $query->latest()->paginate(9)->withQueryString();
 
-        $enrolledCourseIds = $user->enrollments()->pluck('course_id')->toArray();
+        $enrolledCourseIds = $user ? $user->enrollments()->pluck('course_id')->toArray() : [];
 
         $courses->through(function ($course) use ($enrolledCourseIds) {
             $course->is_enrolled = in_array($course->id, $enrolledCourseIds, true);
@@ -108,6 +108,10 @@ class StudentController extends Controller
     public function enroll(Request $request, Course $course): RedirectResponse
     {
         $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login')->with('error', 'Please log in to enroll in this course.');
+        }
 
         if ($course->status !== 'published') {
             return redirect()->back()->with('error', 'This course is currently not open for enrollment.');

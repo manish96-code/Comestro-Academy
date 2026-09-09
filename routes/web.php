@@ -53,9 +53,13 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::patch('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
 });
 
+// Public Course Catalog (accessible with or without login)
+Route::get('/courses', [StudentController::class, 'courses'])->name('courses.index');
+Route::get('/student/courses', [StudentController::class, 'courses'])->name('student.courses.index');
+Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
+
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
-    Route::get('/courses', [StudentController::class, 'courses'])->name('courses.index');
     Route::get('/enrolled-courses', [StudentController::class, 'enrolledCourses'])->name('courses.enrolled');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
