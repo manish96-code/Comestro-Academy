@@ -50,7 +50,7 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
-    Route::patch('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::match(['patch', 'post'], '/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
 });
 
 // Public Course Catalog & Detail Page

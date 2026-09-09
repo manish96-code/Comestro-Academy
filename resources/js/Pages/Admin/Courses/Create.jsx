@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useState, useRef } from 'react';
 import {
     BookPlus,
     Edit3,
@@ -20,11 +21,15 @@ import {
     Trash2,
     CheckCircle2,
     ListChecks,
-    Layers
+    Layers,
+    Upload,
+    UploadCloud
 } from 'lucide-react';
 
 export default function CourseCreate({ course = null, categories = [], instructors = [] }) {
     const isEdit = Boolean(course);
+    const [imagePreview, setImagePreview] = useState(course?.thumbnail || null);
+    const fileInputRef = useRef(null);
 
     const { data, setData, post, patch, processing, errors, transform } = useForm({
         title: course?.title || '',
@@ -48,6 +53,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                 'Full lifetime access on mobile & web',
             ] : []),
         thumbnail: course?.thumbnail || '',
+        thumbnail_image: null,
         price: course?.price ?? '',
         discount_price: course?.discount_price ?? '',
         duration: course?.duration || '',
@@ -68,6 +74,27 @@ export default function CourseCreate({ course = null, categories = [], instructo
             ? formData.course_includes.map((s) => (s || '').trim()).filter(Boolean)
             : [],
     }));
+
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('thumbnail_image', file);
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(objectUrl);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setData((prev) => ({
+            ...prev,
+            thumbnail_image: null,
+            thumbnail: '',
+        }));
+        setImagePreview(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
 
     const addCurriculumItem = () => {
         setData('curriculum', [
@@ -108,9 +135,13 @@ export default function CourseCreate({ course = null, categories = [], instructo
     const submit = (e) => {
         e.preventDefault();
         if (isEdit) {
-            patch(route('admin.courses.update', course.id));
+            post(route('admin.courses.update', course.id), {
+                forceFormData: true,
+            });
         } else {
-            post(route('admin.courses.store'));
+            post(route('admin.courses.store'), {
+                forceFormData: true,
+            });
         }
     };
 
@@ -314,29 +345,94 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 </div>
                             </div>
 
-                            {/* Thumbnail URL */}
-                            <div>
-                                <InputLabel htmlFor="thumbnail" value="Course Thumbnail Image URL" />
-                                <TextInput
-                                    id="thumbnail"
-                                    className="w-full text-xs sm:text-sm py-2 px-3.5"
-                                    value={data.thumbnail}
-                                    onChange={(e) => setData('thumbnail', e.target.value)}
-                                    placeholder="https://example.com/images/course-banner.jpg"
-                                />
-                                <InputError className="mt-1.5" message={errors.thumbnail} />
+                            {/* Course Thumbnail Image (Direct ImageKit Upload) */}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <InputLabel value="Course Thumbnail Banner Image *" />
+                                    <span className="text-[11px] text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded">
+                                        Powered by ImageKit CDN
+                                    </span>
+                                </div>
 
-                                {data.thumbnail && (
-                                    <div className="mt-2.5 flex items-center space-x-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
-                                        <img
-                                            src={data.thumbnail}
-                                            alt="Preview"
-                                            className="h-12 w-20 rounded-md object-cover border border-gray-200 shrink-0"
-                                            onError={(e) => { e.target.style.display = 'none'; }}
-                                        />
-                                        <span className="text-xs text-gray-500">Thumbnail Preview</span>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                                    className="hidden"
+                                />
+
+                                {imagePreview ? (
+                                    <div className="rounded-xl border border-gray-200 overflow-hidden bg-gray-50 p-3.5 sm:p-4 transition hover:border-indigo-300">
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                            <div className="relative w-full sm:w-48 h-28 rounded-lg overflow-hidden border border-gray-200 bg-gray-900 shrink-0 shadow-xs group">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Course Thumbnail"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-[10px] text-white font-semibold px-2 py-0.5 rounded shadow-xs">
+                                                    {data.thumbnail_image ? 'New File Selected' : 'ImageKit Hosted'}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex-1 space-y-1.5 min-w-0">
+                                                <h5 className="text-xs sm:text-sm font-bold text-gray-900 truncate">
+                                                    {data.thumbnail_image
+                                                        ? data.thumbnail_image.name
+                                                        : (data.thumbnail?.split('/').pop() || 'Current Course Thumbnail')}
+                                                </h5>
+                                                <p className="text-[11px] text-gray-500">
+                                                    {data.thumbnail_image
+                                                        ? `${(data.thumbnail_image.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload to ImageKit`
+                                                        : 'Saved on ImageKit CDN storage'}
+                                                </p>
+                                                <div className="flex items-center gap-2 pt-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition"
+                                                    >
+                                                        <Upload className="h-3.5 w-3.5" />
+                                                        <span>Change Image</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleRemoveImage}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                        <span>Remove</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="rounded-xl border-2 border-dashed border-gray-300 hover:border-indigo-500 bg-white hover:bg-indigo-50/20 p-6 text-center cursor-pointer transition group"
+                                    >
+                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 group-hover:bg-indigo-100 transition duration-200">
+                                                <UploadCloud className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                                    Click to upload course banner image
+                                                </p>
+                                                <p className="text-[11px] text-gray-500 mt-0.5">
+                                                    PNG, JPG, WEBP, or SVG up to 5MB (Direct ImageKit storage)
+                                                </p>
+                                            </div>
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">
+                                                Browse from device
+                                            </span>
+                                        </div>
                                     </div>
                                 )}
+
+                                <InputError className="mt-1" message={errors.thumbnail_image || errors.thumbnail} />
                             </div>
 
                             {/* Course Description */}

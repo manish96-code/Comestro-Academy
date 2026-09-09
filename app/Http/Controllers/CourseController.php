@@ -6,12 +6,14 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\User;
+use App\Services\ImageKitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class CourseController extends Controller
 {
@@ -73,7 +75,7 @@ class CourseController extends Controller
     }
 
     // Store a newly created course
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, ImageKitService $imageKit): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -91,6 +93,7 @@ class CourseController extends Controller
             'curriculum.*.subtitle' => ['nullable', 'string', 'max:255'],
             'course_includes' => ['nullable', 'array'],
             'course_includes.*' => ['nullable', 'string', 'max:500'],
+            'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg,gif', 'max:5120'],
             'thumbnail' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
@@ -98,6 +101,17 @@ class CourseController extends Controller
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
         ]);
+
+        $thumbnailUrl = $validated['thumbnail'] ?? null;
+
+        if ($request->hasFile('thumbnail_image')) {
+            try {
+                $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
+                $thumbnailUrl = $upload['url'];
+            } catch (Throwable $e) {
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
+            }
+        }
 
         $slug = Str::slug($validated['title']);
         $originalSlug = $slug;
@@ -119,7 +133,7 @@ class CourseController extends Controller
             'description' => $validated['description'] ?? null,
             'curriculum' => $validated['curriculum'] ?? null,
             'course_includes' => $validated['course_includes'] ?? null,
-            'thumbnail' => $validated['thumbnail'] ?? null,
+            'thumbnail' => $thumbnailUrl,
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'duration' => $validated['duration'] ?? null,
@@ -153,7 +167,7 @@ class CourseController extends Controller
     }
 
     // Update specified course
-    public function update(Request $request, Course $course): RedirectResponse
+    public function update(Request $request, Course $course, ImageKitService $imageKit): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -172,6 +186,7 @@ class CourseController extends Controller
             'curriculum.*.subtitle' => ['nullable', 'string', 'max:1000'],
             'course_includes' => ['nullable', 'array'],
             'course_includes.*' => ['nullable', 'string', 'max:500'],
+            'thumbnail_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg,gif', 'max:5120'],
             'thumbnail' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
@@ -179,6 +194,17 @@ class CourseController extends Controller
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
         ]);
+
+        $thumbnailUrl = $validated['thumbnail'] ?? $course->thumbnail;
+
+        if ($request->hasFile('thumbnail_image')) {
+            try {
+                $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
+                $thumbnailUrl = $upload['url'];
+            } catch (Throwable $e) {
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
+            }
+        }
 
         $slug = Str::slug($validated['title']);
         $originalSlug = $slug;
@@ -200,7 +226,7 @@ class CourseController extends Controller
             'description' => $validated['description'] ?? null,
             'curriculum' => $validated['curriculum'] ?? null,
             'course_includes' => $validated['course_includes'] ?? null,
-            'thumbnail' => $validated['thumbnail'] ?? null,
+            'thumbnail' => $thumbnailUrl,
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'duration' => $validated['duration'] ?? null,

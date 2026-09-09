@@ -3,6 +3,8 @@
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\User;
+use App\Services\ImageKitService;
+use Illuminate\Http\UploadedFile;
 
 test('admin can view courses list', function () {
     $admin = User::factory()->create(['role' => 'admin']);
@@ -111,4 +113,50 @@ test('admin can save and update course_includes list', function () {
 
     $course->refresh();
     expect($course->course_includes)->toEqual($updatedIncludes);
+});
+
+test('admin can upload thumbnail image via imagekit when creating course', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Design',
+        'slug' => 'design',
+        'status' => 'active',
+    ]);
+
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->andReturn([
+            'url' => 'https://ik.imagekit.io/man96/courses/banner.jpg',
+            'fileId' => 'file_12345',
+            'name' => 'banner.jpg',
+        ]);
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
+    $file = UploadedFile::fake()->image('banner.jpg');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.store'), [
+        'title' => 'UI/UX Design Masterclass',
+        'category_id' => $category->id,
+        'price' => 4999,
+        'status' => 'published',
+        'thumbnail_image' => $file,
+        'course_includes' => ['Certificate of Completion', 'Source code access'],
+        'curriculum' => [
+            ['title' => 'Figma Basics', 'subtitle' => 'Interface and shortcuts'],
+        ],
+    ]);
+
+    $response->assertRedirect(route('admin.courses.index'));
+    $this->assertDatabaseHas('courses', [
+        'title' => 'UI/UX Design Masterclass',
+        'thumbnail' => 'https://ik.imagekit.io/man96/courses/banner.jpg',
+    ]);
+
+    $course = Course::where('slug', 'uiux-design-masterclass')->first();
+    expect($course)->not->toBeNull()
+        ->and($course->course_includes)->toEqual(['Certificate of Completion', 'Source code access'])
+        ->and($course->curriculum)->toEqual([
+            ['title' => 'Figma Basics', 'subtitle' => 'Interface and shortcuts'],
+        ]);
 });
