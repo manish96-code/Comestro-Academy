@@ -34,7 +34,8 @@ import {
     Code,
     Terminal,
     Globe,
-    Calendar
+    Calendar,
+    Radio
 } from 'lucide-react';
 
 export default function CourseShow({ course, relatedCourses = [] }) {
@@ -638,6 +639,24 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </span>
                     </div>
 
+                    {/* Course Type Badge */}
+                    <div className="absolute top-3 left-3 z-20">
+                        {course.type === 'live' ? (
+                            <span className="px-2.5 py-1 text-xs font-mono font-bold uppercase rounded-lg bg-rose-600/95 text-white shadow-md flex items-center gap-1.5 backdrop-blur-xs">
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                                </span>
+                                <span>Live Course</span>
+                            </span>
+                        ) : (
+                            <span className="px-2.5 py-1 text-xs font-mono font-bold uppercase rounded-lg bg-slate-900/85 text-white shadow-md flex items-center gap-1.5 backdrop-blur-xs">
+                                <Video className="h-3 w-3" />
+                                <span>Recorded</span>
+                            </span>
+                        )}
+                    </div>
+
                     {discountPercent && (
                         <div className="absolute top-3 right-3 z-20">
                             <span className="px-2.5 py-1 text-xs font-mono font-bold uppercase rounded-lg bg-emerald-600 text-white shadow-md">
@@ -800,6 +819,20 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 {course.category.name}
                             </span>
                         )}
+                        {course.type === 'live' ? (
+                            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1.5 shadow-xs">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                </span>
+                                <span>Live Interactive Sessions</span>
+                            </span>
+                        ) : (
+                            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1.5 shadow-xs">
+                                <Video className="h-3.5 w-3.5" />
+                                <span>Recorded / Self-Paced</span>
+                            </span>
+                        )}
                         {course.is_featured && (
                             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
                                 <Sparkles className="h-3.5 w-3.5" />
@@ -878,6 +911,25 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 </span>
                             </div>
                         )}
+
+                        {/* Format */}
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                            {course.type === 'live' ? (
+                                <>
+                                    <Radio className="h-4 w-4 text-rose-400" />
+                                    <span>
+                                        Format: <strong className="text-white font-semibold">Live Interactive</strong>
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <Video className="h-4 w-4 text-sky-400" />
+                                    <span>
+                                        Format: <strong className="text-white font-semibold">Self-Paced Recorded</strong>
+                                    </span>
+                                </>
+                            )}
+                        </div>
 
                         {/* Language */}
                         <div className="flex items-center gap-1.5 text-slate-400">

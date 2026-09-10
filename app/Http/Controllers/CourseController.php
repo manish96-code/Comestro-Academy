@@ -100,6 +100,7 @@ class CourseController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
             'duration' => ['nullable', 'string', 'max:100'],
+            'type' => ['nullable', 'in:live,recorded'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
         ]);
@@ -111,7 +112,7 @@ class CourseController extends Controller
                 $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
                 $thumbnailUrl = $upload['url'];
             } catch (Throwable $e) {
-                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: ' . $e->getMessage()])->withInput();
             }
         }
 
@@ -139,6 +140,7 @@ class CourseController extends Controller
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'duration' => $validated['duration'] ?? null,
+            'type' => $validated['type'] ?? 'recorded',
             'is_featured' => $isFeatured,
             'status' => $validated['status'],
         ]);
@@ -179,7 +181,7 @@ class CourseController extends Controller
                 'nullable',
                 Rule::exists('instructors', 'id')->where(function ($q) use ($course) {
                     $q->whereIn('user_id', User::where('status', 'active')->select('id'))
-                        ->when($course->instructor_id, fn ($query) => $query->orWhere('id', $course->instructor_id));
+                        ->when($course->instructor_id, fn($query) => $query->orWhere('id', $course->instructor_id));
                 }),
             ],
             'description' => ['nullable', 'string'],
@@ -195,6 +197,7 @@ class CourseController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0'],
             'duration' => ['nullable', 'string', 'max:100'],
+            'type' => ['nullable', 'in:live,recorded'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
         ]);
@@ -206,7 +209,7 @@ class CourseController extends Controller
                 $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
                 $thumbnailUrl = $upload['url'];
             } catch (Throwable $e) {
-                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: ' . $e->getMessage()])->withInput();
             }
         }
 
@@ -234,6 +237,7 @@ class CourseController extends Controller
             'price' => $validated['price'],
             'discount_price' => $validated['discount_price'] ?? null,
             'duration' => $validated['duration'] ?? null,
+            'type' => $validated['type'] ?? 'recorded',
             'is_featured' => $isFeatured,
             'status' => $validated['status'],
         ]);

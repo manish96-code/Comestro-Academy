@@ -18,7 +18,8 @@ import {
     LogIn,
     LayoutDashboard,
     Terminal,
-    Menu
+    Menu,
+    Video
 } from 'lucide-react';
 
 export default function CoursesIndex({ courses, categories, filters }) {
@@ -27,7 +28,6 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
     const [search, setSearch] = useState(filters.search || '');
     const [categoryId, setCategoryId] = useState(filters.category_id || '');
-    const [enrollingId, setEnrollingId] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
@@ -74,24 +74,6 @@ export default function CoursesIndex({ courses, categories, filters }) {
         setSearch('');
         setCategoryId('');
         router.get(route('courses.index'));
-    };
-
-    const handleEnroll = (courseId) => {
-        if (!user) {
-            toast.error('Please log in or create an account to enroll in this course.');
-            router.visit(route('login'));
-            return;
-        }
-
-        setEnrollingId(courseId);
-        router.post(
-            route('courses.enroll', courseId),
-            {},
-            {
-                preserveScroll: true,
-                onFinish: () => setEnrollingId(null),
-            }
-        );
     };
 
     // Shared Catalog Content (Search, Categories, Course Cards, Pagination)
@@ -149,11 +131,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         </span>
                         <button
                             onClick={() => handleCategoryClick('')}
-                            className={`px-3 py-1 text-xs font-semibold rounded-lg transition shrink-0 ${
-                                !categoryId
+                            className={`px-3 py-1 text-xs font-semibold rounded-lg transition shrink-0 ${!categoryId
                                     ? 'bg-indigo-600 text-white shadow-xs'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
                             All
                         </button>
@@ -161,11 +142,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                             <button
                                 key={category.id}
                                 onClick={() => handleCategoryClick(category.id)}
-                                className={`px-3 py-1 text-xs font-semibold rounded-lg transition shrink-0 ${
-                                    categoryId === String(category.id)
+                                className={`px-3 py-1 text-xs font-semibold rounded-lg transition shrink-0 ${categoryId === String(category.id)
                                         ? 'bg-indigo-600 text-white shadow-xs'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 {category.name}
                             </button>
@@ -180,7 +160,6 @@ export default function CoursesIndex({ courses, categories, filters }) {
                     {courses.data.map((course) => {
                         const instructorUser = course.instructor?.user;
                         const isEnrolled = course.is_enrolled;
-                        const isProcessing = enrollingId === course.id;
 
                         return (
                             <div
@@ -219,6 +198,20 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                             <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-indigo-600/95 text-white shadow-xs backdrop-blur-xs">
                                                 {course.category?.name || 'Tech'}
                                             </span>
+                                            {course.type === 'live' ? (
+                                                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-rose-600 text-white shadow-xs flex items-center gap-1 backdrop-blur-xs">
+                                                    <span className="relative flex h-1.5 w-1.5">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                                                    </span>
+                                                    Live
+                                                </span>
+                                            ) : (
+                                                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-slate-900/80 text-slate-200 shadow-xs flex items-center gap-1 backdrop-blur-xs">
+                                                    <Video className="h-2.5 w-2.5" />
+                                                    Recorded
+                                                </span>
+                                            )}
                                             {course.is_featured && (
                                                 <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-amber-500 text-white shadow-xs flex items-center gap-0.5">
                                                     <Sparkles className="h-2.5 w-2.5" />
@@ -296,31 +289,13 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                             </div>
                                         </div>
 
-                                        {isEnrolled ? (
-                                            <Link
-                                                href={route('student.courses.enrolled')}
-                                                className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-300 font-semibold text-xs rounded-lg hover:bg-emerald-100 transition flex items-center gap-1"
-                                            >
-                                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                                <span>Enrolled</span>
-                                            </Link>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                disabled={isProcessing}
-                                                onClick={() => handleEnroll(course.id)}
-                                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition flex items-center gap-1 disabled:opacity-50"
-                                            >
-                                                {isProcessing ? (
-                                                    <span>Enrolling...</span>
-                                                ) : (
-                                                    <>
-                                                        <span>Enroll Now</span>
-                                                        <ArrowRight className="h-3.5 w-3.5" />
-                                                    </>
-                                                )}
-                                            </button>
-                                        )}
+                                        <Link
+                                            href={route('courses.show', course.slug || course.id)}
+                                            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                                        >
+                                            <span>View Details</span>
+                                            <ArrowRight className="h-3.5 w-3.5" />
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -356,13 +331,12 @@ export default function CoursesIndex({ courses, categories, filters }) {
                             key={index}
                             href={link.url || '#'}
                             dangerouslySetInnerHTML={{ __html: link.label }}
-                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
-                                link.active
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${link.active
                                     ? 'bg-indigo-600 text-white shadow-xs'
                                     : !link.url
-                                    ? 'text-gray-300 cursor-not-allowed'
-                                    : 'text-gray-700 bg-white border border-gray-200 hover:bg-gray-50'
-                            }`}
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-700 bg-white border border-gray-200 hover:bg-gray-50'
+                                }`}
                         />
                     ))}
                 </div>

@@ -27,6 +27,7 @@ class Course extends Model
         'price',
         'discount_price',
         'duration',
+        'type',
         'is_featured',
         'status',
     ];

@@ -23,7 +23,9 @@ import {
     ListChecks,
     Layers,
     Upload,
-    UploadCloud
+    UploadCloud,
+    Video,
+    Radio
 } from 'lucide-react';
 
 export default function CourseCreate({ course = null, categories = [], instructors = [] }) {
@@ -74,6 +76,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
         price: course?.price ?? '',
         discount_price: course?.discount_price ?? '',
         duration: course?.duration || '',
+        type: course?.type || 'recorded',
         is_featured: Boolean(course?.is_featured),
         status: course?.status || 'draft',
     });
@@ -248,6 +251,20 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 <div className="space-y-1">
                                     <div className="flex items-center space-x-2">
                                         <h2 className="text-base font-bold text-gray-900">{course.title}</h2>
+                                        {course.type === 'live' ? (
+                                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                                <span className="relative flex h-1.5 w-1.5">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                                                </span>
+                                                <span>Live</span>
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                <Video className="h-2.5 w-2.5" />
+                                                <span>Recorded</span>
+                                            </span>
+                                        )}
                                         {course.is_featured && (
                                             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                                 <Sparkles className="h-2.5 w-2.5" />
@@ -313,8 +330,8 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 <InputError className="mt-1.5" message={errors.subtitle} />
                             </div>
 
-                            {/* Category & Instructor */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {/* Category, Instructor & Course Type */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                 <div>
                                     <InputLabel htmlFor="category_id" value="Category *" />
                                     <div className="relative mt-1">
@@ -353,6 +370,40 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                         </select>
                                     </div>
                                     <InputError className="mt-1.5" message={errors.instructor_id} />
+                                </div>
+
+                                <div>
+                                    <InputLabel value="Course Format / Type *" />
+                                    <div className="grid grid-cols-2 gap-2 mt-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('type', 'recorded')}
+                                            className={`py-2 px-3 text-xs font-semibold rounded-lg border flex items-center justify-center gap-1.5 transition ${
+                                                data.type === 'recorded'
+                                                    ? 'bg-indigo-50 border-indigo-600 text-indigo-700 shadow-xs'
+                                                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <Video className="h-3.5 w-3.5 text-indigo-600" />
+                                            <span>Recorded</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('type', 'live')}
+                                            className={`py-2 px-3 text-xs font-semibold rounded-lg border flex items-center justify-center gap-1.5 transition ${
+                                                data.type === 'live'
+                                                    ? 'bg-rose-50 border-rose-600 text-rose-700 shadow-xs'
+                                                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <span className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                            </span>
+                                            <span>Live Class</span>
+                                        </button>
+                                    </div>
+                                    <InputError className="mt-1.5" message={errors.type} />
                                 </div>
                             </div>
 

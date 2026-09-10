@@ -10,7 +10,8 @@ import {
     Clock,
     Sparkles,
     User,
-    X
+    X,
+    Video
 } from 'lucide-react';
 
 export default function CourseIndex({ courses, categories = [], filters }) {
@@ -110,10 +111,10 @@ export default function CourseIndex({ courses, categories = [], filters }) {
 
             <div className="py-6 bg-gray-50">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-                    
+
                     {/* Header Filter Bar */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-lg bg-white p-4 border border-gray-200 shadow-xs">
-                        
+
                         <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center gap-2 max-w-md">
                             <div className="relative flex-1">
                                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -212,13 +213,27 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                                             </div>
                                                         )}
                                                         <div className="space-y-0.5">
-                                                            <div className="flex items-center space-x-1.5">
+                                                            <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
                                                                 <Link
                                                                     href={route('admin.courses.show', course.id)}
                                                                     className="font-bold text-gray-900 hover:text-indigo-600 transition"
                                                                 >
                                                                     {course.title}
                                                                 </Link>
+                                                                {course.type === 'live' ? (
+                                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                                                        <span className="relative flex h-1.5 w-1.5">
+                                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                                                                        </span>
+                                                                        <span>Live</span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                                                        <Video className="h-2.5 w-2.5 text-slate-500" />
+                                                                        <span>Recorded</span>
+                                                                    </span>
+                                                                )}
                                                                 {course.is_featured && (
                                                                     <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                                                         <Sparkles className="h-2.5 w-2.5" />
@@ -361,13 +376,12 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                             key={idx}
                                             href={link.url || '#'}
                                             preserveState
-                                            className={`px-3 py-1 text-xs rounded-md font-medium transition ${
-                                                link.active
+                                            className={`px-3 py-1 text-xs rounded-md font-medium transition ${link.active
                                                     ? 'bg-indigo-600 text-white font-bold'
                                                     : link.url
-                                                    ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
-                                            }`}
+                                                        ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                                                }`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
                                     ))}

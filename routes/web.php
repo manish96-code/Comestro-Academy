@@ -3,7 +3,6 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -69,10 +68,4 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');
 });
 
-// Razorpay Course Enrollment Payment Routes
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/courses/{course}/payment/create-order', [PaymentController::class, 'createOrder'])->name('courses.payment.create-order');
-    Route::post('/courses/{course}/payment/verify', [PaymentController::class, 'verifyPayment'])->name('courses.payment.verify');
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
