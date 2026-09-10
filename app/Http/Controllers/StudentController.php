@@ -96,7 +96,7 @@ class StudentController extends Controller
 
         $course = Course::where('slug', $slug)
             ->orWhere('id', $slug)
-            ->with(['category', 'instructor.user'])
+            ->with(['category', 'instructor.user', 'lessons'])
             ->withCount(['enrollments' => function ($q) {
                 $q->where('status', 'active');
             }])

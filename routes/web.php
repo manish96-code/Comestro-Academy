@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -51,6 +52,10 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::match(['patch', 'post'], '/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::get('/courses/{course}/content', [CourseController::class, 'content'])->name('courses.content');
+    Route::post('/courses/{course}/lessons', [CourseController::class, 'storeLesson'])->name('courses.lessons.store');
+    Route::post('/courses/{course}/lessons/{lesson}', [CourseController::class, 'updateLesson'])->name('courses.lessons.update');
+    Route::delete('/courses/{course}/lessons/{lesson}', [CourseController::class, 'destroyLesson'])->name('courses.lessons.destroy');
 });
 
 // Public Course Catalog & Detail Page
@@ -68,4 +73,10 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');
 });
 
-require __DIR__ . '/auth.php';
+// Razorpay Course Enrollment Payment Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/courses/{course}/payment/create-order', [PaymentController::class, 'createOrder'])->name('courses.payment.create-order');
+    Route::post('/courses/{course}/payment/verify', [PaymentController::class, 'verifyPayment'])->name('courses.payment.verify');
+});
+
+require __DIR__.'/auth.php';
