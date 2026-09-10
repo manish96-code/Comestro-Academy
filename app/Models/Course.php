@@ -71,4 +71,10 @@ class Course extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    // Lessons (Videos & Notes) relationship
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(CourseLesson::class)->orderBy('order');
+    }
 }

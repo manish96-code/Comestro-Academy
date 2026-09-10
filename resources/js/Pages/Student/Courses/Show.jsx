@@ -2,7 +2,7 @@ import axios from 'axios';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import {
     Clock,
@@ -35,7 +35,10 @@ import {
     Terminal,
     Globe,
     Calendar,
-    Radio
+    Radio,
+    Download,
+    Lock,
+    File
 } from 'lucide-react';
 
 export default function CourseShow({ course, relatedCourses = [] }) {
@@ -226,6 +229,41 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             : null;
 
     const curriculumModules = Array.isArray(course.curriculum) ? course.curriculum : [];
+    const structuredLessons = Array.isArray(course.lessons) ? course.lessons : [];
+
+    const [activeVideoModal, setActiveVideoModal] = useState(null);
+
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+        if (ytMatch) {
+            return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+        }
+        const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)/);
+        if (vimeoMatch) {
+            return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
+        }
+        return url;
+    };
+
+    // Group lessons by module_name
+    const lessonModules = useMemo(() => {
+        if (!structuredLessons.length) return [];
+        const map = new Map();
+        structuredLessons.forEach((lesson) => {
+            const modName = lesson.module_name?.trim() || 'General Curriculum';
+            if (!map.has(modName)) {
+                map.set(modName, []);
+            }
+            map.get(modName).push(lesson);
+        });
+        return Array.from(map.entries()).map(([moduleName, items]) => ({
+            moduleName,
+            lessons: items,
+        }));
+    }, [structuredLessons]);
+
+    const totalModulesCount = lessonModules.length > 0 ? lessonModules.length : curriculumModules.length;
 
     // Automatically format module title with sequential module numbering
     const getModuleTitle = (title, index) => {
@@ -318,7 +356,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         }`}
                     >
                         <span>Curriculum</span>
-                        {curriculumModules.length > 0 && (
+                        {totalModulesCount > 0 && (
                             <span
                                 className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
                                     activeTab === 'curriculum'
@@ -326,7 +364,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         : 'bg-gray-100 text-gray-600'
                                 }`}
                             >
-                                {curriculumModules.length}
+                                {totalModulesCount}
                             </span>
                         )}
                     </button>
@@ -375,32 +413,156 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
                         <div className="flex items-center gap-3 self-start sm:self-auto">
                             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 border border-gray-200">
-                                {curriculumModules.length} Modules
+                                {totalModulesCount} Modules
                             </span>
 
                             <button
                                 type="button"
                                 onClick={() => {
-                                    const allOpen = Object.keys(openModules).length === curriculumModules.length;
+                                    const allOpen = Object.keys(openModules).length === totalModulesCount;
                                     if (allOpen) {
                                         setOpenModules({});
                                     } else {
                                         const newObj = {};
-                                        curriculumModules.forEach((_, i) => (newObj[i] = true));
+                                        for (let i = 0; i < totalModulesCount; i++) {
+                                            newObj[i] = true;
+                                        }
                                         setOpenModules(newObj);
                                     }
                                 }}
                                 className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition"
                             >
-                                {Object.keys(openModules).length === curriculumModules.length
+                                {Object.keys(openModules).length === totalModulesCount
                                     ? 'Collapse All'
                                     : 'Expand All'}
                             </button>
                         </div>
                     </div>
 
-                    {/* Modules List */}
-                    {curriculumModules.length > 0 ? (
+                    {/* Modules & Lessons List */}
+                    {lessonModules.length > 0 ? (
+                        <div className="space-y-4">
+                            {lessonModules.map((mod, mIdx) => {
+                                const isOpen = openModules[mIdx] !== false;
+                                return (
+                                    <div
+                                        key={mIdx}
+                                        className="border border-gray-200 rounded-xl overflow-hidden transition-all shadow-2xs hover:border-indigo-200"
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleModule(mIdx)}
+                                            className="w-full flex items-center justify-between p-4 bg-gray-50/80 hover:bg-gray-100/80 transition text-left"
+                                        >
+                                            <div className="flex items-center gap-3 pr-2">
+                                                <div className="text-indigo-600 shrink-0">
+                                                    {isOpen ? (
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    ) : (
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    )}
+                                                </div>
+                                                <span className="text-xs sm:text-sm font-bold text-gray-900">
+                                                    {getModuleTitle(mod.moduleName, mIdx)}
+                                                </span>
+                                            </div>
+
+                                            <span className="text-[11px] font-semibold text-gray-500 shrink-0 ml-2">
+                                                {mod.lessons.length} {mod.lessons.length === 1 ? 'Lecture' : 'Lectures'}
+                                            </span>
+                                        </button>
+
+                                        {isOpen && (
+                                            <div className="bg-white divide-y divide-gray-100">
+                                                {mod.lessons.map((lesson) => {
+                                                    const canAccess = isEnrolled || lesson.is_free_preview;
+                                                    return (
+                                                        <div
+                                                            key={lesson.id}
+                                                            className="px-4 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 transition"
+                                                        >
+                                                            <div className="flex items-start gap-3 min-w-0">
+                                                                <div className="mt-0.5 p-2 rounded-lg bg-indigo-50 text-indigo-600 shrink-0">
+                                                                    <Video className="h-4 w-4" />
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                                                                            {lesson.title}
+                                                                        </span>
+                                                                        {lesson.is_free_preview && (
+                                                                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                                                Free Preview
+                                                                            </span>
+                                                                        )}
+                                                                        {lesson.duration && (
+                                                                            <span className="text-[11px] text-gray-400 flex items-center gap-1 font-normal">
+                                                                                <Clock className="h-3 w-3" />
+                                                                                {lesson.duration}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    {lesson.description && (
+                                                                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                                                                            {lesson.description}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                                                                {/* Notes / Material Download */}
+                                                                {lesson.notes_file && (
+                                                                    canAccess ? (
+                                                                        <a
+                                                                            href={lesson.notes_file}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition shadow-2xs"
+                                                                        >
+                                                                            <Download className="h-3.5 w-3.5" />
+                                                                            <span className="max-w-[120px] truncate">{lesson.notes_title || 'Notes'}</span>
+                                                                        </a>
+                                                                    ) : (
+                                                                        <span
+                                                                            title="Enroll in course to unlock notes"
+                                                                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                                        >
+                                                                            <Lock className="h-3 w-3" />
+                                                                            <span>Notes</span>
+                                                                        </span>
+                                                                    )
+                                                                )}
+
+                                                                {/* Video Player Action */}
+                                                                {lesson.video_url ? (
+                                                                    canAccess ? (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setActiveVideoModal({ title: lesson.title, url: lesson.video_url })}
+                                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-2xs cursor-pointer"
+                                                                        >
+                                                                            <Play className="h-3.5 w-3.5 fill-white" />
+                                                                            <span>Watch</span>
+                                                                        </button>
+                                                                    ) : (
+                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-400">
+                                                                            <Lock className="h-3.5 w-3.5" />
+                                                                            <span>Locked</span>
+                                                                        </span>
+                                                                    )
+                                                                ) : null}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : curriculumModules.length > 0 ? (
                         <div className="space-y-4">
                             {curriculumModules.map((module, mIdx) => {
                                 const isOpen = !!openModules[mIdx];
@@ -411,7 +573,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         key={mIdx}
                                         className="border border-gray-200 rounded-xl overflow-hidden transition-all shadow-2xs hover:border-indigo-200"
                                     >
-                                        {/* Module Header Toggle */}
                                         <button
                                             type="button"
                                             onClick={() => toggleModule(mIdx)}
@@ -435,7 +596,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                             </span>
                                         </button>
 
-                                        {/* Expanded Topics List (View Only) */}
                                         {isOpen && (
                                             <div className="bg-white divide-y divide-gray-100">
                                                 {topics.length > 0 ? (
@@ -463,7 +623,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </div>
                     ) : (
                         <div className="p-8 text-center text-gray-500 text-xs sm:text-sm border border-dashed border-gray-200 rounded-xl">
-                            No curriculum modules have been added for this course yet.
+                            No curriculum lessons or modules have been added for this course yet.
                         </div>
                     )}
                 </div>
@@ -1160,6 +1320,51 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     </div>
                 </div>
             </footer>
+
+            {/* Video Player Preview Modal */}
+            {activeVideoModal && (
+                <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-950/60">
+                            <div className="flex items-center gap-2.5 min-w-0 pr-4">
+                                <div className="p-1.5 rounded-lg bg-indigo-600/20 text-indigo-400 shrink-0">
+                                    <Video className="h-4 w-4" />
+                                </div>
+                                <h3 className="text-white font-semibold text-sm truncate">
+                                    {activeVideoModal.title}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setActiveVideoModal(null)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <div className="relative w-full pt-[56.25%] bg-black">
+                            {activeVideoModal.url && (activeVideoModal.url.includes('youtube.com') || activeVideoModal.url.includes('youtu.be') || activeVideoModal.url.includes('vimeo.com')) ? (
+                                <iframe
+                                    src={getEmbedUrl(activeVideoModal.url)}
+                                    title={activeVideoModal.title}
+                                    className="absolute inset-0 w-full h-full border-0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                />
+                            ) : (
+                                <video
+                                    src={activeVideoModal.url}
+                                    controls
+                                    autoPlay
+                                    className="absolute inset-0 w-full h-full object-contain"
+                                >
+                                    Your browser does not support HTML5 video.
+                                </video>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

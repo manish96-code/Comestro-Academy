@@ -11,7 +11,8 @@ import {
     Sparkles,
     User,
     X,
-    Video
+    Video,
+    Radio
 } from 'lucide-react';
 
 export default function CourseIndex({ courses, categories = [], filters }) {
@@ -311,13 +312,35 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                                 </td>
 
                                                 <td className="py-3 px-4 text-right whitespace-nowrap">
-                                                    <Link
-                                                        href={route('admin.courses.show', course.id)}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-900 bg-indigo-50/60 hover:bg-indigo-100 rounded-md border border-indigo-200/60 transition"
-                                                    >
-                                                        <Edit3 className="h-3.5 w-3.5" />
-                                                        <span>Edit</span>
-                                                    </Link>
+                                                    <div className="flex items-center justify-end gap-1.5">
+                                                        {course.type === 'recorded' ? (
+                                                            <Link
+                                                                href={route('admin.courses.content', course.id)}
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 rounded-md border border-sky-200 transition shadow-xs"
+                                                                title="Upload Videos & Lecture Notes"
+                                                            >
+                                                                <Video className="h-3.5 w-3.5 text-sky-600" />
+                                                                <span>Videos & Notes</span>
+                                                            </Link>
+                                                        ) : (
+                                                            <Link
+                                                                href={route('admin.courses.content', course.id)}
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 rounded-md border border-rose-200 transition shadow-xs"
+                                                                title="Live Sessions & Content"
+                                                            >
+                                                                <Radio className="h-3.5 w-3.5 text-rose-600" />
+                                                                <span>Live Sessions</span>
+                                                            </Link>
+                                                        )}
+
+                                                        <Link
+                                                            href={route('admin.courses.show', course.id)}
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-900 bg-indigo-50/60 hover:bg-indigo-100 rounded-md border border-indigo-200/60 transition"
+                                                        >
+                                                            <Edit3 className="h-3.5 w-3.5" />
+                                                            <span>Edit</span>
+                                                        </Link>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))

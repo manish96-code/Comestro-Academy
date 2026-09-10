@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseLesson;
 use App\Models\Instructor;
 use App\Models\User;
 use App\Services\ImageKitService;
@@ -112,7 +113,7 @@ class CourseController extends Controller
                 $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
                 $thumbnailUrl = $upload['url'];
             } catch (Throwable $e) {
-                return back()->withErrors(['thumbnail_image' => 'Image upload failed: ' . $e->getMessage()])->withInput();
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
             }
         }
 
@@ -181,7 +182,7 @@ class CourseController extends Controller
                 'nullable',
                 Rule::exists('instructors', 'id')->where(function ($q) use ($course) {
                     $q->whereIn('user_id', User::where('status', 'active')->select('id'))
-                        ->when($course->instructor_id, fn($query) => $query->orWhere('id', $course->instructor_id));
+                        ->when($course->instructor_id, fn ($query) => $query->orWhere('id', $course->instructor_id));
                 }),
             ],
             'description' => ['nullable', 'string'],
@@ -209,7 +210,7 @@ class CourseController extends Controller
                 $upload = $imageKit->upload($request->file('thumbnail_image'), '/courses');
                 $thumbnailUrl = $upload['url'];
             } catch (Throwable $e) {
-                return back()->withErrors(['thumbnail_image' => 'Image upload failed: ' . $e->getMessage()])->withInput();
+                return back()->withErrors(['thumbnail_image' => 'Image upload failed: '.$e->getMessage()])->withInput();
             }
         }
 
@@ -243,5 +244,109 @@ class CourseController extends Controller
         ]);
 
         return redirect()->route('admin.courses.index')->with('success', 'Course details updated successfully.');
+    }
+
+    // Course Content & Lessons Management Page
+    public function content(Course $course): Response
+    {
+        $course->load([
+            'category:id,name',
+            'instructor.user:id,name',
+            'lessons' => fn ($q) => $q->orderBy('order')->orderBy('id'),
+        ]);
+
+        return Inertia::render('Admin/Courses/Content', [
+            'course' => $course,
+        ]);
+    }
+
+    // Store a new lesson / video lecture with notes
+    public function storeLesson(Request $request, Course $course, ImageKitService $imageKit): RedirectResponse
+    {
+        $validated = $request->validate([
+            'module_name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'video_url' => ['nullable', 'string', 'max:1000'],
+            'duration' => ['nullable', 'string', 'max:50'],
+            'notes_file' => ['nullable', 'file', 'max:51200'],
+            'notes_title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'is_free_preview' => ['boolean'],
+            'order' => ['nullable', 'integer'],
+        ]);
+
+        $notesUrl = null;
+        if ($request->hasFile('notes_file')) {
+            try {
+                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
+                $notesUrl = $upload['url'];
+            } catch (Throwable $e) {
+                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
+            }
+        }
+
+        $maxOrder = $course->lessons()->max('order') ?? 0;
+
+        $course->lessons()->create([
+            'module_name' => $validated['module_name'],
+            'title' => $validated['title'],
+            'video_url' => $validated['video_url'] ?? null,
+            'duration' => $validated['duration'] ?? null,
+            'notes_file' => $notesUrl,
+            'notes_title' => $validated['notes_title'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'is_free_preview' => $validated['is_free_preview'] ?? false,
+            'order' => $validated['order'] ?? ($maxOrder + 1),
+        ]);
+
+        return back()->with('success', 'Lesson with video and notes added successfully.');
+    }
+
+    // Update an existing lesson
+    public function updateLesson(Request $request, Course $course, CourseLesson $lesson, ImageKitService $imageKit): RedirectResponse
+    {
+        $validated = $request->validate([
+            'module_name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'video_url' => ['nullable', 'string', 'max:1000'],
+            'duration' => ['nullable', 'string', 'max:50'],
+            'notes_file' => ['nullable', 'file', 'max:51200'],
+            'notes_title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'is_free_preview' => ['boolean'],
+            'order' => ['nullable', 'integer'],
+        ]);
+
+        $notesUrl = $lesson->notes_file;
+        if ($request->hasFile('notes_file')) {
+            try {
+                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
+                $notesUrl = $upload['url'];
+            } catch (Throwable $e) {
+                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
+            }
+        }
+
+        $lesson->update([
+            'module_name' => $validated['module_name'],
+            'title' => $validated['title'],
+            'video_url' => $validated['video_url'] ?? null,
+            'duration' => $validated['duration'] ?? null,
+            'notes_file' => $notesUrl,
+            'notes_title' => $validated['notes_title'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'is_free_preview' => $validated['is_free_preview'] ?? false,
+            'order' => $validated['order'] ?? $lesson->order,
+        ]);
+
+        return back()->with('success', 'Lesson updated successfully.');
+    }
+
+    // Delete a lesson
+    public function destroyLesson(Course $course, CourseLesson $lesson): RedirectResponse
+    {
+        $lesson->delete();
+
+        return back()->with('success', 'Lesson deleted successfully.');
     }
 }
