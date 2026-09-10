@@ -38,10 +38,27 @@ export default function CourseCreate({ course = null, categories = [], instructo
         instructor_id: course?.instructor_id || '',
         description: course?.description || '',
         curriculum: Array.isArray(course?.curriculum)
-            ? course.curriculum.map((item) => ({
-                ...item,
-                title: (item.title || '').replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim(),
-            }))
+            ? course.curriculum.map((item) => {
+                let initialSubtitles = [''];
+                if (Array.isArray(item.subtitles) && item.subtitles.length > 0) {
+                    initialSubtitles = item.subtitles;
+                } else if (Array.isArray(item.subtitle) && item.subtitle.length > 0) {
+                    initialSubtitles = item.subtitle;
+                } else if (typeof item.subtitle === 'string' && item.subtitle.trim().length > 0) {
+                    if (item.subtitle.includes('\n')) {
+                        initialSubtitles = item.subtitle.split('\n').map((s) => s.trim()).filter(Boolean);
+                    } else if (item.subtitle.includes(',')) {
+                        initialSubtitles = item.subtitle.split(',').map((s) => s.trim()).filter(Boolean);
+                    } else {
+                        initialSubtitles = [item.subtitle.trim()];
+                    }
+                }
+                return {
+                    ...item,
+                    title: (item.title || '').replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim(),
+                    subtitles: initialSubtitles.length > 0 ? initialSubtitles : [''],
+                };
+            })
             : [],
         course_includes: Array.isArray(course?.course_includes) && course.course_includes.length > 0
             ? course.course_includes
@@ -61,14 +78,22 @@ export default function CourseCreate({ course = null, categories = [], instructo
         status: course?.status || 'draft',
     });
 
-    // Automatically transform curriculum module title and clean course_includes
+    // Automatically transform curriculum module title, subtitles array, and clean course_includes
     transform((formData) => ({
         ...formData,
         curriculum: Array.isArray(formData.curriculum)
-            ? formData.curriculum.map((item) => ({
-                ...item,
-                title: (item.title || '').replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim(),
-            }))
+            ? formData.curriculum.map((item) => {
+                const cleanedSubtitles = Array.isArray(item.subtitles)
+                    ? item.subtitles.map((s) => (s || '').trim()).filter(Boolean)
+                    : (typeof item.subtitle === 'string'
+                        ? item.subtitle.split(',').map((s) => s.trim()).filter(Boolean)
+                        : []);
+                return {
+                    title: (item.title || '').replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim(),
+                    subtitles: cleanedSubtitles,
+                    subtitle: cleanedSubtitles.join(', '),
+                };
+            })
             : [],
         course_includes: Array.isArray(formData.course_includes)
             ? formData.course_includes.map((s) => (s || '').trim()).filter(Boolean)
@@ -99,18 +124,49 @@ export default function CourseCreate({ course = null, categories = [], instructo
     const addCurriculumItem = () => {
         setData('curriculum', [
             ...data.curriculum,
-            { title: '', subtitle: '' },
+            { title: '', subtitles: [''] },
         ]);
     };
 
-    const updateCurriculumItem = (index, field, value) => {
+    const updateCurriculumTitle = (index, value) => {
         const updated = [...data.curriculum];
-        updated[index] = { ...updated[index], [field]: value };
+        updated[index] = { ...updated[index], title: value };
         setData('curriculum', updated);
     };
 
     const removeCurriculumItem = (index) => {
         const updated = data.curriculum.filter((_, i) => i !== index);
+        setData('curriculum', updated);
+    };
+
+    const addModuleSubtitle = (moduleIndex) => {
+        const updated = [...data.curriculum];
+        const currentSubtitles = updated[moduleIndex].subtitles || [''];
+        updated[moduleIndex] = {
+            ...updated[moduleIndex],
+            subtitles: [...currentSubtitles, ''],
+        };
+        setData('curriculum', updated);
+    };
+
+    const updateModuleSubtitle = (moduleIndex, subIndex, value) => {
+        const updated = [...data.curriculum];
+        const currentSubtitles = [...(updated[moduleIndex].subtitles || [''])];
+        currentSubtitles[subIndex] = value;
+        updated[moduleIndex] = {
+            ...updated[moduleIndex],
+            subtitles: currentSubtitles,
+        };
+        setData('curriculum', updated);
+    };
+
+    const removeModuleSubtitle = (moduleIndex, subIndex) => {
+        const updated = [...data.curriculum];
+        const currentSubtitles = (updated[moduleIndex].subtitles || ['']).filter((_, i) => i !== subIndex);
+        updated[moduleIndex] = {
+            ...updated[moduleIndex],
+            subtitles: currentSubtitles.length > 0 ? currentSubtitles : [''],
+        };
         setData('curriculum', updated);
     };
 
@@ -345,14 +401,9 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 </div>
                             </div>
 
-                            {/* Course Thumbnail Image (Direct ImageKit Upload) */}
+                            {/* Course Thumbnail Image */}
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <InputLabel value="Course Thumbnail Banner Image *" />
-                                    <span className="text-[11px] text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded">
-                                        Powered by ImageKit CDN
-                                    </span>
-                                </div>
+                                <InputLabel value="Course Thumbnail Banner Image *" />
 
                                 <input
                                     type="file"
@@ -372,7 +423,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                     className="w-full h-full object-cover"
                                                 />
                                                 <div className="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-[10px] text-white font-semibold px-2 py-0.5 rounded shadow-xs">
-                                                    {data.thumbnail_image ? 'New File Selected' : 'ImageKit Hosted'}
+                                                    {data.thumbnail_image ? 'New File Selected' : 'Current Thumbnail'}
                                                 </div>
                                             </div>
 
@@ -384,8 +435,8 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                 </h5>
                                                 <p className="text-[11px] text-gray-500">
                                                     {data.thumbnail_image
-                                                        ? `${(data.thumbnail_image.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload to ImageKit`
-                                                        : 'Saved on ImageKit CDN storage'}
+                                                        ? `${(data.thumbnail_image.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload`
+                                                        : 'Saved course thumbnail'}
                                                 </p>
                                                 <div className="flex items-center gap-2 pt-1.5">
                                                     <button
@@ -422,7 +473,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                     Click to upload course banner image
                                                 </p>
                                                 <p className="text-[11px] text-gray-500 mt-0.5">
-                                                    PNG, JPG, WEBP, or SVG up to 5MB (Direct ImageKit storage)
+                                                    PNG, JPG, WEBP, or SVG up to 5MB
                                                 </p>
                                             </div>
                                             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">
@@ -497,8 +548,9 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                     </button>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                                    <div className="sm:col-span-5">
+                                                <div className="space-y-3">
+                                                    {/* Module Title */}
+                                                    <div>
                                                         <div className="flex rounded-lg shadow-xs">
                                                             <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-700 text-xs font-bold select-none shrink-0">
                                                                 Module {idx + 1}:
@@ -506,21 +558,60 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                             <input
                                                                 type="text"
                                                                 value={item.title}
-                                                                onChange={(e) => updateCurriculumItem(idx, 'title', e.target.value)}
+                                                                onChange={(e) => updateCurriculumTitle(idx, e.target.value)}
                                                                 placeholder="e.g. HTML Fundamentals"
                                                                 className="w-full text-xs rounded-r-lg border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 shadow-xs"
                                                                 required
                                                             />
                                                         </div>
                                                     </div>
-                                                    <div className="sm:col-span-7">
-                                                        <input
-                                                            type="text"
-                                                            value={item.subtitle || ''}
-                                                            onChange={(e) => updateCurriculumItem(idx, 'subtitle', e.target.value)}
-                                                            placeholder="Topics covered, e.g. Introduction to HTML, Document Structure, First Page"
-                                                            className="w-full text-xs rounded-lg border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 shadow-xs"
-                                                        />
+
+                                                    {/* Subtitles / Topics list */}
+                                                    <div className="space-y-2 pt-2 border-t border-gray-200/70">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wide">
+                                                                    Subtitles / Topics ({Array.isArray(item.subtitles) ? item.subtitles.length : 1})
+                                                                </span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => addModuleSubtitle(idx)}
+                                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-md transition"
+                                                            >
+                                                                <Plus className="h-3 w-3" />
+                                                                <span>Add Subtitle</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            {(Array.isArray(item.subtitles) ? item.subtitles : [item.subtitle || '']).map((sub, sIdx) => (
+                                                                <div key={sIdx} className="flex items-center gap-2">
+                                                                    <div className="flex-1 flex rounded-lg shadow-xs">
+                                                                        <span className="inline-flex items-center px-2.5 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-600 text-[11px] font-mono font-semibold select-none shrink-0">
+                                                                            {idx + 1}.{sIdx + 1}
+                                                                        </span>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={sub}
+                                                                            onChange={(e) => updateModuleSubtitle(idx, sIdx, e.target.value)}
+                                                                            placeholder={`e.g. Topic ${sIdx + 1} (e.g. Introduction to HTML)`}
+                                                                            className="w-full text-xs rounded-r-lg border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-1.5 px-3 shadow-xs"
+                                                                        />
+                                                                    </div>
+                                                                    {(Array.isArray(item.subtitles) ? item.subtitles.length : 1) > 1 && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => removeModuleSubtitle(idx, sIdx)}
+                                                                            className="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition shrink-0"
+                                                                            title="Remove Subtitle"
+                                                                        >
+                                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

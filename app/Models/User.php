@@ -70,4 +70,9 @@ class User extends Authenticatable
             ->withPivot(['status', 'enrolled_at'])
             ->withTimestamps();
     }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

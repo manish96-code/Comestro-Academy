@@ -1,3 +1,4 @@
+import axios from 'axios';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -96,7 +97,23 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         }));
     };
 
-    const handleEnroll = () => {
+    // Helper to dynamically load the official Razorpay Checkout SDK
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            if (typeof window !== 'undefined' && window.Razorpay) {
+                resolve(true);
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleEnroll = async () => {
         if (!user) {
             toast.error('Please log in or create an account to enroll in this course.');
             router.visit(route('login'));
@@ -104,14 +121,88 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         }
 
         setEnrolling(true);
-        router.post(
-            route('courses.enroll', course.id),
-            {},
-            {
-                preserveScroll: true,
-                onFinish: () => setEnrolling(false),
+
+        try {
+            // Request order creation from backend
+            const { data } = await axios.post(route('courses.payment.create-order', course.id));
+
+            // If the course is free, user is directly enrolled
+            if (data.free) {
+                toast.success(data.message || 'Enrolled successfully!');
+                router.visit(data.redirect_url || route('student.courses.enrolled'));
+                return;
             }
-        );
+
+            // Load Razorpay checkout script if needed
+            const isLoaded = await loadRazorpayScript();
+            if (!isLoaded) {
+                toast.error('Failed to load Razorpay payment gateway. Please check your internet connection.');
+                setEnrolling(false);
+                return;
+            }
+
+            // Razorpay checkout modal options
+            const options = {
+                key: data.key,
+                amount: data.amount,
+                currency: data.currency,
+                name: 'Comestro Academy',
+                description: `Enrollment: ${data.course.title}`,
+                image: data.course.thumbnail || '/favicon.ico',
+                order_id: data.order_id,
+                prefill: {
+                    name: data.user.name || '',
+                    email: data.user.email || '',
+                    contact: data.user.phone || '',
+                },
+                notes: {
+                    course_id: String(data.course.id),
+                    user_id: String(user.id),
+                },
+                theme: {
+                    color: '#4f46e5',
+                },
+                modal: {
+                    ondismiss: () => {
+                        setEnrolling(false);
+                        toast('Payment cancelled.', { icon: 'ℹ️' });
+                    },
+                },
+                handler: function (response) {
+                    // Send signature to server for verification
+                    router.post(
+                        route('courses.payment.verify', course.id),
+                        {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        },
+                        {
+                            preserveScroll: true,
+                            onStart: () => setEnrolling(true),
+                            onFinish: () => setEnrolling(false),
+                            onSuccess: () => {
+                                toast.success('Payment verified! Welcome to the course.');
+                            },
+                            onError: (errs) => {
+                                toast.error(errs.message || 'Payment verification failed.');
+                            },
+                        }
+                    );
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response) {
+                setEnrolling(false);
+                toast.error(response.error?.description || 'Payment transaction failed.');
+            });
+            rzp.open();
+        } catch (error) {
+            setEnrolling(false);
+            const errorMsg = error.response?.data?.message || error.message || 'Failed to initialize enrollment.';
+            toast.error(errorMsg);
+        }
     };
 
     const handleShare = () => {
@@ -142,18 +233,33 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         return `Module ${index + 1}: ${cleanTitle || title}`;
     };
 
-    // Helper to parse subtitle into individual topics
-    const parseTopics = (subtitle) => {
-        if (!subtitle || typeof subtitle !== 'string') {
+    // Helper to parse subtitle or subtitles array into individual topics
+    const parseTopics = (moduleOrSubtitle) => {
+        if (!moduleOrSubtitle) {
             return [];
         }
-        if (subtitle.includes('\n')) {
-            return subtitle.split('\n').map((s) => s.trim()).filter(Boolean);
+        if (typeof moduleOrSubtitle === 'object' && !Array.isArray(moduleOrSubtitle)) {
+            if (Array.isArray(moduleOrSubtitle.subtitles) && moduleOrSubtitle.subtitles.length > 0) {
+                return moduleOrSubtitle.subtitles.map((s) => String(s).trim()).filter(Boolean);
+            }
+            if (Array.isArray(moduleOrSubtitle.subtitle) && moduleOrSubtitle.subtitle.length > 0) {
+                return moduleOrSubtitle.subtitle.map((s) => String(s).trim()).filter(Boolean);
+            }
+            return parseTopics(moduleOrSubtitle.subtitle);
         }
-        if (subtitle.includes(',')) {
-            return subtitle.split(',').map((s) => s.trim()).filter(Boolean);
+        if (Array.isArray(moduleOrSubtitle)) {
+            return moduleOrSubtitle.map((s) => String(s).trim()).filter(Boolean);
         }
-        return [subtitle.trim()];
+        if (typeof moduleOrSubtitle !== 'string') {
+            return [];
+        }
+        if (moduleOrSubtitle.includes('\n')) {
+            return moduleOrSubtitle.split('\n').map((s) => s.trim()).filter(Boolean);
+        }
+        if (moduleOrSubtitle.includes(',')) {
+            return moduleOrSubtitle.split(',').map((s) => s.trim()).filter(Boolean);
+        }
+        return [moduleOrSubtitle.trim()];
     };
 
     // Helper to map dynamic feature text to appropriate visual icon
@@ -297,7 +403,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         <div className="space-y-4">
                             {curriculumModules.map((module, mIdx) => {
                                 const isOpen = !!openModules[mIdx];
-                                const topics = parseTopics(module.subtitle);
+                                const topics = parseTopics(module);
 
                                 return (
                                     <div
@@ -592,10 +698,14 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {enrolling ? (
-                                    <span>Enrolling...</span>
+                                    <span>Processing Checkout...</span>
                                 ) : (
                                     <>
-                                        <span>Enroll in Course Now</span>
+                                        <span>
+                                            {Number(course.price) === 0
+                                                ? 'Enroll in Course (Free)'
+                                                : 'Enroll & Pay with Razorpay'}
+                                        </span>
                                         <ArrowRight className="h-4 w-4" />
                                     </>
                                 )}

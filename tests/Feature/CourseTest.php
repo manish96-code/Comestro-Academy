@@ -160,3 +160,38 @@ test('admin can upload thumbnail image via imagekit when creating course', funct
             ['title' => 'Figma Basics', 'subtitle' => 'Interface and shortcuts'],
         ]);
 });
+
+test('admin can save curriculum with multiple subtitles array', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Backend Engineering',
+        'slug' => 'backend-engineering',
+        'status' => 'active',
+    ]);
+
+    $curriculum = [
+        [
+            'title' => 'Advanced Database Architecture',
+            'subtitles' => [
+                'Indexing Strategies & EXPLAIN analysis',
+                'Partitioning & Sharding at scale',
+                'Transactions, ACID & Locking mechanisms',
+            ],
+            'subtitle' => 'Indexing Strategies & EXPLAIN analysis, Partitioning & Sharding at scale, Transactions, ACID & Locking mechanisms',
+        ],
+    ];
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.store'), [
+        'title' => 'High-Performance SQL & Databases',
+        'category_id' => $category->id,
+        'price' => 3499,
+        'status' => 'published',
+        'curriculum' => $curriculum,
+    ]);
+
+    $response->assertRedirect(route('admin.courses.index'));
+
+    $course = Course::where('slug', 'high-performance-sql-databases')->first();
+    expect($course)->not->toBeNull()
+        ->and($course->curriculum)->toEqual($curriculum);
+});

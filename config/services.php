@@ -41,4 +41,9 @@ return [
         'url_endpoint' => env('IMAGEKIT_URL_ENDPOINT'),
     ],
 
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET'),
+    ],
+
 ];

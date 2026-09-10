@@ -64,4 +64,10 @@ class Course extends Model
             ->withPivot(['status', 'enrolled_at'])
             ->withTimestamps();
     }
+
+    // Payments relationship
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }
