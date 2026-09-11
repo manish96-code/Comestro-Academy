@@ -26,7 +26,13 @@ class CourseController extends Controller
         $categoryId = $request->query('category_id');
         $status = $request->query('status');
 
-        $query = Course::with(['category', 'instructor.user']);
+        $query = Course::with([
+            'category',
+            'instructor.user',
+            'enrollments' => function ($q) {
+                $q->with('user:id,name,email,phone,status')->latest('enrolled_at');
+            },
+        ])->withCount('enrollments');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -50,10 +56,12 @@ class CourseController extends Controller
         $courses = $query->latest()->paginate(10)->withQueryString();
 
         $categories = Category::where('status', 'active')->get(['id', 'name']);
+        $students = User::where('role', 'student')->where('status', 'active')->orderBy('name')->get(['id', 'name', 'email']);
 
         return Inertia::render('Admin/Courses/Index', [
             'courses' => $courses,
             'categories' => $categories,
+            'students' => $students,
             'filters' => [
                 'search' => $search,
                 'category_id' => $categoryId,

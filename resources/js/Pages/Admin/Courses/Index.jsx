@@ -1,5 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
+import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -14,13 +15,110 @@ import {
     X,
     Video,
     Radio,
-    Filter
+    Filter,
+    Users,
+    UserPlus,
+    CheckCircle2,
+    XCircle,
+    Trash2,
+    GraduationCap,
+    ExternalLink
 } from 'lucide-react';
 
-export default function CourseIndex({ courses, categories = [], filters }) {
+export default function CourseIndex({ courses, categories = [], students = [], filters }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [categoryId, setCategoryId] = useState(filters?.category_id || '');
     const [status, setStatus] = useState(filters?.status || '');
+
+    // Enrolled Students Modal state
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
+    const [studentModalSearch, setStudentModalSearch] = useState('');
+    const [showEnrollForm, setShowEnrollForm] = useState(false);
+    const [enrollUserId, setEnrollUserId] = useState('');
+    const [enrollStatus, setEnrollStatus] = useState('active');
+    const [isEnrolling, setIsEnrolling] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        enrollmentId: null,
+        studentName: '',
+        courseTitle: '',
+    });
+
+    const activeCourse = selectedCourseId ? courses.data?.find((c) => c.id === selectedCourseId) : null;
+    const enrolledStudents = activeCourse?.enrollments || [];
+
+    const filteredEnrolledStudents = enrolledStudents.filter((enr) => {
+        if (!studentModalSearch.trim()) return true;
+        const term = studentModalSearch.toLowerCase();
+        const st = enr.user;
+        return (
+            st?.name?.toLowerCase().includes(term) ||
+            st?.email?.toLowerCase().includes(term) ||
+            st?.phone?.toLowerCase().includes(term)
+        );
+    });
+
+    const availableStudentsToEnroll = students.filter(
+        (st) => !enrolledStudents.some((enr) => enr.user_id === st.id)
+    );
+
+    const openStudentsModal = (course) => {
+        setSelectedCourseId(course.id);
+        setStudentModalSearch('');
+        setShowEnrollForm(false);
+        setEnrollUserId('');
+        setEnrollStatus('active');
+    };
+
+    const closeStudentsModal = () => {
+        setSelectedCourseId(null);
+        setShowEnrollForm(false);
+    };
+
+    const handleUpdateStatus = (enrollmentId, newStatus) => {
+        router.patch(
+            route('admin.enrollments.update', enrollmentId),
+            { status: newStatus },
+            { preserveScroll: true }
+        );
+    };
+
+    const handleEnrollStudent = (e) => {
+        e.preventDefault();
+        if (!enrollUserId || !selectedCourseId) return;
+
+        setIsEnrolling(true);
+        router.post(
+            route('admin.enrollments.store'),
+            {
+                course_id: selectedCourseId,
+                user_id: enrollUserId,
+                status: enrollStatus,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setEnrollUserId('');
+                    setShowEnrollForm(false);
+                    setIsEnrolling(false);
+                },
+                onError: () => {
+                    setIsEnrolling(false);
+                },
+            }
+        );
+    };
+
+    const handleDeleteEnrollment = () => {
+        if (!deleteModal.enrollmentId) return;
+
+        router.delete(route('admin.enrollments.destroy', deleteModal.enrollmentId), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteModal({ isOpen: false, enrollmentId: null, studentName: '', courseTitle: '' });
+            },
+        });
+    };
 
     const hasActiveFilters = Boolean(search || categoryId || status);
 
@@ -341,6 +439,16 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                                             <Edit3 className="h-3 w-3 text-slate-500" />
                                                             <span>Edit</span>
                                                         </Link>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openStudentsModal(course)}
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-md border border-emerald-200 transition shadow-2xs"
+                                                            title="View Enrolled Students"
+                                                        >
+                                                            <Users className="h-3 w-3 text-emerald-600" />
+                                                            <span>Students ({course.enrollments_count ?? (course.enrollments ? course.enrollments.length : 0)})</span>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -400,6 +508,272 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                     </div>
                 </div>
             </div>
+
+            {/* ENROLLED STUDENTS MANAGEMENT MODAL */}
+            {activeCourse && (
+                <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="relative bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="flex items-start justify-between pb-4 border-b border-slate-100 shrink-0">
+                            <div className="flex items-center gap-3">
+                                {activeCourse.thumbnail ? (
+                                    <img
+                                        src={activeCourse.thumbnail}
+                                        alt={activeCourse.title}
+                                        className="h-11 w-16 rounded-lg object-cover border border-slate-200 shrink-0"
+                                    />
+                                ) : (
+                                    <div className="h-11 w-16 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">
+                                        <BookOpen className="h-5 w-5" />
+                                    </div>
+                                )}
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-base font-bold text-slate-900 line-clamp-1">
+                                            {activeCourse.title}
+                                        </h3>
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                            {enrolledStudents.length} Enrolled
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-0.5">
+                                        {activeCourse.category?.name || 'Uncategorized'} • {activeCourse.instructor?.user?.name || 'No Instructor assigned'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeStudentsModal}
+                                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Top Controls: Search + Enroll Student Toggle */}
+                        <div className="py-3.5 flex items-center justify-between gap-3 shrink-0">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={studentModalSearch}
+                                    onChange={(e) => setStudentModalSearch(e.target.value)}
+                                    placeholder="Search enrolled students by name, email..."
+                                    className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowEnrollForm(!showEnrollForm)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                            >
+                                <UserPlus className="h-3.5 w-3.5" />
+                                <span>{showEnrollForm ? 'Cancel Enroll' : 'Enroll Student'}</span>
+                            </button>
+                        </div>
+
+                        {/* Quick Enroll Form */}
+                        {showEnrollForm && (
+                            <form
+                                onSubmit={handleEnrollStudent}
+                                className="p-3.5 mb-3 bg-indigo-50/50 rounded-xl border border-indigo-100/80 space-y-3 shrink-0 animate-in fade-in slide-in-from-top-2 duration-150"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                                        <GraduationCap className="h-4 w-4 text-indigo-600" />
+                                        Manual Student Enrollment
+                                    </span>
+                                    <span className="text-[11px] text-indigo-600">
+                                        {availableStudentsToEnroll.length} available to enroll
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                            Select Student
+                                        </label>
+                                        <select
+                                            value={enrollUserId}
+                                            onChange={(e) => setEnrollUserId(e.target.value)}
+                                            required
+                                            className="w-full text-xs rounded-lg border border-slate-200 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <option value="">-- Choose a student --</option>
+                                            {availableStudentsToEnroll.map((st) => (
+                                                <option key={st.id} value={st.id}>
+                                                    {st.name} ({st.email})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                            Initial Status
+                                        </label>
+                                        <select
+                                            value={enrollStatus}
+                                            onChange={(e) => setEnrollStatus(e.target.value)}
+                                            className="w-full text-xs rounded-lg border border-slate-200 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <option value="active">Active</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-2 pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEnrollForm(false)}
+                                        className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200/60 rounded-md transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!enrollUserId || isEnrolling}
+                                        className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-md shadow-xs transition"
+                                    >
+                                        {isEnrolling ? 'Enrolling...' : 'Confirm Enrollment'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {/* Students List Table */}
+                        <div className="overflow-y-auto flex-1 border border-slate-200 rounded-xl">
+                            {filteredEnrolledStudents.length === 0 ? (
+                                <div className="py-12 text-center text-slate-400">
+                                    <Users className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                                    <p className="text-xs font-medium text-slate-600">
+                                        {studentModalSearch ? 'No students match your search.' : 'No students enrolled in this course yet.'}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">
+                                        Click "Enroll Student" above to manually grant classroom access.
+                                    </p>
+                                </div>
+                            ) : (
+                                <table className="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold sticky top-0">
+                                            <th className="py-2.5 px-3.5">Student</th>
+                                            <th className="py-2.5 px-3.5">Enrolled Date</th>
+                                            <th className="py-2.5 px-3.5">Status</th>
+                                            <th className="py-2.5 px-3.5 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {filteredEnrolledStudents.map((enrollment) => {
+                                            const student = enrollment.user;
+                                            return (
+                                                <tr key={enrollment.id} className="hover:bg-slate-50/70 transition">
+                                                    <td className="py-2.5 px-3.5">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="h-8 w-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-xs shrink-0">
+                                                                {student?.name?.charAt(0) || 'S'}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <Link
+                                                                        href={route('admin.students.show', student?.id || '')}
+                                                                        className="font-semibold text-slate-900 hover:text-indigo-600 transition truncate max-w-[180px] block"
+                                                                        title="View Student Profile"
+                                                                    >
+                                                                        {student?.name || 'Unknown Student'}
+                                                                    </Link>
+                                                                    <ExternalLink className="h-2.5 w-2.5 text-slate-400" />
+                                                                </div>
+                                                                <p className="text-[11px] text-slate-400 font-mono truncate max-w-[180px]">
+                                                                    {student?.email || 'No email'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td className="py-2.5 px-3.5 text-slate-500 font-mono text-[11px]">
+                                                        {enrollment.enrolled_at
+                                                            ? new Date(enrollment.enrolled_at).toLocaleDateString()
+                                                            : 'N/A'}
+                                                    </td>
+
+                                                    <td className="py-2.5 px-3.5">
+                                                        <select
+                                                            value={enrollment.status}
+                                                            onChange={(e) => handleUpdateStatus(enrollment.id, e.target.value)}
+                                                            className={`text-[11px] font-semibold rounded-md py-1 px-2 border transition ${
+                                                                enrollment.status === 'active'
+                                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                                                    : enrollment.status === 'completed'
+                                                                    ? 'bg-sky-50 text-sky-700 border-sky-200'
+                                                                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                                                            }`}
+                                                        >
+                                                            <option value="active">Active</option>
+                                                            <option value="completed">Completed</option>
+                                                            <option value="cancelled">Cancelled</option>
+                                                        </select>
+                                                    </td>
+
+                                                    <td className="py-2.5 px-3.5 text-right">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setDeleteModal({
+                                                                    isOpen: true,
+                                                                    enrollmentId: enrollment.id,
+                                                                    studentName: student?.name || 'this student',
+                                                                    courseTitle: activeCourse.title,
+                                                                })
+                                                            }
+                                                            className="inline-flex items-center justify-center h-7 w-7 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-md transition"
+                                                            title="Unenroll student"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-4 mt-1 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 shrink-0">
+                            <span>
+                                Showing {filteredEnrolledStudents.length} of {enrolledStudents.length} students
+                            </span>
+                            <button
+                                type="button"
+                                onClick={closeStudentsModal}
+                                className="px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* CONFIRM DELETE / UNENROLL MODAL */}
+            <ConfirmDeleteModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, enrollmentId: null, studentName: '', courseTitle: '' })}
+                onConfirm={handleDeleteEnrollment}
+                title="Remove Course Enrollment?"
+                message={
+                    <p>
+                        Are you sure you want to remove <span className="font-semibold text-slate-800">{deleteModal.studentName}</span> from{' '}
+                        <span className="font-semibold text-slate-800">{deleteModal.courseTitle}</span>? This will revoke their classroom access.
+                    </p>
+                }
+                confirmText="Yes, Remove Enrollment"
+            />
         </AdminLayout>
     );
 }

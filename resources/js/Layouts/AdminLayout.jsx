@@ -17,7 +17,8 @@ import {
     Layers,
     Code,
     Sparkles,
-    ShieldCheck
+    ShieldCheck,
+    UserCheck
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {

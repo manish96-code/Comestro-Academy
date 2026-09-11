@@ -1,0 +1,1 @@
+import{t as e}from"./app-NVp-B2fB.js";var t=e();function n({message:e,className:n=``,...r}){return e?(0,t.jsx)(`p`,{...r,className:`text-sm text-red-600 dark:text-red-400 `+n,children:e}):null}function r({value:e,className:n=``,children:r,...i}){return(0,t.jsx)(`label`,{...i,className:`block text-xs font-semibold text-gray-700 mb-1.5 `+n,children:e||r})}export{n,r as t};

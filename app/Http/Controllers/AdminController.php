@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -64,10 +66,20 @@ class AdminController extends Controller
         ]);
     }
 
-    // Display single Student profile details.
+    // Display single Student profile details and enrolled courses.
     public function showStudent(User $student): Response
     {
-        $student->load('studentProfile');
+        $student->load([
+            'studentProfile',
+            'enrollments.course.category',
+        ]);
+
+        $enrolledCourseIds = $student->enrollments->pluck('course_id');
+
+        $availableCourses = Course::where('status', 'published')
+            ->whereNotIn('id', $enrolledCourseIds)
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'thumbnail', 'price', 'discount_price', 'duration']);
 
         return Inertia::render('Admin/Students/Show', [
             'student' => [
@@ -87,6 +99,8 @@ class AdminController extends Controller
                 'city' => $student->studentProfile?->city ?? '',
                 'state' => $student->studentProfile?->state ?? '',
             ],
+            'enrollments' => $student->enrollments,
+            'availableCourses' => $availableCourses,
         ]);
     }
 
@@ -241,5 +255,72 @@ class AdminController extends Controller
         );
 
         return redirect()->back()->with('success', 'Instructor details updated successfully.');
+    }
+
+    // Enroll a student into a course directly from their student profile.
+    public function enrollStudent(Request $request, User $student): RedirectResponse
+    {
+        $validated = $request->validate([
+            'course_id' => ['required', 'exists:courses,id'],
+            'status' => ['required', 'in:active,completed,cancelled'],
+        ]);
+
+        Enrollment::updateOrCreate(
+            [
+                'user_id' => $student->id,
+                'course_id' => $validated['course_id'],
+            ],
+            [
+                'status' => $validated['status'],
+                'enrolled_at' => now(),
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Student successfully enrolled into the course.');
+    }
+
+    // Update an enrollment status.
+    public function updateEnrollment(Request $request, Enrollment $enrollment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:active,completed,cancelled'],
+        ]);
+
+        $enrollment->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()->back()->with('success', 'Enrollment status updated to '.ucfirst($validated['status']).'.');
+    }
+
+    // Remove / unenroll a student from a course.
+    public function destroyEnrollment(Enrollment $enrollment): RedirectResponse
+    {
+        $enrollment->delete();
+
+        return redirect()->back()->with('success', 'Course enrollment removed successfully.');
+    }
+
+    // Store a manual course enrollment from the global enrollments page.
+    public function storeEnrollment(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'user_id' => ['required', 'exists:users,id'],
+            'course_id' => ['required', 'exists:courses,id'],
+            'status' => ['required', 'in:active,completed,cancelled'],
+        ]);
+
+        Enrollment::updateOrCreate(
+            [
+                'user_id' => $validated['user_id'],
+                'course_id' => $validated['course_id'],
+            ],
+            [
+                'status' => $validated['status'],
+                'enrolled_at' => now(),
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Student successfully enrolled into the course.');
     }
 }

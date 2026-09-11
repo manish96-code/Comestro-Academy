@@ -40,6 +40,11 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::get('/students', [AdminController::class, 'students'])->name('students.index');
     Route::get('/students/{student}', [AdminController::class, 'showStudent'])->name('students.show');
     Route::patch('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
+    Route::post('/students/{student}/enrollments', [AdminController::class, 'enrollStudent'])->name('students.enrollments.store');
+
+    Route::post('/enrollments', [AdminController::class, 'storeEnrollment'])->name('enrollments.store');
+    Route::patch('/enrollments/{enrollment}', [AdminController::class, 'updateEnrollment'])->name('enrollments.update');
+    Route::delete('/enrollments/{enrollment}', [AdminController::class, 'destroyEnrollment'])->name('enrollments.destroy');
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
