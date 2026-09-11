@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
+use App\Models\CourseModule;
 use App\Models\Instructor;
 use App\Models\User;
 use App\Services\ImageKitService;
@@ -252,7 +253,11 @@ class CourseController extends Controller
         $course->load([
             'category:id,name',
             'instructor.user:id,name',
-            'lessons' => fn ($q) => $q->orderBy('order')->orderBy('id'),
+            'modules' => fn ($q) => $q->orderBy('sort_order')->with([
+                'lessons' => fn ($lq) => $lq->orderBy('sort_order')->with(['videos', 'resources']),
+            ]),
+            'lessons' => fn ($q) => $q->with(['videos', 'resources']),
+            'liveClasses' => fn ($q) => $q->orderBy('start_time'),
         ]);
 
         return Inertia::render('Admin/Courses/Content', [
@@ -275,29 +280,54 @@ class CourseController extends Controller
             'order' => ['nullable', 'integer'],
         ]);
 
-        $notesUrl = null;
+        $moduleName = trim($validated['module_name']);
+        $module = CourseModule::firstOrCreate(
+            ['course_id' => $course->id, 'title' => $moduleName],
+            ['sort_order' => ($course->modules()->max('sort_order') ?? 0) + 1]
+        );
+
+        $maxSortOrder = $module->lessons()->max('sort_order') ?? 0;
+        $sortOrder = $validated['order'] ?? ($maxSortOrder + 1);
+
+        $lesson = $module->lessons()->create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'sort_order' => $sortOrder,
+            'is_free_preview' => $validated['is_free_preview'] ?? false,
+            'status' => 'published',
+        ]);
+
+        if (! empty($validated['video_url'])) {
+            $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
+
+            $lesson->videos()->create([
+                'title' => $validated['title'],
+                'video_url' => $validated['video_url'],
+                'duration_seconds' => $durationSeconds,
+                'video_provider' => 'url',
+                'status' => 'ready',
+            ]);
+        }
+
         if ($request->hasFile('notes_file')) {
             try {
                 $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
-                $notesUrl = $upload['url'];
+                $extension = strtolower($request->file('notes_file')->getClientOriginalExtension());
+                $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
+
+                $lesson->resources()->create([
+                    'title' => $validated['notes_title'] ?: 'Lecture Notes & Material',
+                    'file_url' => $upload['url'],
+                    'storage_key' => $upload['fileId'] ?? null,
+                    'resource_type' => $resourceType,
+                    'mime_type' => $request->file('notes_file')->getClientMimeType(),
+                    'file_size' => $request->file('notes_file')->getSize(),
+                    'sort_order' => 1,
+                ]);
             } catch (Throwable $e) {
                 return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
             }
         }
-
-        $maxOrder = $course->lessons()->max('order') ?? 0;
-
-        $course->lessons()->create([
-            'module_name' => $validated['module_name'],
-            'title' => $validated['title'],
-            'video_url' => $validated['video_url'] ?? null,
-            'duration' => $validated['duration'] ?? null,
-            'notes_file' => $notesUrl,
-            'notes_title' => $validated['notes_title'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'is_free_preview' => $validated['is_free_preview'] ?? false,
-            'order' => $validated['order'] ?? ($maxOrder + 1),
-        ]);
 
         return back()->with('success', 'Lesson with video and notes added successfully.');
     }
@@ -317,27 +347,70 @@ class CourseController extends Controller
             'order' => ['nullable', 'integer'],
         ]);
 
-        $notesUrl = $lesson->notes_file;
-        if ($request->hasFile('notes_file')) {
-            try {
-                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
-                $notesUrl = $upload['url'];
-            } catch (Throwable $e) {
-                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
+        $moduleName = trim($validated['module_name']);
+        if ($lesson->module?->title !== $moduleName) {
+            $module = CourseModule::firstOrCreate(
+                ['course_id' => $course->id, 'title' => $moduleName],
+                ['sort_order' => ($course->modules()->max('sort_order') ?? 0) + 1]
+            );
+            $lesson->module_id = $module->id;
+        }
+
+        $lesson->title = $validated['title'];
+        $lesson->description = $validated['description'] ?? null;
+        $lesson->is_free_preview = $validated['is_free_preview'] ?? false;
+        if (isset($validated['order'])) {
+            $lesson->sort_order = $validated['order'];
+        }
+        $lesson->save();
+
+        // Handle video
+        if (! empty($validated['video_url'])) {
+            $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
+
+            $video = $lesson->videos()->first();
+            if ($video) {
+                $video->update([
+                    'title' => $validated['title'],
+                    'video_url' => $validated['video_url'],
+                    'duration_seconds' => $durationSeconds,
+                ]);
+            } else {
+                $lesson->videos()->create([
+                    'title' => $validated['title'],
+                    'video_url' => $validated['video_url'],
+                    'duration_seconds' => $durationSeconds,
+                    'video_provider' => 'url',
+                    'status' => 'ready',
+                ]);
             }
         }
 
-        $lesson->update([
-            'module_name' => $validated['module_name'],
-            'title' => $validated['title'],
-            'video_url' => $validated['video_url'] ?? null,
-            'duration' => $validated['duration'] ?? null,
-            'notes_file' => $notesUrl,
-            'notes_title' => $validated['notes_title'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'is_free_preview' => $validated['is_free_preview'] ?? false,
-            'order' => $validated['order'] ?? $lesson->order,
-        ]);
+        // Handle notes resource
+        if ($request->hasFile('notes_file')) {
+            try {
+                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
+                $extension = strtolower($request->file('notes_file')->getClientOriginalExtension());
+                $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
+
+                $lesson->resources()->create([
+                    'title' => $validated['notes_title'] ?: 'Lecture Notes & Material',
+                    'file_url' => $upload['url'],
+                    'storage_key' => $upload['fileId'] ?? null,
+                    'resource_type' => $resourceType,
+                    'mime_type' => $request->file('notes_file')->getClientMimeType(),
+                    'file_size' => $request->file('notes_file')->getSize(),
+                    'sort_order' => ($lesson->resources()->max('sort_order') ?? 0) + 1,
+                ]);
+            } catch (Throwable $e) {
+                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
+            }
+        } elseif (! empty($validated['notes_title'])) {
+            $firstResource = $lesson->resources()->first();
+            if ($firstResource) {
+                $firstResource->update(['title' => $validated['notes_title']]);
+            }
+        }
 
         return back()->with('success', 'Lesson updated successfully.');
     }
@@ -348,5 +421,47 @@ class CourseController extends Controller
         $lesson->delete();
 
         return back()->with('success', 'Lesson deleted successfully.');
+    }
+
+    // Helper to parse human string duration to integer seconds
+    private function parseDurationToSeconds(?string $duration): ?int
+    {
+        if (empty($duration)) {
+            return null;
+        }
+
+        $duration = trim($duration);
+
+        if (is_numeric($duration)) {
+            return (int) $duration;
+        }
+
+        if (preg_match('/^(\d+):(\d+)$/', $duration, $m)) {
+            return ((int) $m[1] * 60) + (int) $m[2];
+        }
+
+        if (preg_match('/^(\d+):(\d+):(\d+)$/', $duration, $m)) {
+            return ((int) $m[1] * 3600) + ((int) $m[2] * 60) + (int) $m[3];
+        }
+
+        $seconds = 0;
+        $matched = false;
+
+        if (preg_match('/(\d+)\s*(?:h|hr|hrs|hour|hours)/i', $duration, $m)) {
+            $seconds += (int) $m[1] * 3600;
+            $matched = true;
+        }
+
+        if (preg_match('/(\d+)\s*(?:m|min|mins|minute|minutes)/i', $duration, $m)) {
+            $seconds += (int) $m[1] * 60;
+            $matched = true;
+        }
+
+        if (preg_match('/(\d+)\s*(?:s|sec|secs|second|seconds)/i', $duration, $m)) {
+            $seconds += (int) $m[1];
+            $matched = true;
+        }
+
+        return $matched ? $seconds : null;
     }
 }

@@ -96,7 +96,13 @@ class StudentController extends Controller
 
         $course = Course::where('slug', $slug)
             ->orWhere('id', $slug)
-            ->with(['category', 'instructor.user', 'lessons'])
+            ->with([
+                'category',
+                'instructor.user',
+                'modules' => fn ($q) => $q->orderBy('sort_order')->with([
+                    'lessons' => fn ($lq) => $lq->select('id', 'module_id', 'title', 'sort_order')->orderBy('sort_order'),
+                ]),
+            ])
             ->withCount(['enrollments' => function ($q) {
                 $q->where('status', 'active');
             }])
@@ -138,6 +144,34 @@ class StudentController extends Controller
         return Inertia::render('Student/Courses/Show', [
             'course' => $course,
             'relatedCourses' => $relatedCourses,
+        ]);
+    }
+
+    // Classroom learning page for enrolled students to watch video lectures and download study notes
+    public function learn(Request $request, Course $course): Response|RedirectResponse
+    {
+        $user = $request->user();
+
+        $isEnrolled = $user->enrollments()
+            ->where('course_id', $course->id)
+            ->where('status', 'active')
+            ->exists();
+
+        if (! $isEnrolled && ! $user->isAdmin() && ! $user->isInstructor()) {
+            return redirect()->route('courses.show', $course->slug)->with('error', 'Please enroll in this course to access classroom lectures and study notes.');
+        }
+
+        $course->load([
+            'category:id,name',
+            'instructor.user:id,name',
+            'modules' => fn ($q) => $q->orderBy('sort_order')->with([
+                'lessons' => fn ($lq) => $lq->orderBy('sort_order')->with(['videos', 'resources']),
+            ]),
+            'liveClasses' => fn ($q) => $q->orderBy('start_time'),
+        ]);
+
+        return Inertia::render('Student/Courses/Learn', [
+            'course' => $course,
         ]);
     }
 

@@ -159,7 +159,7 @@ test('admin can delete a lesson', function () {
     ]);
 });
 
-test('students can view lessons on the public course show page', function () {
+test('students can view syllabus overview on the public course show page', function () {
     $module = CourseModule::create([
         'course_id' => $this->course->id,
         'title' => 'Getting Started',
@@ -173,6 +173,38 @@ test('students can view lessons on the public course show page', function () {
         'sort_order' => 1,
     ]);
 
+    $response = $this->get(route('courses.show', $this->course->slug));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Courses/Show')
+        ->has('course.modules', 1)
+        ->where('course.modules.0.title', 'Getting Started')
+    );
+});
+
+test('enrolled student can access the course learning classroom page to watch lessons and access notes', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Introduction to Laravel',
+        'is_free_preview' => false,
+        'sort_order' => 1,
+    ]);
+
     $lesson->videos()->create([
         'title' => 'Intro Video',
         'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -180,13 +212,20 @@ test('students can view lessons on the public course show page', function () {
         'status' => 'ready',
     ]);
 
-    $response = $this->get(route('courses.show', $this->course->slug));
+    $response = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
 
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
-        ->component('Student/Courses/Show')
+        ->component('Student/Courses/Learn')
         ->has('course.modules', 1)
-        ->has('course.lessons', 1)
-        ->where('course.lessons.0.title', 'Introduction to Laravel')
+        ->where('course.modules.0.lessons.0.title', 'Introduction to Laravel')
     );
+});
+
+test('unenrolled student is redirected from course learning classroom page', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $response = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
+
+    $response->assertRedirect(route('courses.show', $this->course->slug));
 });

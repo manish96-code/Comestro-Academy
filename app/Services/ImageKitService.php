@@ -26,17 +26,30 @@ class ImageKitService
             .'_'.time().'.'
             .$file->getClientOriginalExtension();
 
-        $response = Http::withBasicAuth($privateKey, '')
-            ->attach(
-                'file',
-                file_get_contents($file->getRealPath()),
-                $filename
-            )
-            ->post('https://upload.imagekit.io/api/v1/files/upload', [
-                'fileName' => $filename,
-                'folder' => $folder,
-                'useUniqueFileName' => 'true',
-            ]);
+        $fileHandle = fopen($file->getRealPath(), 'r');
+
+        try {
+            $response = Http::withBasicAuth($privateKey, '')
+                ->timeout(120)
+                ->connectTimeout(20)
+                ->withOptions([
+                    'force_ip_resolve' => 'v4',
+                ])
+                ->attach(
+                    'file',
+                    $fileHandle,
+                    $filename
+                )
+                ->post('https://upload.imagekit.io/api/v1/files/upload', [
+                    'fileName' => $filename,
+                    'folder' => $folder,
+                    'useUniqueFileName' => 'true',
+                ]);
+        } finally {
+            if (is_resource($fileHandle)) {
+                fclose($fileHandle);
+            }
+        }
 
         if ($response->failed()) {
             $errorMsg = $response->json('message') ?? $response->body();

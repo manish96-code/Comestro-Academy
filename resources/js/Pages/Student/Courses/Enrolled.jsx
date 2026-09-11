@@ -138,13 +138,13 @@ export default function EnrolledCourses({ enrollments }) {
                                                     <BookOpen className="h-4 w-4 text-indigo-600" />
                                                     <span>Course Materials</span>
                                                 </div>
-                                                <button
-                                                    type="button"
+                                                <Link
+                                                    href={route('student.courses.learn', course.id)}
                                                     className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition inline-flex items-center gap-1"
                                                 >
                                                     <span>Start Learning</span>
                                                     <ArrowRight className="h-3 w-3" />
-                                                </button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
