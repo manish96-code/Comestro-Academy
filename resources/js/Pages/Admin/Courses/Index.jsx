@@ -1,4 +1,5 @@
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -388,29 +389,14 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                         </div>
 
                         {/* Pagination Footer */}
-                        {courses?.links && courses.links.length > 3 && (
-                            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2">
-                                <div className="text-[11px] text-slate-500 font-mono">
-                                    Showing <span className="font-semibold text-slate-900">{courses.from || 0}</span> to <span className="font-semibold text-slate-900">{courses.to || 0}</span> of <span className="font-semibold text-slate-900">{courses.total}</span> courses
-                                </div>
-                                <div className="flex space-x-1">
-                                    {courses.links.map((link, idx) => (
-                                        <Link
-                                            key={idx}
-                                            href={link.url || '#'}
-                                            preserveState
-                                            className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${link.active
-                                                    ? 'bg-indigo-600 text-white font-bold'
-                                                    : link.url
-                                                        ? 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-                                                        : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                                                }`}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        <Pagination
+                            links={courses?.links}
+                            from={courses?.from}
+                            to={courses?.to}
+                            total={courses?.total}
+                            itemLabel="courses"
+                        />
+
                     </div>
                 </div>
             </div>

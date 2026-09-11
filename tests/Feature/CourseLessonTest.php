@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
+use App\Models\CourseModule;
 use App\Models\User;
 use App\Services\ImageKitService;
 use Illuminate\Http\UploadedFile;
@@ -18,7 +19,6 @@ beforeEach(function () {
         'category_id' => $this->category->id,
         'title' => 'Mastering Laravel 12',
         'slug' => 'mastering-laravel-12',
-        'course_type' => 'recorded',
         'price' => 2999,
         'status' => 'published',
     ]);
@@ -45,12 +45,26 @@ test('admin can create a lesson for a course', function () {
     ]);
 
     $response->assertRedirect();
-    $this->assertDatabaseHas('course_lessons', [
+
+    $this->assertDatabaseHas('course_modules', [
         'course_id' => $this->course->id,
-        'module_name' => 'Module 1: Setup',
+        'title' => 'Module 1: Setup',
+    ]);
+
+    $module = CourseModule::where('course_id', $this->course->id)->where('title', 'Module 1: Setup')->first();
+
+    $this->assertDatabaseHas('course_lessons', [
+        'module_id' => $module->id,
         'title' => 'Installing PHP & Composer',
-        'duration' => '15m',
         'is_free_preview' => 1,
+    ]);
+
+    $lesson = CourseLesson::where('module_id', $module->id)->first();
+
+    $this->assertDatabaseHas('lesson_videos', [
+        'lesson_id' => $lesson->id,
+        'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        'duration_seconds' => 900,
     ]);
 });
 
@@ -73,22 +87,31 @@ test('admin can create lesson with notes file upload via ImageKit', function () 
     ]);
 
     $response->assertRedirect();
-    $this->assertDatabaseHas('course_lessons', [
-        'course_id' => $this->course->id,
-        'title' => 'Cheat Sheet & Architecture',
-        'notes_file' => 'https://ik.imagekit.io/test/notes/cheat_sheet.pdf',
-        'notes_title' => 'Laravel Setup Cheatsheet',
+
+    $module = CourseModule::where('course_id', $this->course->id)->where('title', 'Module 1: Setup')->first();
+    $lesson = CourseLesson::where('module_id', $module->id)->first();
+
+    $this->assertDatabaseHas('lesson_resources', [
+        'lesson_id' => $lesson->id,
+        'title' => 'Laravel Setup Cheatsheet',
+        'file_url' => 'https://ik.imagekit.io/test/notes/cheat_sheet.pdf',
+        'resource_type' => 'pdf',
     ]);
 });
 
 test('admin can update a lesson', function () {
     $admin = User::factory()->create(['role' => 'admin']);
 
-    $lesson = CourseLesson::create([
+    $module = CourseModule::create([
         'course_id' => $this->course->id,
-        'module_name' => 'Intro',
+        'title' => 'Intro',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
         'title' => 'Old Title',
-        'order' => 1,
+        'sort_order' => 1,
         'is_free_preview' => false,
     ]);
 
@@ -99,22 +122,32 @@ test('admin can update a lesson', function () {
     ]);
 
     $response->assertRedirect();
+
     $this->assertDatabaseHas('course_lessons', [
         'id' => $lesson->id,
         'title' => 'Updated Title',
-        'module_name' => 'Module 1: Intro',
         'is_free_preview' => 1,
+    ]);
+
+    $this->assertDatabaseHas('course_modules', [
+        'course_id' => $this->course->id,
+        'title' => 'Module 1: Intro',
     ]);
 });
 
 test('admin can delete a lesson', function () {
     $admin = User::factory()->create(['role' => 'admin']);
 
-    $lesson = CourseLesson::create([
+    $module = CourseModule::create([
         'course_id' => $this->course->id,
-        'module_name' => 'Intro',
+        'title' => 'Intro',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
         'title' => 'To Be Deleted',
-        'order' => 1,
+        'sort_order' => 1,
         'is_free_preview' => false,
     ]);
 
@@ -127,14 +160,24 @@ test('admin can delete a lesson', function () {
 });
 
 test('students can view lessons on the public course show page', function () {
-    CourseLesson::create([
+    $module = CourseModule::create([
         'course_id' => $this->course->id,
-        'module_name' => 'Getting Started',
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
         'title' => 'Introduction to Laravel',
-        'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'duration' => '10m',
         'is_free_preview' => true,
-        'order' => 1,
+        'sort_order' => 1,
+    ]);
+
+    $lesson->videos()->create([
+        'title' => 'Intro Video',
+        'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        'duration_seconds' => 600,
+        'status' => 'ready',
     ]);
 
     $response = $this->get(route('courses.show', $this->course->slug));
@@ -142,6 +185,7 @@ test('students can view lessons on the public course show page', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('Student/Courses/Show')
+        ->has('course.modules', 1)
         ->has('course.lessons', 1)
         ->where('course.lessons.0.title', 'Introduction to Laravel')
     );

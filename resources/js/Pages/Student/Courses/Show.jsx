@@ -246,8 +246,14 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         return url;
     };
 
-    // Group lessons by module_name
+    // Group lessons by module_name or use course.modules
     const lessonModules = useMemo(() => {
+        if (Array.isArray(course.modules) && course.modules.length > 0) {
+            return course.modules.map((mod) => ({
+                moduleName: mod.title,
+                lessons: mod.lessons || [],
+            }));
+        }
         if (!structuredLessons.length) return [];
         const map = new Map();
         structuredLessons.forEach((lesson) => {
@@ -261,7 +267,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             moduleName,
             lessons: items,
         }));
-    }, [structuredLessons]);
+    }, [course.modules, structuredLessons]);
 
     const totalModulesCount = lessonModules.length > 0 ? lessonModules.length : curriculumModules.length;
 
@@ -511,20 +517,25 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                                             </div>
 
                                                             <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                                                                {/* Notes / Material Download */}
-                                                                {lesson.notes_file && (
+                                                                {/* Notes / Material Resources Download */}
+                                                                {((lesson.resources && lesson.resources.length > 0)
+                                                                    ? lesson.resources
+                                                                    : (lesson.notes_file ? [{ id: 'legacy', title: lesson.notes_title || 'Notes', file_url: lesson.notes_file }] : [])
+                                                                ).map((res) => (
                                                                     canAccess ? (
                                                                         <a
-                                                                            href={lesson.notes_file}
+                                                                            key={res.id}
+                                                                            href={res.file_url}
                                                                             target="_blank"
                                                                             rel="noopener noreferrer"
                                                                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition shadow-2xs"
                                                                         >
                                                                             <Download className="h-3.5 w-3.5" />
-                                                                            <span className="max-w-[120px] truncate">{lesson.notes_title || 'Notes'}</span>
+                                                                            <span className="max-w-[120px] truncate">{res.title || 'Notes'}</span>
                                                                         </a>
                                                                     ) : (
                                                                         <span
+                                                                            key={res.id}
                                                                             title="Enroll in course to unlock notes"
                                                                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-400 cursor-not-allowed"
                                                                         >
@@ -532,7 +543,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                                                             <span>Notes</span>
                                                                         </span>
                                                                     )
-                                                                )}
+                                                                ))}
 
                                                                 {/* Video Player Action */}
                                                                 {lesson.video_url ? (

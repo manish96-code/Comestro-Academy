@@ -1,4 +1,5 @@
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -194,6 +195,13 @@ export default function CategoryIndex({ categories, filters }) {
                                 </tbody>
                             </table>
                         </div>
+                        <Pagination
+                            links={categories?.links}
+                            from={categories?.from}
+                            to={categories?.to}
+                            total={categories?.total}
+                            itemLabel="categories"
+                        />
                     </div>
 
                 </div>

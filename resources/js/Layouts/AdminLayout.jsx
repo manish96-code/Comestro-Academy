@@ -40,7 +40,7 @@ export default function AdminLayout({ header, children }) {
             items: [
                 {
                     name: 'Dashboard',
-                    href: route('admin.dashboard'),
+                    href: route('admin.dashboard', undefined, false),
                     active: route().current('admin.dashboard'),
                     icon: LayoutDashboard,
                 },
@@ -51,13 +51,13 @@ export default function AdminLayout({ header, children }) {
             items: [
                 {
                     name: 'Courses',
-                    href: route('admin.courses.index'),
+                    href: route('admin.courses.index', undefined, false),
                     active: route().current('admin.courses.*'),
                     icon: BookOpen,
                 },
                 {
                     name: 'Course Categories',
-                    href: route('admin.categories.index'),
+                    href: route('admin.categories.index', undefined, false),
                     active: route().current('admin.categories.*'),
                     icon: FolderTree,
                 },
@@ -67,6 +67,7 @@ export default function AdminLayout({ header, children }) {
                     active: false,
                     icon: Video,
                     badge: 'Live',
+                    onClick: (e) => e.preventDefault(),
                 },
             ],
         },
@@ -75,13 +76,13 @@ export default function AdminLayout({ header, children }) {
             items: [
                 {
                     name: 'Students',
-                    href: route('admin.students.index'),
+                    href: route('admin.students.index', undefined, false),
                     active: route().current('admin.students.*'),
                     icon: GraduationCap,
                 },
                 {
                     name: 'Instructors',
-                    href: route('admin.instructors.index'),
+                    href: route('admin.instructors.index', undefined, false),
                     active: route().current('admin.instructors.*'),
                     icon: Users,
                 },
@@ -103,7 +104,10 @@ export default function AdminLayout({ header, children }) {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    onClick={onItemClick}
+                                    onClick={(e) => {
+                                        if (item.onClick) item.onClick(e);
+                                        if (onItemClick) onItemClick(e);
+                                    }}
                                     className={`group flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                                         item.active
                                             ? 'bg-indigo-50/90 text-indigo-700 font-semibold border-l-2 border-indigo-600 shadow-2xs'
@@ -140,7 +144,7 @@ export default function AdminLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-slate-50/70 flex antialiased text-slate-800">
-            {/* Desktop Fixed Left Sidebar - Clean White SaaS Theme */}
+            {/* Desktop Fixed Left Sidebar */}
             <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-slate-200/90 fixed inset-y-0 z-30 shadow-2xs">
                 {/* Brand Header */}
                 <div className="h-14 flex items-center justify-between px-5 border-b border-slate-200/80 bg-white">

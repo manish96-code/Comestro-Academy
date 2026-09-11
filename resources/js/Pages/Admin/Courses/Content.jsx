@@ -27,7 +27,12 @@ import {
 } from 'lucide-react';
 
 export default function CourseContent({ course }) {
-    const lessons = course.lessons || [];
+    const lessons = useMemo(() => {
+        if (Array.isArray(course.modules) && course.modules.length > 0) {
+            return course.modules.flatMap((m) => (m.lessons || []).map((l) => ({ ...l, module_name: m.title })));
+        }
+        return course.lessons || [];
+    }, [course]);
 
     // Group lessons by module_name preserving order
     const modulesGrouped = useMemo(() => {
@@ -379,19 +384,24 @@ export default function CourseContent({ course }) {
                                                                 </span>
                                                             )}
 
-                                                            {/* Notes Status */}
-                                                            {lesson.notes_file ? (
+                                                            {/* Notes / Resources Status */}
+                                                            {((lesson.resources && lesson.resources.length > 0)
+                                                                ? lesson.resources
+                                                                : (lesson.notes_file ? [{ id: 'legacy', title: lesson.notes_title || 'Lecture Notes (PDF)', file_url: lesson.notes_file }] : [])
+                                                            ).map((res) => (
                                                                 <a
-                                                                    href={lesson.notes_file}
+                                                                    key={res.id}
+                                                                    href={res.file_url}
                                                                     target="_blank"
                                                                     rel="noreferrer"
                                                                     className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 transition text-[11px]"
                                                                 >
                                                                     <FileCheck className="h-3 w-3" />
-                                                                    <span>{lesson.notes_title || 'Lecture Notes (PDF)'}</span>
+                                                                    <span className="max-w-[140px] truncate">{res.title || 'Lecture Notes'}</span>
                                                                     <ExternalLink className="h-2.5 w-2.5" />
                                                                 </a>
-                                                            ) : (
+                                                            ))}
+                                                            {(!lesson.notes_file && (!lesson.resources || lesson.resources.length === 0)) && (
                                                                 <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] border border-slate-200">
                                                                     <span>No notes</span>
                                                                 </span>

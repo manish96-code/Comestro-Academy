@@ -1,4 +1,5 @@
 import AdminLayout from '@/Layouts/AdminLayout';
+import Pagination from '@/Components/Pagination';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -185,7 +186,15 @@ export default function StudentIndex({ students, filters }) {
                                 </tbody>
                             </table>
                         </div>
+                        <Pagination
+                            links={students?.links}
+                            from={students?.from}
+                            to={students?.to}
+                            total={students?.total}
+                            itemLabel="students"
+                        />
                     </div>
+
 
                 </div>
             </div>
