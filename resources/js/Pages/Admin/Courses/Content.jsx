@@ -10,21 +10,20 @@ import {
     Plus,
     Video,
     FileText,
-    Download,
     ExternalLink,
     Play,
     Edit3,
     Trash2,
-    CheckCircle2,
     Clock,
-    Upload,
     Layers,
     X,
-    Sparkles,
     FolderTree,
-    Eye,
     FileCheck,
-    Save
+    Save,
+    Radio,
+    BookOpen,
+    HelpCircle,
+    Settings
 } from 'lucide-react';
 
 export default function CourseContent({ course }) {
@@ -174,22 +173,36 @@ export default function CourseContent({ course }) {
                     <div className="flex items-center gap-3">
                         <Link
                             href={route('admin.courses.index')}
-                            className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition shrink-0"
+                            className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-xs"
                             title="Back to Courses"
                         >
                             <ArrowLeft className="h-4 w-4" />
                         </Link>
                         <div>
-                            <div className="flex items-center gap-2">
-                                <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h1 className="text-lg font-bold text-slate-900 leading-tight">
                                     {course.title}
                                 </h1>
-                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-sky-100 text-sky-800">
-                                    Videos & Notes
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${
+                                    course.course_type === 'live'
+                                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                }`}>
+                                    {course.course_type === 'live' ? (
+                                        <>
+                                            <Radio className="h-2.5 w-2.5 text-rose-500 animate-pulse" />
+                                            Live Course
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Video className="h-2.5 w-2.5 text-indigo-500" />
+                                            Recorded Lectures & Notes
+                                        </>
+                                    )}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-500">
-                                Manage video lessons, upload lecture notes, and organize course curriculum
+                            <p className="text-xs text-slate-500 font-mono mt-0.5">
+                                /{course.slug} • Manage curriculum modules, video streams, and PDF study resources
                             </p>
                         </div>
                     </div>
@@ -197,14 +210,15 @@ export default function CourseContent({ course }) {
                     <div className="flex items-center gap-2">
                         <Link
                             href={route('admin.courses.show', course.id)}
-                            className="px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-xs transition"
                         >
-                            Course Settings
+                            <Settings className="h-3.5 w-3.5 text-slate-500" />
+                            <span>Course Settings</span>
                         </Link>
                         <button
                             type="button"
                             onClick={() => openAddModal()}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
                         >
                             <Plus className="h-4 w-4" />
                             <span>Add New Lecture</span>
@@ -213,121 +227,121 @@ export default function CourseContent({ course }) {
                 </div>
             }
         >
-            <Head title={`Videos & Notes - ${course.title}`} />
+            <Head title={`Curriculum & Notes - ${course.title}`} />
 
-            <div className="py-6 bg-gray-50 min-h-[calc(100vh-5rem)]">
+            <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Summary Metrics Bar */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-xs">
-                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
+                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
                                 <Layers className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-gray-400 uppercase">Modules</p>
-                                <p className="text-lg font-extrabold text-gray-900">{moduleNames.length}</p>
+                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Modules</p>
+                                <p className="text-lg font-bold text-slate-900 font-mono">{moduleNames.length}</p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-xs">
-                            <div className="p-2.5 bg-sky-50 text-sky-600 rounded-lg">
+                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
+                            <div className="p-2.5 bg-sky-50 text-sky-600 rounded-lg border border-sky-100">
                                 <Video className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-gray-400 uppercase">Video Lectures</p>
-                                <p className="text-lg font-extrabold text-gray-900">{totalVideos} / {lessons.length}</p>
+                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Video Lessons</p>
+                                <p className="text-lg font-bold text-slate-900 font-mono">{totalVideos} <span className="text-xs text-slate-400 font-normal">/ {lessons.length}</span></p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-xs">
-                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg">
+                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
+                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100">
                                 <FileText className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-gray-400 uppercase">Study Notes (PDF)</p>
-                                <p className="text-lg font-extrabold text-gray-900">{totalNotes}</p>
+                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">PDF Study Notes</p>
+                                <p className="text-lg font-bold text-slate-900 font-mono">{totalNotes}</p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-xs">
-                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-lg">
+                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
+                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-lg border border-amber-100">
                                 <Clock className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-gray-400 uppercase">Total Lessons</p>
-                                <p className="text-lg font-extrabold text-gray-900">{lessons.length}</p>
+                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Lessons</p>
+                                <p className="text-lg font-bold text-slate-900 font-mono">{lessons.length}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Modules and Lessons Listing */}
                     {lessons.length === 0 ? (
-                        <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-12 text-center space-y-4">
-                            <div className="h-16 w-16 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mx-auto shadow-xs">
-                                <Video className="h-8 w-8" />
+                        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center space-y-4 shadow-xs">
+                            <div className="h-14 w-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto border border-indigo-100">
+                                <BookOpen className="h-7 w-7" />
                             </div>
-                            <div className="space-y-1 max-w-sm mx-auto">
-                                <h3 className="text-base font-bold text-gray-900">No Lectures Uploaded Yet</h3>
-                                <p className="text-xs text-gray-500">
-                                    Start building your recorded course by uploading video links and lecture notes (PDFs) for your students.
+                            <div className="space-y-1 max-w-md mx-auto">
+                                <h3 className="text-sm font-bold text-slate-900">No Curriculum Lectures Uploaded</h3>
+                                <p className="text-xs text-slate-500">
+                                    Start structuring this course by adding modules, video streaming links (YouTube / Vimeo / MP4), and uploading study notes (PDFs).
                                 </p>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => openAddModal()}
-                                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition"
+                                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
                             >
                                 <Plus className="h-4 w-4" />
-                                <span>Add First Lecture</span>
+                                <span>Create First Lecture</span>
                             </button>
                         </div>
                     ) : (
-                        <div className="space-y-6">
+                        <div className="space-y-5">
                             {moduleNames.map((modName, mIdx) => (
                                 <div
                                     key={modName}
-                                    className="bg-white rounded-xl border border-gray-200 shadow-xs overflow-hidden"
+                                    className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden"
                                 >
                                     {/* Module Banner */}
-                                    <div className="px-5 py-3.5 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                                    <div className="px-5 py-3 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between">
                                         <div className="flex items-center gap-2.5">
-                                            <span className="h-6 w-6 rounded-md bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                                            <span className="h-6 w-6 rounded-md bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0 font-mono shadow-xs">
                                                 {mIdx + 1}
                                             </span>
-                                            <h3 className="font-bold text-sm text-gray-900">{modName}</h3>
-                                            <span className="text-xs text-gray-400 font-medium">
-                                                ({modulesGrouped[modName].length} {modulesGrouped[modName].length === 1 ? 'lecture' : 'lectures'})
+                                            <h3 className="font-bold text-xs sm:text-sm text-slate-900">{modName}</h3>
+                                            <span className="text-[11px] text-slate-400 font-mono">
+                                                ({modulesGrouped[modName].length} {modulesGrouped[modName].length === 1 ? 'lesson' : 'lessons'})
                                             </span>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => openAddModal(modName)}
-                                            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition"
+                                            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition"
                                         >
                                             <Plus className="h-3.5 w-3.5" />
-                                            <span>Add Lecture to Module</span>
+                                            <span>Add Lecture</span>
                                         </button>
                                     </div>
 
                                     {/* Lessons List in Module */}
-                                    <div className="divide-y divide-gray-100">
+                                    <div className="divide-y divide-slate-100">
                                         {modulesGrouped[modName].map((lesson, lIdx) => (
                                             <div
                                                 key={lesson.id}
-                                                className="p-4 hover:bg-gray-50/60 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                                                className="p-4 hover:bg-slate-50/70 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                                             >
                                                 {/* Left: Info */}
-                                                <div className="flex items-start gap-3.5">
-                                                    <div className="h-9 w-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5 border border-sky-100">
-                                                        <Video className="h-4 w-4" />
+                                                <div className="flex items-start gap-3.5 min-w-0">
+                                                    <div className="h-9 w-9 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 border border-slate-200">
+                                                        <Video className="h-4 w-4 text-indigo-600" />
                                                     </div>
                                                     <div className="space-y-1 min-w-0">
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <span className="text-xs font-mono font-semibold text-gray-400">
+                                                            <span className="text-[11px] font-mono font-semibold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                                                                 #{lesson.order || lIdx + 1}
                                                             </span>
-                                                            <h4 className="text-sm font-bold text-gray-900 truncate">
+                                                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                                                                 {lesson.title}
                                                             </h4>
                                                             {lesson.is_free_preview && (
@@ -339,29 +353,29 @@ export default function CourseContent({ course }) {
 
                                                         {/* Description snippet */}
                                                         {lesson.description && (
-                                                            <p className="text-xs text-gray-500 line-clamp-1">
+                                                            <p className="text-xs text-slate-500 line-clamp-1">
                                                                 {lesson.description}
                                                             </p>
                                                         )}
 
                                                         {/* Video & Notes Status Pills */}
-                                                        <div className="flex items-center gap-3 pt-1 flex-wrap text-xs text-gray-500">
+                                                        <div className="flex items-center gap-2.5 pt-0.5 flex-wrap text-xs text-slate-500">
                                                             {/* Video Status */}
                                                             {lesson.video_url ? (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setPreviewVideoUrl(lesson.video_url)}
-                                                                    className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 transition"
+                                                                    className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 transition text-[11px]"
                                                                 >
-                                                                    <Play className="h-3 w-3 fill-current" />
-                                                                    <span>Watch Video</span>
+                                                                    <Play className="h-2.5 w-2.5 fill-current" />
+                                                                    <span>Watch Stream</span>
                                                                     {lesson.duration && (
-                                                                        <span className="text-sky-600 font-normal ml-0.5">({lesson.duration})</span>
+                                                                        <span className="text-sky-600 font-mono ml-0.5">({lesson.duration})</span>
                                                                     )}
                                                                 </button>
                                                             ) : (
-                                                                <span className="inline-flex items-center gap-1 text-gray-400 bg-gray-100 px-2 py-0.5 rounded text-[11px]">
-                                                                    <span>No video attached</span>
+                                                                <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] border border-slate-200">
+                                                                    <span>No video link</span>
                                                                 </span>
                                                             )}
 
@@ -371,14 +385,14 @@ export default function CourseContent({ course }) {
                                                                     href={lesson.notes_file}
                                                                     target="_blank"
                                                                     rel="noreferrer"
-                                                                    className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 transition"
+                                                                    className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 transition text-[11px]"
                                                                 >
                                                                     <FileCheck className="h-3 w-3" />
-                                                                    <span>{lesson.notes_title || 'Download Lecture Notes (PDF)'}</span>
+                                                                    <span>{lesson.notes_title || 'Lecture Notes (PDF)'}</span>
                                                                     <ExternalLink className="h-2.5 w-2.5" />
                                                                 </a>
                                                             ) : (
-                                                                <span className="inline-flex items-center gap-1 text-gray-400 bg-gray-100 px-2 py-0.5 rounded text-[11px]">
+                                                                <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] border border-slate-200">
                                                                     <span>No notes</span>
                                                                 </span>
                                                             )}
@@ -387,19 +401,19 @@ export default function CourseContent({ course }) {
                                                 </div>
 
                                                 {/* Right: Actions */}
-                                                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                                                <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditModal(lesson)}
-                                                        className="px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition flex items-center gap-1"
+                                                        className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-xs transition flex items-center gap-1"
                                                     >
-                                                        <Edit3 className="h-3.5 w-3.5" />
+                                                        <Edit3 className="h-3.5 w-3.5 text-slate-500" />
                                                         <span>Edit</span>
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDelete(lesson.id)}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition"
+                                                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 transition"
                                                         title="Delete Lecture"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -417,41 +431,41 @@ export default function CourseContent({ course }) {
 
             {/* Modal: Add / Edit Lecture with Video & Notes */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
                             <div className="flex items-center gap-2.5">
-                                <div className="p-2 bg-indigo-600 text-white rounded-lg">
+                                <div className="p-2 bg-indigo-600 text-white rounded-lg shadow-xs">
                                     <Video className="h-4 w-4" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-base text-gray-900">
-                                        {editingLesson ? 'Edit Lecture & Materials' : 'Add New Lecture'}
+                                    <h3 className="font-bold text-sm text-slate-900">
+                                        {editingLesson ? 'Edit Lecture & Course Notes' : 'Add New Curriculum Lecture'}
                                     </h3>
-                                    <p className="text-xs text-gray-500">
-                                        Upload video lesson details and attach study notes/PDF files
+                                    <p className="text-xs text-slate-500">
+                                        Configure lesson stream URL, lecture duration, and attach PDF study notes
                                     </p>
                                 </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={closeModal}
-                                className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition"
+                                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition"
                             >
-                                <X className="h-5 w-5" />
+                                <X className="h-4 w-4" />
                             </button>
                         </div>
 
                         {/* Form */}
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
                             {/* Module Selector */}
                             <div className="space-y-1.5">
                                 <InputLabel value="Curriculum Module / Chapter *" />
                                 <select
                                     value={data.module_name}
                                     onChange={(e) => setData('module_name', e.target.value)}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                                 >
                                     {moduleNames.map((m) => (
                                         <option key={m} value={m}>{m}</option>
@@ -462,7 +476,7 @@ export default function CourseContent({ course }) {
                                     <div className="pt-2">
                                         <TextInput
                                             type="text"
-                                            placeholder="Enter New Module Title (e.g. Module 3: RESTful APIs)"
+                                            placeholder="Enter New Module Title (e.g. Module 3: RESTful APIs & Authentication)"
                                             value={data.new_module_name}
                                             onChange={(e) => setData('new_module_name', e.target.value)}
                                             className="w-full text-xs sm:text-sm py-2 px-3"
@@ -496,7 +510,7 @@ export default function CourseContent({ course }) {
                                         min="1"
                                         value={data.order}
                                         onChange={(e) => setData('order', e.target.value)}
-                                        className="w-full text-xs sm:text-sm py-2 px-3 mt-1"
+                                        className="w-full text-xs sm:text-sm py-2 px-3 mt-1 font-mono"
                                     />
                                     <InputError message={errors.order} />
                                 </div>
@@ -505,7 +519,7 @@ export default function CourseContent({ course }) {
                             {/* Section 1: Video Content */}
                             <div className="p-4 rounded-xl border border-sky-200 bg-sky-50/40 space-y-3">
                                 <div className="flex items-center gap-1.5 text-sky-800 font-bold text-xs">
-                                    <Video className="h-4 w-4" />
+                                    <Video className="h-3.5 w-3.5" />
                                     <span>Video Stream / Lecture URL</span>
                                 </div>
 
@@ -518,7 +532,7 @@ export default function CourseContent({ course }) {
                                             value={data.video_url}
                                             onChange={(e) => setData('video_url', e.target.value)}
                                             placeholder="https://www.youtube.com/watch?v=... or .mp4"
-                                            className="w-full text-xs py-2 px-3 mt-1"
+                                            className="w-full text-xs py-2 px-3 mt-1 font-mono"
                                         />
                                         <InputError message={errors.video_url} />
                                     </div>
@@ -531,17 +545,17 @@ export default function CourseContent({ course }) {
                                             value={data.duration}
                                             onChange={(e) => setData('duration', e.target.value)}
                                             placeholder="12:45"
-                                            className="w-full text-xs py-2 px-3 mt-1"
+                                            className="w-full text-xs py-2 px-3 mt-1 font-mono"
                                         />
                                         <InputError message={errors.duration} />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Section 2: Upload Study Notes (PDF/Docs) using ImageKit */}
+                            {/* Section 2: Upload Study Notes (PDF/Docs) */}
                             <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 space-y-3">
                                 <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-xs">
-                                    <FileText className="h-4 w-4" />
+                                    <FileText className="h-3.5 w-3.5" />
                                     <span>Lecture Notes & Downloadable Material</span>
                                 </div>
 
@@ -565,7 +579,7 @@ export default function CourseContent({ course }) {
                                             type="file"
                                             onChange={(e) => setData('notes_file', e.target.files[0])}
                                             accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip"
-                                            className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 mt-1 cursor-pointer"
+                                            className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 mt-1 cursor-pointer"
                                         />
                                         <InputError message={errors.notes_file} />
                                     </div>
@@ -597,7 +611,7 @@ export default function CourseContent({ course }) {
                                         value={data.description}
                                         onChange={(e) => setData('description', e.target.value)}
                                         placeholder="Key takeaways or summary points covered in this lecture..."
-                                        className="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 mt-1"
+                                        className="w-full text-xs rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 mt-1 transition"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -608,29 +622,29 @@ export default function CourseContent({ course }) {
                                         id="is_free_preview"
                                         checked={data.is_free_preview}
                                         onChange={(e) => setData('is_free_preview', e.target.checked)}
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                                     />
-                                    <label htmlFor="is_free_preview" className="text-xs font-semibold text-gray-800 cursor-pointer select-none">
+                                    <label htmlFor="is_free_preview" className="text-xs font-semibold text-slate-800 cursor-pointer select-none">
                                         Mark as Free Preview (Allow prospective students to watch before enrolling)
                                     </label>
                                 </div>
                             </div>
 
                             {/* Modal Actions */}
-                            <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition disabled:opacity-50"
                                 >
-                                    <Save className="h-4 w-4" />
+                                    <Save className="h-3.5 w-3.5" />
                                     <span>{processing ? 'Saving...' : editingLesson ? 'Update Lecture' : 'Save Lecture'}</span>
                                 </button>
                             </div>
@@ -641,16 +655,19 @@ export default function CourseContent({ course }) {
 
             {/* Video Player Preview Modal */}
             {previewVideoUrl && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-                    <div className="bg-slate-900 rounded-2xl overflow-hidden max-w-3xl w-full border border-slate-700 shadow-2xl">
-                        <div className="p-3 bg-slate-950 flex items-center justify-between text-white border-b border-slate-800">
-                            <span className="text-xs font-semibold">Video Preview</span>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
+                    <div className="bg-slate-900 rounded-xl overflow-hidden max-w-3xl w-full border border-slate-700 shadow-2xl">
+                        <div className="px-4 py-3 bg-slate-950 flex items-center justify-between text-white border-b border-slate-800">
+                            <span className="text-xs font-semibold flex items-center gap-1.5">
+                                <Play className="h-3 w-3 text-indigo-400 fill-current" />
+                                Video Lecture Stream Preview
+                            </span>
                             <button
                                 type="button"
                                 onClick={() => setPreviewVideoUrl(null)}
-                                className="p-1 text-slate-400 hover:text-white"
+                                className="p-1 text-slate-400 hover:text-white rounded-md transition"
                             >
-                                <X className="h-5 w-5" />
+                                <X className="h-4 w-4" />
                             </button>
                         </div>
                         <div className="aspect-video w-full bg-black flex items-center justify-center">

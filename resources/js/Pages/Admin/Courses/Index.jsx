@@ -12,7 +12,8 @@ import {
     User,
     X,
     Video,
-    Radio
+    Radio,
+    Filter
 } from 'lucide-react';
 
 export default function CourseIndex({ courses, categories = [], filters }) {
@@ -62,22 +63,22 @@ export default function CourseIndex({ courses, categories = [], filters }) {
         switch (courseStatus) {
             case 'published':
                 return (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         Published
                     </span>
                 );
             case 'draft':
                 return (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                        <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-500"></span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                         Draft
                     </span>
                 );
             case 'archived':
                 return (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                        <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-slate-400"></span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         Archived
                     </span>
                 );
@@ -89,60 +90,59 @@ export default function CourseIndex({ courses, categories = [], filters }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h1 className="text-lg font-bold text-gray-900 leading-tight">
-                            Courses
+                        <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                            Courses & Curriculums
                         </h1>
-                        <p className="text-xs text-gray-500">
-                            Manage curriculum, pricing, instructor allocations, and course visibility
+                        <p className="text-[11px] text-slate-500">
+                            Manage curriculum, pricing, instructor allocations, and video content
                         </p>
                     </div>
                     <Link
                         href={route('admin.courses.create')}
-                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition shrink-0"
                     >
-                        <Plus className="h-4 w-4" />
-                        <span>Add New Course</span>
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Add Course</span>
                     </Link>
                 </div>
             }
         >
             <Head title="Course Management" />
 
-            <div className="py-6 bg-gray-50">
+            <div className="py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
 
                     {/* Header Filter Bar */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-lg bg-white p-4 border border-gray-200 shadow-xs">
-
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-xl bg-white p-3.5 sm:p-4 border border-slate-200 shadow-2xs">
                         <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center gap-2 max-w-md">
                             <div className="relative flex-1">
-                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                    <Search className="h-4 w-4 text-gray-400" />
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-3.5 w-3.5 text-slate-400" />
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Search courses, instructors..."
+                                    placeholder="Search courses, slugs..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full text-xs sm:text-sm pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                                    className="w-full text-xs pl-9 pr-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0 shadow-xs"
+                                className="px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0 shadow-2xs"
                             >
                                 Search
                             </button>
                         </form>
 
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
                             {/* Category Filter */}
                             <select
                                 value={categoryId}
                                 onChange={handleCategoryChange}
-                                className="text-xs sm:text-sm rounded-lg border border-gray-300 bg-white text-gray-700 py-2 px-3 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-xs"
+                                className="text-xs rounded-lg border border-slate-300 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
                             >
                                 <option value="">All Categories</option>
                                 {categories.map((cat) => (
@@ -156,7 +156,7 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                             <select
                                 value={status}
                                 onChange={handleStatusChange}
-                                className="text-xs sm:text-sm rounded-lg border border-gray-300 bg-white text-gray-700 py-2 px-3 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-xs"
+                                className="text-xs rounded-lg border border-slate-300 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
                             >
                                 <option value="">All Statuses</option>
                                 <option value="published">Published</option>
@@ -168,56 +168,56 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold px-2 py-1.5 hover:bg-indigo-50 rounded-lg transition"
+                                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold px-2 py-1 hover:bg-indigo-50 rounded-lg transition"
                                 >
-                                    <X className="h-3.5 w-3.5" />
-                                    <span>Reset Filters</span>
+                                    <X className="h-3 w-3" />
+                                    <span>Reset</span>
                                 </button>
                             )}
 
-                            <div className="text-xs text-gray-600 font-medium shrink-0 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg">
-                                Total: <strong className="text-gray-900 font-bold ml-1">{courses?.total || 0}</strong>
+                            <div className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg">
+                                Total: <strong className="text-slate-900 font-bold ml-0.5">{courses?.total || 0}</strong>
                             </div>
                         </div>
                     </div>
 
                     {/* Courses Table */}
-                    <div className="rounded-lg bg-white border border-gray-200 overflow-hidden shadow-xs">
+                    <div className="rounded-xl bg-white border border-slate-200 overflow-hidden shadow-2xs">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 text-left">
-                                <thead className="bg-gray-50 text-gray-500 text-[11px] font-bold uppercase tracking-wider">
+                            <table className="min-w-full divide-y divide-slate-200 text-left">
+                                <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider font-mono">
                                     <tr>
-                                        <th scope="col" className="py-3 px-4">Course</th>
-                                        <th scope="col" className="py-3 px-4">Category</th>
-                                        <th scope="col" className="py-3 px-4">Instructor</th>
-                                        <th scope="col" className="py-3 px-4">Pricing</th>
-                                        <th scope="col" className="py-3 px-4">Duration</th>
-                                        <th scope="col" className="py-3 px-4">Status</th>
-                                        <th scope="col" className="py-3 px-4 text-right">Action</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Course</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Category</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Instructor</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Pricing</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Duration</th>
+                                        <th scope="col" className="py-2.5 px-4 font-semibold">Status</th>
+                                        <th scope="col" className="py-2.5 px-4 text-right font-semibold">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white text-xs">
+                                <tbody className="divide-y divide-slate-100 bg-white text-xs">
                                     {courses?.data && courses.data.length > 0 ? (
                                         courses.data.map((course) => (
-                                            <tr key={course.id} className="hover:bg-gray-50/70 transition">
+                                            <tr key={course.id} className="hover:bg-slate-50/70 transition">
                                                 <td className="py-3 px-4">
-                                                    <div className="flex items-center space-x-3">
+                                                    <div className="flex items-center gap-3">
                                                         {course.thumbnail ? (
                                                             <img
                                                                 src={course.thumbnail}
                                                                 alt={course.title}
-                                                                className="h-10 w-14 rounded-md object-cover border border-gray-200 shrink-0"
+                                                                className="h-10 w-14 rounded-md object-cover border border-slate-200 shrink-0"
                                                             />
                                                         ) : (
                                                             <div className="h-10 w-14 rounded-md bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">
-                                                                <BookOpen className="h-5 w-5" />
+                                                                <BookOpen className="h-4 w-4" />
                                                             </div>
                                                         )}
-                                                        <div className="space-y-0.5">
-                                                            <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                                                        <div className="space-y-0.5 min-w-0">
+                                                            <div className="flex items-center gap-1.5 flex-wrap">
                                                                 <Link
                                                                     href={route('admin.courses.show', course.id)}
-                                                                    className="font-bold text-gray-900 hover:text-indigo-600 transition"
+                                                                    className="font-bold text-slate-900 hover:text-indigo-600 transition truncate max-w-xs"
                                                                 >
                                                                     {course.title}
                                                                 </Link>
@@ -242,36 +242,36 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <p className="font-mono text-[11px] text-gray-400">/{course.slug}</p>
+                                                            <p className="font-mono text-[10px] text-slate-400 truncate">/{course.slug}</p>
                                                         </div>
                                                     </div>
                                                 </td>
 
                                                 <td className="py-3 px-4 whitespace-nowrap">
                                                     {course.category ? (
-                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
-                                                            <FolderTree className="h-3 w-3 text-gray-500" />
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                                            <FolderTree className="h-3 w-3 text-slate-500" />
                                                             <span>{course.category.name}</span>
                                                         </span>
                                                     ) : (
-                                                        <span className="text-gray-400 italic">None</span>
+                                                        <span className="text-slate-400 italic text-[11px]">None</span>
                                                     )}
                                                 </td>
 
                                                 <td className="py-3 px-4 whitespace-nowrap">
                                                     {course.instructor?.user ? (
-                                                        <div className="flex items-center space-x-2">
-                                                            <div className="h-7 w-7 rounded-full bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="h-6 w-6 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
                                                                 {course.instructor.user.name.charAt(0)}
                                                             </div>
                                                             <div>
-                                                                <p className="font-medium text-gray-900">{course.instructor.user.name}</p>
-                                                                <p className="text-[10px] text-gray-400">{course.instructor.designation || 'Instructor'}</p>
+                                                                <p className="font-medium text-slate-900 leading-tight">{course.instructor.user.name}</p>
+                                                                <p className="text-[10px] text-slate-400">{course.instructor.designation || 'Instructor'}</p>
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-1 text-gray-400 italic text-xs">
-                                                            <User className="h-3.5 w-3.5 text-gray-300" />
+                                                        <span className="inline-flex items-center gap-1 text-slate-400 italic text-[11px]">
+                                                            <User className="h-3 w-3 text-slate-300" />
                                                             <span>Unassigned</span>
                                                         </span>
                                                     )}
@@ -279,31 +279,31 @@ export default function CourseIndex({ courses, categories = [], filters }) {
 
                                                 <td className="py-3 px-4 whitespace-nowrap">
                                                     {Number(course.price) === 0 ? (
-                                                        <span className="font-semibold text-emerald-600">Free</span>
+                                                        <span className="font-semibold text-emerald-600 font-mono">Free</span>
                                                     ) : course.discount_price ? (
-                                                        <div className="space-y-0.5">
-                                                            <span className="font-bold text-gray-900">
+                                                        <div className="space-y-0.2">
+                                                            <span className="font-bold text-slate-900 font-mono">
                                                                 ₹{Number(course.discount_price).toLocaleString()}
                                                             </span>
-                                                            <span className="text-[11px] line-through text-gray-400 block">
+                                                            <span className="text-[10px] line-through text-slate-400 block font-mono">
                                                                 ₹{Number(course.price).toLocaleString()}
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <span className="font-bold text-gray-900">
+                                                        <span className="font-bold text-slate-900 font-mono">
                                                             ₹{Number(course.price).toLocaleString()}
                                                         </span>
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-4 whitespace-nowrap text-gray-600">
+                                                <td className="py-3 px-4 whitespace-nowrap text-slate-600">
                                                     {course.duration ? (
-                                                        <span className="inline-flex items-center gap-1">
-                                                            <Clock className="h-3 w-3 text-gray-400" />
+                                                        <span className="inline-flex items-center gap-1 text-[11px] font-mono">
+                                                            <Clock className="h-3 w-3 text-slate-400" />
                                                             <span>{course.duration}</span>
                                                         </span>
                                                     ) : (
-                                                        <span className="text-gray-400">-</span>
+                                                        <span className="text-slate-400 font-mono">-</span>
                                                     )}
                                                 </td>
 
@@ -316,28 +316,28 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                                         {course.type === 'recorded' ? (
                                                             <Link
                                                                 href={route('admin.courses.content', course.id)}
-                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 rounded-md border border-sky-200 transition shadow-xs"
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 rounded-md border border-sky-200 transition shadow-2xs"
                                                                 title="Upload Videos & Lecture Notes"
                                                             >
-                                                                <Video className="h-3.5 w-3.5 text-sky-600" />
+                                                                <Video className="h-3 w-3 text-sky-600" />
                                                                 <span>Videos & Notes</span>
                                                             </Link>
                                                         ) : (
                                                             <Link
                                                                 href={route('admin.courses.content', course.id)}
-                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 rounded-md border border-rose-200 transition shadow-xs"
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 rounded-md border border-rose-200 transition shadow-2xs"
                                                                 title="Live Sessions & Content"
                                                             >
-                                                                <Radio className="h-3.5 w-3.5 text-rose-600" />
-                                                                <span>Live Sessions</span>
+                                                                <Radio className="h-3 w-3 text-rose-600" />
+                                                                <span>Live Content</span>
                                                             </Link>
                                                         )}
 
                                                         <Link
                                                             href={route('admin.courses.show', course.id)}
-                                                            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-900 bg-indigo-50/60 hover:bg-indigo-100 rounded-md border border-indigo-200/60 transition"
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-md border border-slate-200 transition shadow-2xs"
                                                         >
-                                                            <Edit3 className="h-3.5 w-3.5" />
+                                                            <Edit3 className="h-3 w-3 text-slate-500" />
                                                             <span>Edit</span>
                                                         </Link>
                                                     </div>
@@ -346,37 +346,37 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="py-12 text-center text-gray-500">
-                                                <div className="flex flex-col items-center justify-center space-y-3">
-                                                    <div className="p-3 bg-gray-100 rounded-xl text-gray-400">
-                                                        {hasActiveFilters ? <Search className="h-8 w-8" /> : <BookOpen className="h-8 w-8" />}
+                                            <td colSpan="7" className="py-12 text-center text-slate-500">
+                                                <div className="flex flex-col items-center justify-center space-y-2">
+                                                    <div className="p-3 bg-slate-50 rounded-xl text-slate-400 border border-slate-200">
+                                                        {hasActiveFilters ? <Search className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-semibold text-gray-900">
+                                                        <p className="text-xs font-bold text-slate-900">
                                                             {hasActiveFilters ? 'No matching courses found' : 'No courses found'}
                                                         </p>
-                                                        <p className="text-xs text-gray-500 mt-0.5">
+                                                        <p className="text-[11px] text-slate-500 mt-0.5">
                                                             {hasActiveFilters
-                                                                ? 'Try adjusting your search query or filter selection.'
-                                                                : 'Get started by creating your first course in the academy.'}
+                                                                ? 'Try adjusting your search query or category filter.'
+                                                                : 'Get started by creating your first course curriculum.'}
                                                         </p>
                                                     </div>
                                                     {hasActiveFilters ? (
                                                         <button
                                                             type="button"
                                                             onClick={clearFilters}
-                                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg shadow-xs transition"
+                                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg shadow-2xs transition"
                                                         >
-                                                            <X className="h-3.5 w-3.5 text-gray-400" />
-                                                            <span>Clear all filters</span>
+                                                            <X className="h-3 w-3 text-slate-400" />
+                                                            <span>Clear filters</span>
                                                         </button>
                                                     ) : (
                                                         <Link
                                                             href={route('admin.courses.create')}
-                                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
+                                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition"
                                                         >
                                                             <Plus className="h-3.5 w-3.5" />
-                                                            <span>Create the first course</span>
+                                                            <span>Create course</span>
                                                         </Link>
                                                     )}
                                                 </div>
@@ -389,9 +389,9 @@ export default function CourseIndex({ courses, categories = [], filters }) {
 
                         {/* Pagination Footer */}
                         {courses?.links && courses.links.length > 3 && (
-                            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-                                <div className="text-xs text-gray-500">
-                                    Showing <span className="font-semibold text-gray-900">{courses.from || 0}</span> to <span className="font-semibold text-gray-900">{courses.to || 0}</span> of <span className="font-semibold text-gray-900">{courses.total}</span> courses
+                            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+                                <div className="text-[11px] text-slate-500 font-mono">
+                                    Showing <span className="font-semibold text-slate-900">{courses.from || 0}</span> to <span className="font-semibold text-slate-900">{courses.to || 0}</span> of <span className="font-semibold text-slate-900">{courses.total}</span> courses
                                 </div>
                                 <div className="flex space-x-1">
                                     {courses.links.map((link, idx) => (
@@ -399,11 +399,11 @@ export default function CourseIndex({ courses, categories = [], filters }) {
                                             key={idx}
                                             href={link.url || '#'}
                                             preserveState
-                                            className={`px-3 py-1 text-xs rounded-md font-medium transition ${link.active
+                                            className={`px-2.5 py-1 text-xs rounded-md font-medium transition ${link.active
                                                     ? 'bg-indigo-600 text-white font-bold'
                                                     : link.url
-                                                        ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                                                        ? 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                                                        : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                                                 }`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
@@ -417,3 +417,4 @@ export default function CourseIndex({ courses, categories = [], filters }) {
         </AdminLayout>
     );
 }
+
