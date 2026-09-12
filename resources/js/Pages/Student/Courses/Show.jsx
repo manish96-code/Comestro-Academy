@@ -964,40 +964,49 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     );
 
     // Student portal view
+    // Student portal view
     if (user && user.role === 'student') {
         return (
             <StudentLayout
                 header={
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                             <Link
                                 href={route('courses.index')}
-                                className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+                                className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition shrink-0"
                                 title="Back to Courses Catalog"
                             >
-                                <ArrowLeft className="h-5 w-5" />
+                                <ArrowLeft className="h-4 w-4" />
                             </Link>
-                            <div>
-                                <h1 className="text-lg font-bold text-gray-900 leading-tight truncate max-w-md sm:max-w-xl">
+                            <div className="min-w-0">
+                                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate max-w-md sm:max-w-xl">
                                     {course.title}
                                 </h1>
                                 <p className="text-xs text-gray-500">
-                                    Course Details & Curriculum
+                                    Course Syllabus & Learning Overview
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                             <Link
                                 href={route('courses.index')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition"
+                                className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg shadow-2xs transition"
                             >
                                 All Courses
                             </Link>
-                            {isEnrolled && (
+                            {isEnrolled ? (
+                                <Link
+                                    href={route('student.courses.learn', course.id)}
+                                    className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition inline-flex items-center gap-1.5"
+                                >
+                                    <Play className="h-3 w-3 fill-current" />
+                                    <span>Classroom</span>
+                                </Link>
+                            ) : (
                                 <Link
                                     href={route('student.courses.enrolled')}
-                                    className="px-3.5 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200/60 rounded-lg transition"
+                                    className="px-3.5 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200/60 rounded-lg shadow-2xs transition"
                                 >
                                     My Enrolled Courses
                                 </Link>
@@ -1008,11 +1017,80 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             >
                 <Head title={`${course.title} - Comestro Academy`} />
 
-                {/* Hero banner */}
-                {heroHeaderSection}
+                {/* Clean White Student Header */}
+                <div className="bg-white border-b border-gray-200 py-6 sm:py-8">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-3">
+                        <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                            <Link href={route('student.dashboard')} className="hover:text-indigo-600 transition">Dashboard</Link>
+                            <span>/</span>
+                            <Link href={route('student.courses.enrolled')} className="hover:text-indigo-600 transition">My Courses</Link>
+                            <span>/</span>
+                            <span className="text-gray-700 font-medium truncate max-w-xs">{course.title}</span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                            {course.category && (
+                                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                    {course.category.name}
+                                </span>
+                            )}
+                            {course.type === 'live' ? (
+                                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-rose-50 text-rose-600 border border-rose-200 flex items-center gap-1.5">
+                                    <span className="relative flex h-1.5 w-1.5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                                    </span>
+                                    <span>Live Interactive Classes</span>
+                                </span>
+                            ) : (
+                                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-gray-100 text-gray-700 border border-gray-200 flex items-center gap-1">
+                                    <Video className="h-3 w-3" />
+                                    <span>Self-Paced Recorded</span>
+                                </span>
+                            )}
+                            {isEnrolled && (
+                                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    <span>Enrolled</span>
+                                </span>
+                            )}
+                        </div>
+
+                        <h1 className="text-xl sm:text-3xl font-extrabold text-gray-900 leading-tight">
+                            {course.title}
+                        </h1>
+
+                        {(course.subtitle || course.description) && (
+                            <p className="text-xs sm:text-sm text-gray-500 max-w-3xl leading-relaxed">
+                                {course.subtitle || course.description}
+                            </p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-1 text-xs text-gray-500">
+                            <div className="flex items-center gap-1.5">
+                                <User className="h-3.5 w-3.5 text-gray-400" />
+                                <span>Mentor: <strong className="text-gray-700">{instructorUser?.name || 'Comestro Mentor'}</strong></span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <BookOpen className="h-3.5 w-3.5 text-gray-400" />
+                                <span><strong className="text-gray-700">{curriculumModules.length}</strong> Modules</span>
+                            </div>
+                            {course.duration && (
+                                <div className="flex items-center gap-1.5">
+                                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                                    <span><strong className="text-gray-700">{course.duration}</strong></span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-1.5">
+                                <Globe className="h-3.5 w-3.5 text-gray-400" />
+                                <span>English & Hindi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Main content & sidebar */}
-                <div className="py-8 sm:py-12 bg-gray-50">
+                <div className="py-8 min-h-[calc(100vh-140px)]">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                             {/* Course details */}

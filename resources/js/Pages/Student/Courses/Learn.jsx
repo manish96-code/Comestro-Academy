@@ -343,7 +343,7 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
         >
             <Head title={`${activeLesson ? activeLesson.title : 'Learning Portal'} - ${course.title}`} />
 
-            <div className="py-6 bg-slate-100 min-h-[calc(100vh-140px)]">
+            <div className="py-6 min-h-[calc(100vh-140px)]">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -396,15 +396,15 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                     </div>
                                 ) : (
                                     /* Reading / notes lecture */
-                                    <div className="py-16 px-6 text-center space-y-4 bg-gradient-to-b from-slate-900 to-slate-950 text-white">
-                                        <div className="h-16 w-16 mx-auto rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
-                                            <BookOpen className="h-8 w-8" />
+                                    <div className="py-14 px-6 text-center space-y-4 bg-white rounded-2xl border border-gray-200 text-gray-800 shadow-2xs">
+                                        <div className="h-14 w-14 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                                            <BookOpen className="h-7 w-7" />
                                         </div>
                                         <div className="max-w-md mx-auto space-y-1">
-                                            <h3 className="text-base font-bold text-white">
-                                                Reading & Notes Lecture
+                                            <h3 className="text-base font-bold text-gray-900">
+                                                Reading & Study Notes Lecture
                                             </h3>
-                                            <p className="text-xs text-slate-400">
+                                            <p className="text-xs text-gray-500 leading-relaxed">
                                                 This lecture is structured around reading materials and downloadable study notes. Review the summary and study guides below.
                                             </p>
                                         </div>
@@ -412,9 +412,9 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                             <button
                                                 type="button"
                                                 onClick={() => setActiveTab('notes')}
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition"
+                                                className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition"
                                             >
-                                                <Download className="h-4 w-4" />
+                                                <Download className="h-3.5 w-3.5" />
                                                 <span>View Attached Notes ({activeResources.length})</span>
                                             </button>
                                         )}
@@ -424,19 +424,19 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
 
                             {/* Auto-advance banner */}
                             {autoAdvanceTimer !== null && (
-                                <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white p-4 rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-emerald-400/30">
+                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-4 rounded-xl shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center font-extrabold text-base font-mono shrink-0 shadow-inner">
+                                        <div className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm font-mono shrink-0 shadow-2xs">
                                             {autoAdvanceTimer}s
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-200">
-                                                <CheckCircle2 className="h-4 w-4 text-emerald-300 fill-emerald-300/20" />
-                                                <span>Video Ended! Automatically marked as completed.</span>
+                                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
+                                                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                                <span>Lecture Completed! Next lecture will begin shortly.</span>
                                             </div>
                                             {allLessons[activeIndex + 1] && (
-                                                <p className="text-xs text-white truncate font-medium mt-0.5">
-                                                    Up next: <span className="font-semibold text-white underline decoration-white/40">{allLessons[activeIndex + 1].title}</span>
+                                                <p className="text-xs text-emerald-700 truncate font-medium mt-0.5">
+                                                    Up next: <span className="font-semibold text-emerald-900">{allLessons[activeIndex + 1].title}</span>
                                                 </p>
                                             )}
                                         </div>
@@ -446,7 +446,7 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                         <button
                                             type="button"
                                             onClick={() => setAutoAdvanceTimer(null)}
-                                            className="px-3 py-1.5 text-xs font-semibold text-white/90 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg transition"
+                                            className="px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-950 bg-white border border-emerald-200 rounded-lg transition"
                                         >
                                             Stay Here
                                         </button>
@@ -456,9 +456,9 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                                 handleNext();
                                                 setAutoAdvanceTimer(null);
                                             }}
-                                            className="px-3.5 py-1.5 text-xs font-bold text-emerald-950 bg-white hover:bg-emerald-50 rounded-lg shadow-sm transition inline-flex items-center gap-1"
+                                            className="px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition inline-flex items-center gap-1"
                                         >
-                                            <span>Play Next Now</span>
+                                            <span>Play Next</span>
                                             <ChevronRight className="h-3.5 w-3.5" />
                                         </button>
                                     </div>
@@ -688,34 +688,34 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                             <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
 
                                 {/* Playlist header */}
-                                <div className="p-4 bg-slate-900 text-white space-y-2.5">
+                                <div className="p-4 bg-white border-b border-gray-200 space-y-2.5">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                                                <FolderCheck className="h-4 w-4 text-indigo-400" />
-                                                <span>Course Playlist</span>
+                                            <h3 className="text-xs font-bold text-gray-900 flex items-center gap-2">
+                                                <FolderCheck className="h-4 w-4 text-indigo-600" />
+                                                <span>Course Curriculum</span>
                                             </h3>
-                                            <p className="text-[11px] text-slate-400 font-mono">
-                                                {allLessons.length} {allLessons.length === 1 ? 'Lecture' : 'Lectures'} in {modules.length} Modules
+                                            <p className="text-[11px] text-gray-500 font-mono">
+                                                {allLessons.length} {allLessons.length === 1 ? 'Lecture' : 'Lectures'} · {modules.length} Modules
                                             </p>
                                         </div>
-                                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             {progressPct}% Done
                                         </span>
                                     </div>
 
                                     {/* Sidebar progress bar */}
                                     {allLessons.length > 0 && (
-                                        <div className="space-y-1">
-                                            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                        <div className="space-y-1 pt-1">
+                                            <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                                                 <div
                                                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                                                        progressPct === 100 ? 'bg-emerald-400' : 'bg-indigo-500'
+                                                        progressPct === 100 ? 'bg-emerald-500' : 'bg-indigo-600'
                                                     }`}
                                                     style={{ width: `${progressPct}%` }}
                                                 />
                                             </div>
-                                            <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                                            <div className="flex items-center justify-between text-[10px] text-gray-400 font-mono">
                                                 <span>{completedCount}/{allLessons.length} Completed</span>
                                                 <span>{progressPct}%</span>
                                             </div>

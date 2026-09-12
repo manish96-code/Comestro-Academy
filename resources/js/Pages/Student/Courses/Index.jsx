@@ -164,19 +164,19 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         return (
                             <div
                                 key={course.id}
-                                className="bg-white rounded-xl border border-gray-200/90 shadow-xs hover:border-indigo-300 hover:shadow-md transition flex flex-col justify-between overflow-hidden group"
+                                className="bg-white rounded-xl border border-gray-200/90 shadow-2xs hover:border-indigo-300 hover:shadow-xs transition flex flex-col justify-between overflow-hidden group"
                             >
                                 <div>
                                     {/* Thumbnail Banner */}
                                     <Link
                                         href={route('courses.show', course.slug || course.id)}
-                                        className="relative h-44 bg-gradient-to-tr from-slate-900 via-indigo-950 to-indigo-900 flex items-center justify-center p-4 overflow-hidden block"
+                                        className="relative h-44 bg-slate-100 border-b border-gray-100 flex items-center justify-center overflow-hidden block"
                                     >
                                         {course.thumbnail ? (
                                             <img
                                                 src={course.thumbnail}
                                                 alt={course.title}
-                                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                                 onError={(e) => {
                                                     e.currentTarget.style.display = 'none';
                                                 }}
@@ -184,47 +184,41 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                         ) : null}
 
                                         {/* Fallback Graphic */}
-                                        <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-1">
-                                            <div className="p-3 bg-white/10 backdrop-blur-xs rounded-xl text-white">
-                                                <GraduationCap className="h-8 w-8" />
+                                        <div className="flex flex-col items-center justify-center text-center space-y-1 p-4">
+                                            <div className="p-3 bg-white rounded-xl text-indigo-600 border border-gray-200 shadow-2xs">
+                                                <Terminal className="h-7 w-7" />
                                             </div>
-                                            <span className="text-[11px] font-bold text-indigo-200 tracking-wider uppercase">
+                                            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase font-mono mt-1">
                                                 {course.category?.name || 'Comestro Academy'}
                                             </span>
                                         </div>
 
                                         {/* Badges Over Thumbnail */}
-                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
-                                            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-indigo-600/95 text-white shadow-xs backdrop-blur-xs">
-                                                {course.category?.name || 'Tech'}
+                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-white/95 text-indigo-700 border border-gray-200 shadow-2xs">
+                                                {course.category?.name || 'Coding'}
                                             </span>
                                             {course.type === 'live' ? (
-                                                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-rose-600 text-white shadow-xs flex items-center gap-1 backdrop-blur-xs">
+                                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-rose-50 text-rose-600 border border-rose-200 shadow-2xs flex items-center gap-1">
                                                     <span className="relative flex h-1.5 w-1.5">
-                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
                                                     </span>
                                                     Live
                                                 </span>
                                             ) : (
-                                                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-slate-900/80 text-slate-200 shadow-xs flex items-center gap-1 backdrop-blur-xs">
+                                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-gray-100 text-gray-700 border border-gray-200 shadow-2xs flex items-center gap-1">
                                                     <Video className="h-2.5 w-2.5" />
                                                     Recorded
-                                                </span>
-                                            )}
-                                            {course.is_featured && (
-                                                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-amber-500 text-white shadow-xs flex items-center gap-0.5">
-                                                    <Sparkles className="h-2.5 w-2.5" />
-                                                    Featured
                                                 </span>
                                             )}
                                         </div>
 
                                         {/* Enrolled Badge */}
                                         {isEnrolled && (
-                                            <div className="absolute bottom-3 right-3 z-20">
-                                                <span className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-emerald-600 text-white shadow-xs flex items-center gap-1">
-                                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                            <div className="absolute top-3 right-3 z-10">
+                                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs flex items-center gap-1">
+                                                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
                                                     Enrolled
                                                 </span>
                                             </div>
@@ -265,10 +259,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                 </div>
 
                                 {/* Footer: Pricing & Action Button */}
-                                <div className="p-5 pt-0">
-                                    <div className="p-3 bg-gray-50 rounded-xl border border-gray-200/80 flex items-center justify-between">
+                                <div className="p-4 pt-0 bg-white">
+                                    <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between gap-2">
                                         <div>
-                                            <div className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider">Course Fee</div>
+                                            <div className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider font-mono">Course Fee</div>
                                             <div className="flex items-baseline gap-1.5">
                                                 {Number(course.price) === 0 ? (
                                                     <span className="text-sm font-bold text-emerald-600">Free</span>
@@ -289,13 +283,23 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                             </div>
                                         </div>
 
-                                        <Link
-                                            href={route('courses.show', course.slug || course.id)}
-                                            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
-                                        >
-                                            <span>View Details</span>
-                                            <ArrowRight className="h-3.5 w-3.5" />
-                                        </Link>
+                                        {isEnrolled ? (
+                                            <Link
+                                                href={route('student.courses.learn', course.id)}
+                                                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-2xs transition flex items-center gap-1.5"
+                                            >
+                                                <span>Learn</span>
+                                                <ArrowRight className="h-3.5 w-3.5" />
+                                            </Link>
+                                        ) : (
+                                            <Link
+                                                href={route('courses.show', course.slug || course.id)}
+                                                className="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-800 border border-gray-200 font-semibold text-xs rounded-lg shadow-2xs transition flex items-center gap-1.5"
+                                            >
+                                                <span>Details</span>
+                                                <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
+                                            </Link>
+                                        )}
                                     </div>
                                 </div>
                             </div>

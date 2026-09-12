@@ -30,102 +30,130 @@ export default function StudentLayout({ header, children }) {
         }
     }, [flash]);
 
-    const navigation = [
+    const navigationGroups = [
         {
-            name: 'Dashboard',
-            href: route('student.dashboard'),
-            active: route().current('student.dashboard'),
-            icon: LayoutDashboard,
+            label: 'Learning',
+            items: [
+                {
+                    name: 'Dashboard',
+                    href: route('student.dashboard'),
+                    active: route().current('student.dashboard'),
+                    icon: LayoutDashboard,
+                },
+                {
+                    name: 'My Courses',
+                    href: route('student.courses.enrolled'),
+                    active: route().current('student.courses.enrolled'),
+                    icon: BookOpen,
+                },
+                {
+                    name: 'Browse Courses',
+                    href: route('courses.index'),
+                    active: route().current('courses.index') || route().current('student.courses.index'),
+                    icon: Compass,
+                },
+                {
+                    name: 'Live Classes',
+                    href: '#',
+                    active: false,
+                    icon: Video,
+                    badge: 'Live',
+                },
+            ],
         },
         {
-            name: 'Explore Courses',
-            href: route('courses.index'),
-            active: route().current('courses.index') || route().current('student.courses.index'),
-            icon: Compass,
+            label: 'Achievements',
+            items: [
+                {
+                    name: 'Certificates',
+                    href: '#',
+                    active: false,
+                    icon: Award,
+                    badge: 'Soon',
+                },
+            ],
         },
         {
-            name: 'Enrolled Courses',
-            href: route('student.courses.enrolled'),
-            active: route().current('student.courses.enrolled'),
-            icon: BookOpen,
-        },
-        {
-            name: 'My Profile',
-            href: route('student.profile'),
-            active: route().current('student.profile*'),
-            icon: User,
-        },
-        {
-            name: 'Live Interactive Classes',
-            href: '#',
-            active: false,
-            icon: Video,
-            badge: 'Live',
-        },
-        {
-            name: 'Certificates',
-            href: '#',
-            active: false,
-            icon: Award,
-            badge: 'Soon',
+            label: 'Account',
+            items: [
+                {
+                    name: 'My Profile',
+                    href: route('student.profile'),
+                    active: route().current('student.profile*'),
+                    icon: User,
+                },
+            ],
         },
     ];
 
+    const renderNavItems = (onItemClick = null) => (
+        <div className="space-y-5">
+            {navigationGroups.map((group) => (
+                <div key={group.label} className="space-y-1">
+                    <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">
+                        {group.label}
+                    </div>
+                    <div className="space-y-0.5">
+                        {group.items.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={onItemClick}
+                                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
+                                        item.active
+                                            ? 'bg-indigo-600 text-white shadow-2xs'
+                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    }`}
+                                >
+                                    <div className="flex items-center space-x-2.5">
+                                        <Icon className={`h-4 w-4 ${item.active ? 'text-white' : 'text-gray-400'}`} />
+                                        <span>{item.name}</span>
+                                    </div>
+                                    {item.badge && (
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                                            item.badge === 'Live'
+                                                ? 'bg-rose-50 text-rose-600 border border-rose-200'
+                                                : 'bg-gray-100 text-gray-500 border border-gray-200'
+                                        }`}>
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50/70 flex antialiased text-gray-800">
             <Toaster position="top-right" />
 
             {/* Desktop Left Sidebar */}
             <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white text-gray-800 border-r border-gray-200 fixed inset-y-0 z-30">
                 
                 {/* Brand Header */}
-                <div className="h-16 flex items-center px-6 border-b border-gray-200/80 space-x-3 bg-white">
-                    <div className="p-1.5 bg-indigo-600 rounded-xl shadow-xs">
-                        <GraduationCap className="h-6 w-6 text-white" />
+                <div className="h-16 flex items-center px-5 border-b border-gray-200/80 space-x-3 bg-white">
+                    <div className="p-1.5 bg-indigo-600 rounded-lg shadow-2xs text-white">
+                        <GraduationCap className="h-5 w-5" />
                     </div>
-                    <div>
-                        <h1 className="font-bold text-sm leading-tight text-gray-900 tracking-wide">
+                    <div className="min-w-0">
+                        <h1 className="font-bold text-xs leading-tight text-gray-900 tracking-wide truncate">
                             Comestro Academy
                         </h1>
-                        <span className="text-[10px] font-semibold tracking-wider uppercase text-indigo-600">
+                        <span className="text-[10px] font-semibold tracking-wider uppercase text-indigo-600 font-mono">
                             Student Portal
                         </span>
                     </div>
                 </div>
 
                 {/* Sidebar Nav Links */}
-                <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-                    <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2 font-mono">
-                        Student Menu
-                    </div>
-                    {navigation.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
-                                    item.active
-                                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                                        : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
-                                }`}
-                            >
-                                <div className="flex items-center space-x-3">
-                                    <Icon className={`h-4 w-4 ${item.active ? 'text-white' : 'text-gray-400'}`} />
-                                    <span>{item.name}</span>
-                                </div>
-                                {item.badge && (
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                        item.badge === 'Live'
-                                            ? 'bg-rose-50 text-rose-600 border border-rose-200'
-                                            : 'bg-gray-100 text-gray-500 border border-gray-200'
-                                    }`}>
-                                        {item.badge}
-                                    </span>
-                                )}
-                            </Link>
-                        );
-                    })}
+                <div className="flex-1 overflow-y-auto px-3.5 py-4">
+                    {renderNavItems()}
                 </div>
 
                 {/* Bottom User Profile Card */}
@@ -187,36 +215,8 @@ export default function StudentLayout({ header, children }) {
                             </button>
                         </div>
 
-                        <div className="flex-1 py-4 space-y-1 overflow-y-auto">
-                            {navigation.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
-                                            item.active
-                                                ? 'bg-indigo-600 text-white shadow-sm'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                        }`}
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <Icon className={`h-4 w-4 ${item.active ? 'text-white' : 'text-gray-400'}`} />
-                                            <span>{item.name}</span>
-                                        </div>
-                                        {item.badge && (
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                                item.badge === 'Live'
-                                                    ? 'bg-rose-50 text-rose-600 border border-rose-200'
-                                                    : 'bg-gray-100 text-gray-500 border border-gray-200'
-                                            }`}>
-                                                {item.badge}
-                                            </span>
-                                        )}
-                                    </Link>
-                                );
-                            })}
+                        <div className="flex-1 py-4 overflow-y-auto">
+                            {renderNavItems(() => setSidebarOpen(false))}
                         </div>
 
                         <div className="pt-4 border-t border-gray-100">

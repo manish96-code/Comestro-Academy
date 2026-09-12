@@ -8,25 +8,27 @@ import {
     Calendar,
     Compass,
     GraduationCap,
-    ArrowRight
+    ArrowRight,
+    Play,
+    Terminal
 } from 'lucide-react';
 
 export default function EnrolledCourses({ enrollments }) {
     return (
         <StudentLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                        <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
                             My Enrolled Courses
                         </h1>
-                        <p className="text-xs text-gray-500">
-                            Track and access all your active courses and learning materials
+                        <p className="text-xs text-gray-500 mt-0.5">
+                            Track your learning progress, resume lectures, and access study materials
                         </p>
                     </div>
                     <Link
-                        href={route('student.courses.index')}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                        href={route('courses.index')}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition shrink-0"
                     >
                         <Compass className="h-3.5 w-3.5" />
                         <span>Explore More Courses</span>
@@ -34,9 +36,9 @@ export default function EnrolledCourses({ enrollments }) {
                 </div>
             }
         >
-            <Head title="My Enrolled Courses - Student Portal" />
+            <Head title="My Enrolled Courses - Comestro Academy" />
 
-            <div className="py-6 bg-gray-50">
+            <div className="py-6 min-h-[calc(100vh-140px)]">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {enrollments.data && enrollments.data.length > 0 ? (
@@ -56,16 +58,16 @@ export default function EnrolledCourses({ enrollments }) {
                                 return (
                                     <div
                                         key={enrollment.id}
-                                        className="bg-white rounded-lg border border-gray-200 shadow-xs hover:border-indigo-300 hover:shadow-md transition flex flex-col justify-between overflow-hidden"
+                                        className="bg-white rounded-xl border border-gray-200/90 shadow-2xs hover:border-indigo-300 hover:shadow-xs transition flex flex-col justify-between overflow-hidden group"
                                     >
                                         <div>
-                                            {/* Thumbnail / Header */}
-                                            <div className="relative h-44 bg-gradient-to-tr from-slate-900 via-indigo-950 to-indigo-900 flex items-center justify-center p-4 overflow-hidden">
+                                            {/* Thumbnail / Visual Header */}
+                                            <div className="relative h-44 bg-slate-100 border-b border-gray-100 flex items-center justify-center overflow-hidden">
                                                 {course.thumbnail ? (
                                                     <img
                                                         src={course.thumbnail}
                                                         alt={course.title}
-                                                        className="absolute inset-0 w-full h-full object-cover"
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                                         onError={(e) => {
                                                             e.currentTarget.style.display = 'none';
                                                         }}
@@ -73,33 +75,33 @@ export default function EnrolledCourses({ enrollments }) {
                                                 ) : null}
 
                                                 {/* Fallback Graphic */}
-                                                <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-1">
-                                                    <div className="p-3 bg-white/10 backdrop-blur-xs rounded-xl text-white">
-                                                        <GraduationCap className="h-8 w-8" />
+                                                <div className="flex flex-col items-center justify-center text-center space-y-1 p-4">
+                                                    <div className="p-3 bg-white rounded-xl text-indigo-600 border border-gray-200 shadow-2xs">
+                                                        <Terminal className="h-7 w-7" />
                                                     </div>
-                                                    <span className="text-[11px] font-bold text-indigo-200 tracking-wider uppercase">
+                                                    <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase font-mono mt-1">
                                                         {course.category?.name || 'Comestro Academy'}
                                                     </span>
                                                 </div>
 
-                                                {/* Status Badge */}
-                                                <div className="absolute top-3 right-3 z-20">
-                                                    <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md bg-emerald-600 text-white shadow-xs flex items-center gap-1">
-                                                        <CheckCircle2 className="h-3 w-3" />
-                                                        Active
+                                                {/* Category & Status Badges */}
+                                                <div className="absolute top-3 left-3 z-10">
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase font-mono rounded-md bg-white/95 text-indigo-700 border border-gray-200 shadow-2xs">
+                                                        {course.category?.name || 'Coding'}
                                                     </span>
                                                 </div>
 
-                                                <div className="absolute top-3 left-3 z-20">
-                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-indigo-600 text-white shadow-xs">
-                                                        {course.category?.name || 'Tech'}
+                                                <div className="absolute top-3 right-3 z-10">
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs flex items-center gap-1">
+                                                        <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                                                        Active
                                                     </span>
                                                 </div>
                                             </div>
 
                                             {/* Body Information */}
                                             <div className="p-5 space-y-3">
-                                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
+                                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug group-hover:text-indigo-600 transition">
                                                     {course.title}
                                                 </h3>
 
@@ -111,35 +113,37 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 <div className="pt-3 border-t border-gray-100 space-y-2 text-xs text-gray-500">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="flex items-center gap-1.5 text-gray-700 font-medium truncate max-w-[60%]">
+                                                        <span className="flex items-center gap-1.5 text-gray-700 font-medium truncate max-w-[65%]">
                                                             <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                                                             <span className="truncate">
                                                                 {instructorUser?.name || 'Academy Mentor'}
                                                             </span>
                                                         </span>
-                                                        <span className="flex items-center gap-1 text-gray-400">
+                                                        <span className="flex items-center gap-1 text-gray-400 shrink-0">
                                                             <Clock className="h-3.5 w-3.5" />
                                                             <span>{course.duration || 'Self-paced'}</span>
                                                         </span>
                                                     </div>
 
-                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[11px]">
-                                                        <Calendar className="h-3.5 w-3.5" />
+                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-mono">
+                                                        <Calendar className="h-3 w-3" />
                                                         <span>Enrolled on {enrolledDate}</span>
                                                     </div>
                                                 </div>
 
                                                 {/* Course Completion Progress Bar */}
-                                                {course.progress && course.progress.total_lessons > 0 && (
+                                                {course.progress && course.progress.total_lessons > 0 ? (
                                                     <div className="pt-3 border-t border-gray-100 space-y-1.5">
                                                         <div className="flex items-center justify-between text-xs">
                                                             <span className="font-semibold text-gray-700 flex items-center gap-1">
-                                                                {course.progress.is_completed && (
+                                                                {course.progress.is_completed ? (
                                                                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                                                ) : (
+                                                                    <Play className="h-3 w-3 text-indigo-600 fill-current" />
                                                                 )}
                                                                 <span>Progress</span>
                                                             </span>
-                                                            <span className={`font-bold font-mono ${
+                                                            <span className={`font-bold font-mono text-xs ${
                                                                 course.progress.is_completed ? 'text-emerald-600' : 'text-indigo-600'
                                                             }`}>
                                                                 {course.progress.progress_percentage}%
@@ -153,9 +157,9 @@ export default function EnrolledCourses({ enrollments }) {
                                                                 style={{ width: `${course.progress.progress_percentage}%` }}
                                                             />
                                                         </div>
-                                                        <div className="flex items-center justify-between text-[11px] text-gray-500">
+                                                        <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
                                                             <span>
-                                                                {course.progress.completed_lessons} of {course.progress.total_lessons} lessons
+                                                                {course.progress.completed_lessons} of {course.progress.total_lessons} lessons completed
                                                             </span>
                                                             {course.progress.is_completed && (
                                                                 <span className="text-emerald-600 font-bold uppercase text-[10px]">
@@ -164,25 +168,48 @@ export default function EnrolledCourses({ enrollments }) {
                                                             )}
                                                         </div>
                                                     </div>
+                                                ) : (
+                                                    <div className="pt-3 border-t border-gray-100 space-y-1.5">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-semibold text-gray-700 flex items-center gap-1">
+                                                                <Play className="h-3 w-3 text-indigo-600 fill-current" />
+                                                                <span>Progress</span>
+                                                            </span>
+                                                            <span className="font-bold font-mono text-xs text-indigo-600">
+                                                                0%
+                                                            </span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                                            <div className="h-2 rounded-full bg-indigo-600" style={{ width: '0%' }} />
+                                                        </div>
+                                                        <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
+                                                            <span>Ready to start</span>
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
 
-                                        {/* Footer Action */}
-                                        <div className="p-5 pt-0">
-                                            <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 flex items-center justify-between">
-                                                <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700">
-                                                    <BookOpen className="h-4 w-4 text-indigo-600" />
-                                                    <span>Course Materials</span>
-                                                </div>
+                                        {/* Footer Actions */}
+                                        <div className="p-4 pt-0 bg-white">
+                                            <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between gap-2">
+                                                <Link
+                                                    href={route('courses.show', course.slug || course.id)}
+                                                    className="px-2.5 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 transition flex items-center gap-1"
+                                                >
+                                                    <BookOpen className="h-3.5 w-3.5 text-gray-400" />
+                                                    <span>Syllabus</span>
+                                                </Link>
+
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
-                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg shadow-xs transition inline-flex items-center gap-1 text-white ${
+                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg shadow-2xs transition inline-flex items-center gap-1.5 text-white ${
                                                         course.progress?.is_completed
                                                             ? 'bg-emerald-600 hover:bg-emerald-700'
                                                             : 'bg-indigo-600 hover:bg-indigo-700'
                                                     }`}
                                                 >
+                                                    <Play className="h-3 w-3 fill-current" />
                                                     <span>
                                                         {course.progress?.is_completed
                                                             ? 'Review Course'
@@ -199,24 +226,26 @@ export default function EnrolledCourses({ enrollments }) {
                             })}
                         </div>
                     ) : (
-                        /* Empty State */
-                        <div className="bg-white rounded-lg border border-gray-200 shadow-xs p-12 text-center space-y-4">
-                            <div className="mx-auto h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <BookOpen className="h-6 w-6" />
+                        /* Clean Empty State */
+                        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center space-y-4 shadow-2xs">
+                            <div className="mx-auto h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                                <Terminal className="h-6 w-6" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-sm font-bold text-gray-900">No Enrolled Courses Yet</h3>
-                                <p className="text-xs text-gray-500 max-w-sm mx-auto">
-                                    You have not enrolled in any courses yet. Browse our published courses catalog and enroll with one click.
+                                <h3 className="text-base font-bold text-gray-900">No Enrolled Courses Yet</h3>
+                                <p className="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
+                                    You have not enrolled in any coding courses yet. Explore our published courses catalog to start learning.
                                 </p>
                             </div>
-                            <Link
-                                href={route('student.courses.index')}
-                                className="px-4 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-lg hover:bg-indigo-700 transition inline-flex items-center gap-1.5"
-                            >
-                                <Compass className="h-4 w-4" />
-                                <span>Browse Courses Catalog</span>
-                            </Link>
+                            <div>
+                                <Link
+                                    href={route('courses.index')}
+                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-2xs transition inline-flex items-center gap-1.5"
+                                >
+                                    <Compass className="h-4 w-4" />
+                                    <span>Browse Courses Catalog</span>
+                                </Link>
+                            </div>
                         </div>
                     )}
 
@@ -230,7 +259,7 @@ export default function EnrolledCourses({ enrollments }) {
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                     className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
                                         link.active
-                                            ? 'bg-indigo-600 text-white'
+                                            ? 'bg-indigo-600 text-white shadow-2xs'
                                             : !link.url
                                             ? 'text-gray-300 cursor-not-allowed'
                                             : 'text-gray-700 bg-white border border-gray-200 hover:bg-gray-50'
