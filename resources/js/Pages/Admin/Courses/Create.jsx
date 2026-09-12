@@ -3,7 +3,8 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import {
     BookPlus,
@@ -31,7 +32,13 @@ import {
 export default function CourseCreate({ course = null, categories = [], instructors = [] }) {
     const isEdit = Boolean(course);
     const [imagePreview, setImagePreview] = useState(course?.thumbnail || null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const fileInputRef = useRef(null);
+
+    const handleDelete = () => {
+        if (!course?.id) return;
+        router.delete(route('admin.courses.destroy', course.id));
+    };
 
     const { data, setData, post, patch, processing, errors, transform } = useForm({
         title: course?.title || '',
@@ -279,6 +286,15 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             <Video className="h-3.5 w-3.5" />
                                             <span>Manage Lectures</span>
                                         </Link>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowDeleteModal(true)}
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                            <span>Delete Course</span>
+                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -759,6 +775,24 @@ export default function CourseCreate({ course = null, categories = [], instructo
                     </form>
                 </div>
             </div>
+
+            {/* CONFIRM DELETE COURSE MODAL */}
+            {isEdit && (
+                <ConfirmDeleteModal
+                    isOpen={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={handleDelete}
+                    title="Delete Course?"
+                    message={
+                        <p>
+                            Are you sure you want to permanently delete{' '}
+                            <span className="font-semibold text-slate-800">{course.title}</span>?
+                            All modules, lessons, videos, resources, and enrollments linked to this course will also be removed.
+                        </p>
+                    }
+                    confirmText="Yes, Delete Course"
+                />
+            )}
         </AdminLayout>
     );
 }

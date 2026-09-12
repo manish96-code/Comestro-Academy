@@ -44,6 +44,12 @@ export default function CourseIndex({ courses, categories = [], students = [], f
         courseTitle: '',
     });
 
+    const [deleteCourseModal, setDeleteCourseModal] = useState({
+        isOpen: false,
+        courseId: null,
+        courseTitle: '',
+    });
+
     const activeCourse = selectedCourseId ? courses.data?.find((c) => c.id === selectedCourseId) : null;
     const enrolledStudents = activeCourse?.enrollments || [];
 
@@ -116,6 +122,17 @@ export default function CourseIndex({ courses, categories = [], students = [], f
             preserveScroll: true,
             onSuccess: () => {
                 setDeleteModal({ isOpen: false, enrollmentId: null, studentName: '', courseTitle: '' });
+            },
+        });
+    };
+
+    const handleDeleteCourse = () => {
+        if (!deleteCourseModal.courseId) return;
+
+        router.delete(route('admin.courses.destroy', deleteCourseModal.courseId), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteCourseModal({ isOpen: false, courseId: null, courseTitle: '' });
             },
         });
     };
@@ -449,6 +466,21 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                                             <Users className="h-3 w-3 text-emerald-600" />
                                                             <span>Students ({course.enrollments_count ?? (course.enrollments ? course.enrollments.length : 0)})</span>
                                                         </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setDeleteCourseModal({
+                                                                    isOpen: true,
+                                                                    courseId: course.id,
+                                                                    courseTitle: course.title,
+                                                                })
+                                                            }
+                                                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md border border-rose-200 transition shadow-2xs"
+                                                            title="Delete Course"
+                                                        >
+                                                            <Trash2 className="h-3 w-3" />
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -773,6 +805,22 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                     </p>
                 }
                 confirmText="Yes, Remove Enrollment"
+            />
+
+            {/* CONFIRM DELETE COURSE MODAL */}
+            <ConfirmDeleteModal
+                isOpen={deleteCourseModal.isOpen}
+                onClose={() => setDeleteCourseModal({ isOpen: false, courseId: null, courseTitle: '' })}
+                onConfirm={handleDeleteCourse}
+                title="Delete Course?"
+                message={
+                    <p>
+                        Are you sure you want to permanently delete{' '}
+                        <span className="font-semibold text-slate-800">{deleteCourseModal.courseTitle}</span>?
+                        All modules, lessons, videos, resources, and enrollments linked to this course will also be removed.
+                    </p>
+                }
+                confirmText="Yes, Delete Course"
             />
         </AdminLayout>
     );

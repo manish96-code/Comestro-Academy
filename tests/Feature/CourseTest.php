@@ -195,3 +195,67 @@ test('admin can save curriculum with multiple subtitles array', function () {
     expect($course)->not->toBeNull()
         ->and($course->curriculum)->toEqual($curriculum);
 });
+
+test('admin can delete a course', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Design',
+        'slug' => 'design-'.uniqid(),
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Figma UI Course',
+        'slug' => 'figma-ui-course-'.uniqid(),
+        'price' => 1999,
+        'status' => 'published',
+    ]);
+
+    $response = $this->actingAs($admin)->delete(route('admin.courses.destroy', $course->id));
+
+    $response->assertRedirect(route('admin.courses.index'));
+    $this->assertDatabaseMissing('courses', [
+        'id' => $course->id,
+    ]);
+});
+
+test('admin can delete an empty category', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Temporary Category',
+        'slug' => 'temp-cat-'.uniqid(),
+        'status' => 'active',
+    ]);
+
+    $response = $this->actingAs($admin)->delete(route('admin.categories.destroy', $category->id));
+
+    $response->assertRedirect(route('admin.categories.index'));
+    $this->assertDatabaseMissing('categories', [
+        'id' => $category->id,
+    ]);
+});
+
+test('admin cannot delete a category that has courses', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Backend Category',
+        'slug' => 'backend-cat-'.uniqid(),
+        'status' => 'active',
+    ]);
+
+    Course::create([
+        'category_id' => $category->id,
+        'title' => 'Python Course',
+        'slug' => 'python-course-'.uniqid(),
+        'price' => 1999,
+        'status' => 'published',
+    ]);
+
+    $response = $this->actingAs($admin)->delete(route('admin.categories.destroy', $category->id));
+
+    $response->assertSessionHas('error');
+    $this->assertDatabaseHas('categories', [
+        'id' => $category->id,
+    ]);
+});

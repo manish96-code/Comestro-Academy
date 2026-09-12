@@ -1,5 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
+import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -10,11 +11,28 @@ import {
     Layers,
     FolderTree,
     Sparkles,
-    RotateCcw
+    RotateCcw,
+    Trash2
 } from 'lucide-react';
 
 export default function CategoryIndex({ categories, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        categoryId: null,
+        categoryName: '',
+    });
+
+    const handleDeleteCategory = () => {
+        if (!deleteModal.categoryId) return;
+
+        router.delete(route('admin.categories.destroy', deleteModal.categoryId), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteModal({ isOpen: false, categoryId: null, categoryName: '' });
+            },
+        });
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -170,14 +188,31 @@ export default function CategoryIndex({ categories, filters }) {
                                                     {getStatusBadge(cat.status)}
                                                 </td>
                                                 <td className="py-3 px-4 text-right">
-                                                    <Link
-                                                        href={route('admin.categories.show', cat.id)}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-xs transition"
-                                                        title="Edit Category"
-                                                    >
-                                                        <Edit3 className="h-3 w-3 text-slate-400" />
-                                                        <span>Edit</span>
-                                                    </Link>
+                                                    <div className="flex items-center justify-end gap-1.5">
+                                                        <Link
+                                                            href={route('admin.categories.show', cat.id)}
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-xs transition"
+                                                            title="Edit Category"
+                                                        >
+                                                            <Edit3 className="h-3 w-3 text-slate-400" />
+                                                            <span>Edit</span>
+                                                        </Link>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setDeleteModal({
+                                                                    isOpen: true,
+                                                                    categoryId: cat.id,
+                                                                    categoryName: cat.name,
+                                                                })
+                                                            }
+                                                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg border border-rose-200 shadow-xs transition"
+                                                            title="Delete Category"
+                                                        >
+                                                            <Trash2 className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
@@ -207,6 +242,20 @@ export default function CategoryIndex({ categories, filters }) {
                 </div>
             </div>
 
+            {/* CONFIRM DELETE MODAL */}
+            <ConfirmDeleteModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: '' })}
+                onConfirm={handleDeleteCategory}
+                title="Delete Category?"
+                message={
+                    <p>
+                        Are you sure you want to delete <span className="font-semibold text-slate-800">{deleteModal.categoryName}</span>?
+                        Categories assigned to active courses cannot be deleted until courses are reassigned.
+                    </p>
+                }
+                confirmText="Yes, Delete Category"
+            />
         </AdminLayout>
     );
 }

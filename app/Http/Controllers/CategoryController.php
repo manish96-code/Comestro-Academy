@@ -128,4 +128,21 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')->with('success', 'Category details updated successfully.');
     }
+
+    // Delete category
+    public function destroy(Category $category): RedirectResponse
+    {
+        $coursesCount = $category->courses()->count();
+        if ($coursesCount > 0) {
+            return redirect()->back()->with('error', "Cannot delete category \"{$category->name}\" because it is assigned to {$coursesCount} course(s). Reassign or delete those courses first.");
+        }
+
+        if ($category->children()->exists()) {
+            return redirect()->back()->with('error', "Cannot delete category \"{$category->name}\" because it has subcategories. Remove subcategories first.");
+        }
+
+        $category->delete();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
 }

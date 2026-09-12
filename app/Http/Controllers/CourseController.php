@@ -255,6 +255,14 @@ class CourseController extends Controller
         return redirect()->route('admin.courses.index')->with('success', 'Course details updated successfully.');
     }
 
+    // Delete specified course
+    public function destroy(Course $course): RedirectResponse
+    {
+        $course->delete();
+
+        return redirect()->route('admin.courses.index')->with('success', 'Course deleted successfully.');
+    }
+
     // Course Content & Lessons Management Page
     public function content(Course $course): Response
     {

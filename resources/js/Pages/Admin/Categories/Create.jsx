@@ -3,11 +3,14 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FolderPlus, Edit3, ArrowLeft, Save, Tag, FolderTree } from 'lucide-react';
+import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import { Head, Link, useForm, router } from '@inertiajs/react';
+import { useState } from 'react';
+import { FolderPlus, Edit3, ArrowLeft, Save, Tag, FolderTree, Trash2 } from 'lucide-react';
 
 export default function CategoryCreate({ category = null, parentCategories = [] }) {
     const isEdit = Boolean(category);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const { data, setData, post, patch, processing, errors } = useForm({
         name: category?.name || '',
@@ -15,6 +18,11 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
         parent_id: category?.parent_id || '',
         status: category?.status || 'active',
     });
+
+    const handleDelete = () => {
+        if (!category?.id) return;
+        router.delete(route('admin.categories.destroy', category.id));
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -155,7 +163,20 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                                 <InputError className="mt-1.5" message={errors.description} />
                             </div>
 
-                            <div className="pt-4 border-t border-slate-100 flex justify-end">
+                            <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                {isEdit ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDeleteModal(true)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg border border-rose-200 transition"
+                                    >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <span>Delete Category</span>
+                                    </button>
+                                ) : (
+                                    <div />
+                                )}
+
                                 <PrimaryButton disabled={processing} className="flex items-center gap-1.5">
                                     <Save className="h-3.5 w-3.5" />
                                     <span>{processing ? 'Saving...' : isEdit ? 'Update Category' : 'Create Category'}</span>
@@ -166,6 +187,23 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
 
                 </div>
             </div>
+
+            {/* CONFIRM DELETE MODAL */}
+            {isEdit && (
+                <ConfirmDeleteModal
+                    isOpen={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={handleDelete}
+                    title="Delete Category?"
+                    message={
+                        <p>
+                            Are you sure you want to delete <span className="font-semibold text-slate-800">{category.name}</span>?
+                            Categories assigned to active courses cannot be deleted until courses are reassigned.
+                        </p>
+                    }
+                    confirmText="Yes, Delete Category"
+                />
+            )}
         </AdminLayout>
     );
 }
