@@ -3,7 +3,8 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { useState, useRef } from 'react';
 import {
     User,
     Mail,
@@ -18,15 +19,17 @@ import {
     MapPin,
     ExternalLink,
     FileText,
-    Globe
+    Globe,
+    Upload,
+    Trash2
 } from 'lucide-react';
 
 export default function StudentProfile({ student }) {
-    // Profile Details Form (Personal + Education + Social)
+    // Profile details form
     const profileForm = useForm({
         name: student?.name || '',
-        email: student?.email || '',
         phone: student?.phone || '',
+        profile_pic: null,
         qualification: student?.qualification || '',
         college_name: student?.college_name || '',
         city: student?.city || '',
@@ -36,14 +39,45 @@ export default function StudentProfile({ student }) {
         bio: student?.bio || '',
     });
 
+    // Profile photo preview
+    const [previewUrl, setPreviewUrl] = useState(student?.profile_pic || null);
+    const fileInputRef = useRef(null);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            profileForm.setData('profile_pic', file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
+    // Remove photo directly from DB or reset preview
+    const handleRemovePhoto = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        profileForm.setData('profile_pic', null);
+
+        if (student?.profile_pic) {
+            router.delete(route('student.profile.pic.destroy'), {
+                preserveScroll: true,
+                onSuccess: () => setPreviewUrl(null),
+            });
+        } else {
+            setPreviewUrl(null);
+        }
+    };
+
+    // Submit profile update
     const submitProfile = (e) => {
         e.preventDefault();
-        profileForm.patch(route('student.profile.update'), {
+        profileForm.post(route('student.profile.update'), {
             preserveScroll: true,
+            forceFormData: true,
         });
     };
 
-    // Password Update Form
+    // Password form
     const passwordForm = useForm({
         current_password: '',
         password: '',
@@ -60,6 +94,7 @@ export default function StudentProfile({ student }) {
         });
     };
 
+    // Status badge helper
     const getStatusBadge = (status) => {
         switch (status) {
             case 'active':
@@ -104,11 +139,21 @@ export default function StudentProfile({ student }) {
             <div className="py-6 bg-gray-50">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
                     
-                    {/* Top Profile Summary Card */}
+                    {/* Summary card */}
                     <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="flex items-center space-x-4">
-                            <div className="h-16 w-16 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl border border-indigo-700 shrink-0 shadow-xs">
-                                {student?.name ? student.name.charAt(0).toUpperCase() : 'S'}
+                            <div className="h-16 w-16 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl border border-indigo-700 shrink-0 shadow-xs overflow-hidden">
+                                {previewUrl ? (
+                                    <img
+                                        src={previewUrl}
+                                        alt={student?.name}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : student?.name ? (
+                                    student.name.charAt(0).toUpperCase()
+                                ) : (
+                                    'S'
+                                )}
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center space-x-2">
@@ -141,10 +186,10 @@ export default function StudentProfile({ student }) {
                         </div>
                     </div>
 
-                    {/* Unified Profile Edit Form */}
+                    {/* Profile edit form */}
                     <form onSubmit={submitProfile} className="space-y-6">
                         
-                        {/* Section 1: Basic Information */}
+                        {/* Basic information */}
                         <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-5">
                             <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
                                 <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -153,6 +198,62 @@ export default function StudentProfile({ student }) {
                                 <div>
                                     <h3 className="text-sm font-bold text-gray-900">Basic Information</h3>
                                     <p className="text-xs text-gray-500">Update your primary identity and communication contact</p>
+                                </div>
+                            </div>
+
+                            {/* Profile picture picker */}
+                            <div>
+                                <InputLabel value="Profile Picture" />
+                                <div className="mt-2 flex items-center gap-4">
+                                    <div className="relative">
+                                        <div className="h-16 w-16 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl border border-indigo-700 shrink-0 shadow-xs overflow-hidden">
+                                            {previewUrl ? (
+                                                <img
+                                                    src={previewUrl}
+                                                    alt={student?.name}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : student?.name ? (
+                                                student.name.charAt(0).toUpperCase()
+                                            ) : (
+                                                'S'
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/jpg,image/webp"
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg shadow-2xs transition"
+                                            >
+                                                <Upload className="h-3.5 w-3.5 text-indigo-600" />
+                                                <span>{previewUrl ? 'Change Photo' : 'Upload Photo'}</span>
+                                            </button>
+                                            {previewUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemovePhoto}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                                >
+                                                    <Trash2 className="h-3 w-3" />
+                                                    <span>Remove</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-[11px] text-gray-500">
+                                            JPG, PNG or WEBP (Max 5MB)
+                                        </p>
+                                        <InputError message={profileForm.errors.profile_pic} />
+                                    </div>
                                 </div>
                             </div>
 
@@ -170,16 +271,18 @@ export default function StudentProfile({ student }) {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <InputLabel htmlFor="email" value="Email Address *" />
+                                    <InputLabel htmlFor="email" value="Email Address" />
                                     <TextInput
                                         id="email"
                                         type="email"
-                                        className="w-full text-xs sm:text-sm py-2 px-3.5 mt-1"
-                                        value={profileForm.data.email}
-                                        onChange={(e) => profileForm.setData('email', e.target.value)}
-                                        placeholder="rahul@example.com"
+                                        readOnly
+                                        disabled
+                                        className="w-full text-xs sm:text-sm py-2 px-3.5 mt-1 bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed select-none"
+                                        value={student?.email || ''}
                                     />
-                                    <InputError className="mt-1.5" message={profileForm.errors.email} />
+                                    <p className="text-[11px] text-gray-400 mt-1">
+                                        Cannot be changed
+                                    </p>
                                 </div>
 
                                 <div>
@@ -198,7 +301,7 @@ export default function StudentProfile({ student }) {
                             </div>
                         </div>
 
-                        {/* Section 2: Education & College Background */}
+                        {/* Education background */}
                         <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-5">
                             <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
                                 <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">

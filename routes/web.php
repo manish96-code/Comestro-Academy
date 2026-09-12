@@ -78,7 +78,8 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::post('/courses/{course}/lessons/{lesson}/toggle-complete', [StudentController::class, 'toggleLessonComplete'])->name('courses.lessons.toggle-complete');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
-    Route::patch('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
+    Route::match(['post', 'patch'], '/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/pic', [StudentController::class, 'destroyProfilePic'])->name('profile.pic.destroy');
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');
 });
 

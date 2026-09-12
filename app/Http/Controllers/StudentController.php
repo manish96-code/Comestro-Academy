@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\UploadProfilePicture;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
@@ -9,7 +10,6 @@ use App\Models\Enrollment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -275,6 +275,7 @@ class StudentController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'profile_pic' => $user->profile_pic,
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'status' => $user->status,
@@ -298,7 +299,7 @@ class StudentController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:50', 'regex:/^[a-zA-Z ]+$/'],
-            'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'profile_pic' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
             'phone' => ['nullable', 'string', 'regex:/^[6-9]\d{9}$/'],
             'qualification' => ['nullable', 'string', 'max:100'],
             'college_name' => ['nullable', 'string', 'max:150'],
@@ -309,11 +310,22 @@ class StudentController extends Controller
             'state' => ['nullable', 'string', 'max:100'],
         ]);
 
-        $user->update([
+        $userUpdates = [
             'name' => $validated['name'],
-            'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-        ]);
+        ];
+
+        if ($request->hasFile('profile_pic')) {
+            $file = $request->file('profile_pic');
+
+            UploadProfilePicture::dispatch(
+                $user,
+                base64_encode($file->get()),
+                $file->getClientOriginalName()
+            );
+        }
+
+        $user->update($userUpdates);
 
         $user->studentProfile()->updateOrCreate(
             ['user_id' => $user->id],
@@ -329,6 +341,16 @@ class StudentController extends Controller
         );
 
         return redirect()->back()->with('success', 'Profile details updated successfully.');
+    }
+
+    // Delete student profile picture
+    public function destroyProfilePic(Request $request): RedirectResponse
+    {
+        $request->user()->update([
+            'profile_pic' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Profile picture removed successfully.');
     }
 
     // Update student password
