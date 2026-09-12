@@ -97,4 +97,31 @@ class Course extends Model
     {
         return $this->hasMany(LiveClass::class)->orderBy('start_time');
     }
+
+    // Progress stats for a given user
+    public function getProgressFor(?User $user): array
+    {
+        $total = $this->lessons()->count();
+        if (! $user || $total === 0) {
+            return [
+                'total_lessons' => $total,
+                'completed_lessons' => 0,
+                'progress_percentage' => 0,
+                'is_completed' => false,
+            ];
+        }
+
+        $completed = $user->completedLessons()
+            ->whereIn('lesson_id', $this->lessons()->select('course_lessons.id'))
+            ->count();
+
+        $percentage = (int) round(($completed / $total) * 100);
+
+        return [
+            'total_lessons' => $total,
+            'completed_lessons' => $completed,
+            'progress_percentage' => min(100, $percentage),
+            'is_completed' => $completed >= $total,
+        ];
+    }
 }

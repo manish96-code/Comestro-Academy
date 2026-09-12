@@ -128,6 +128,43 @@ export default function EnrolledCourses({ enrollments }) {
                                                         <span>Enrolled on {enrolledDate}</span>
                                                     </div>
                                                 </div>
+
+                                                {/* Course Completion Progress Bar */}
+                                                {course.progress && course.progress.total_lessons > 0 && (
+                                                    <div className="pt-3 border-t border-gray-100 space-y-1.5">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <span className="font-semibold text-gray-700 flex items-center gap-1">
+                                                                {course.progress.is_completed && (
+                                                                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                                                )}
+                                                                <span>Progress</span>
+                                                            </span>
+                                                            <span className={`font-bold font-mono ${
+                                                                course.progress.is_completed ? 'text-emerald-600' : 'text-indigo-600'
+                                                            }`}>
+                                                                {course.progress.progress_percentage}%
+                                                            </span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                                            <div
+                                                                className={`h-2 rounded-full transition-all duration-500 ${
+                                                                    course.progress.is_completed ? 'bg-emerald-500' : 'bg-indigo-600'
+                                                                }`}
+                                                                style={{ width: `${course.progress.progress_percentage}%` }}
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center justify-between text-[11px] text-gray-500">
+                                                            <span>
+                                                                {course.progress.completed_lessons} of {course.progress.total_lessons} lessons
+                                                            </span>
+                                                            {course.progress.is_completed && (
+                                                                <span className="text-emerald-600 font-bold uppercase text-[10px]">
+                                                                    Completed
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
@@ -140,9 +177,19 @@ export default function EnrolledCourses({ enrollments }) {
                                                 </div>
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
-                                                    className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition inline-flex items-center gap-1"
+                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg shadow-xs transition inline-flex items-center gap-1 text-white ${
+                                                        course.progress?.is_completed
+                                                            ? 'bg-emerald-600 hover:bg-emerald-700'
+                                                            : 'bg-indigo-600 hover:bg-indigo-700'
+                                                    }`}
                                                 >
-                                                    <span>Start Learning</span>
+                                                    <span>
+                                                        {course.progress?.is_completed
+                                                            ? 'Review Course'
+                                                            : (course.progress?.completed_lessons || 0) > 0
+                                                            ? 'Continue Learning'
+                                                            : 'Start Learning'}
+                                                    </span>
                                                     <ArrowRight className="h-3 w-3" />
                                                 </Link>
                                             </div>

@@ -64,7 +64,6 @@ export default function CourseContent({ course }) {
         notes_file: null,
         notes_title: '',
         description: '',
-        is_free_preview: false,
         order: 1,
     });
 
@@ -80,7 +79,6 @@ export default function CourseContent({ course }) {
             notes_file: null,
             notes_title: '',
             description: '',
-            is_free_preview: false,
             order: lessons.length + 1,
         });
         setIsModalOpen(true);
@@ -98,7 +96,6 @@ export default function CourseContent({ course }) {
             notes_file: null,
             notes_title: lesson.notes_title || '',
             description: lesson.description || '',
-            is_free_preview: Boolean(lesson.is_free_preview),
             order: lesson.order || 1,
         });
         setIsModalOpen(true);
@@ -349,11 +346,6 @@ export default function CourseContent({ course }) {
                                                             <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                                                                 {lesson.title}
                                                             </h4>
-                                                            {lesson.is_free_preview && (
-                                                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                                    Free Preview
-                                                                </span>
-                                                            )}
                                                         </div>
 
                                                         {/* Description snippet */}
@@ -624,19 +616,6 @@ export default function CourseContent({ course }) {
                                         className="w-full text-xs rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 mt-1 transition"
                                     />
                                     <InputError message={errors.description} />
-                                </div>
-
-                                <div className="flex items-center gap-2 pt-1">
-                                    <input
-                                        type="checkbox"
-                                        id="is_free_preview"
-                                        checked={data.is_free_preview}
-                                        onChange={(e) => setData('is_free_preview', e.target.checked)}
-                                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <label htmlFor="is_free_preview" className="text-xs font-semibold text-slate-800 cursor-pointer select-none">
-                                        Mark as Free Preview (Allow prospective students to watch before enrolling)
-                                    </label>
                                 </div>
                             </div>
 

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedInteger('sort_order')->default(1);
-            $table->boolean('is_free_preview')->default(false);
             $table->enum('status', ['draft', 'published'])->default('published');
             $table->timestamps();
         });

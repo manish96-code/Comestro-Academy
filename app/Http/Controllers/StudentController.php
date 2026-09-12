@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseLesson;
 use App\Models\Enrollment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -170,8 +171,16 @@ class StudentController extends Controller
             'liveClasses' => fn ($q) => $q->orderBy('start_time'),
         ]);
 
+        $progress = $course->getProgressFor($user);
+        $completedLessonIds = $user ? $user->completedLessons()
+            ->whereIn('lesson_id', $course->lessons()->select('course_lessons.id'))
+            ->pluck('course_lessons.id')
+            ->toArray() : [];
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
+            'progress' => $progress,
+            'completedLessonIds' => $completedLessonIds,
         ]);
     }
 
@@ -185,9 +194,44 @@ class StudentController extends Controller
             ->latest('enrolled_at')
             ->paginate(9);
 
+        $enrollments->through(function ($enrollment) use ($user) {
+            if ($enrollment->course) {
+                $enrollment->course->progress = $enrollment->course->getProgressFor($user);
+            }
+
+            return $enrollment;
+        });
+
         return Inertia::render('Student/Courses/Enrolled', [
             'enrollments' => $enrollments,
         ]);
+    }
+
+    // Toggle completion status for a lesson in a course
+    public function toggleLessonComplete(Request $request, Course $course, CourseLesson $lesson): RedirectResponse
+    {
+        $user = $request->user();
+
+        $isEnrolled = $user->enrollments()
+            ->where('course_id', $course->id)
+            ->where('status', 'active')
+            ->exists();
+
+        if (! $isEnrolled && ! $user->isAdmin() && ! $user->isInstructor()) {
+            return redirect()->back()->with('error', 'Please enroll to track lesson progress.');
+        }
+
+        $existing = $user->completedLessons()->where('lesson_id', $lesson->id)->first();
+
+        if ($existing) {
+            $user->completedLessons()->detach($lesson->id);
+            $message = 'Lesson marked as incomplete.';
+        } else {
+            $user->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
+            $message = 'Lesson marked as completed!';
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     // Enroll the authenticated student in a course

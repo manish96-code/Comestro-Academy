@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
     Route::get('/enrolled-courses', [StudentController::class, 'enrolledCourses'])->name('courses.enrolled');
     Route::get('/courses/{course}/learn', [StudentController::class, 'learn'])->name('courses.learn');
+    Route::post('/courses/{course}/lessons/{lesson}/toggle-complete', [StudentController::class, 'toggleLessonComplete'])->name('courses.lessons.toggle-complete');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::patch('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');

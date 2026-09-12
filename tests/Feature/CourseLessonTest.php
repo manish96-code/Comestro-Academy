@@ -40,7 +40,6 @@ test('admin can create a lesson for a course', function () {
         'title' => 'Installing PHP & Composer',
         'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         'duration' => '15m',
-        'is_free_preview' => true,
         'description' => 'First lecture setting up our dev environment.',
     ]);
 
@@ -56,7 +55,6 @@ test('admin can create a lesson for a course', function () {
     $this->assertDatabaseHas('course_lessons', [
         'module_id' => $module->id,
         'title' => 'Installing PHP & Composer',
-        'is_free_preview' => 1,
     ]);
 
     $lesson = CourseLesson::where('module_id', $module->id)->first();
@@ -112,13 +110,11 @@ test('admin can update a lesson', function () {
         'module_id' => $module->id,
         'title' => 'Old Title',
         'sort_order' => 1,
-        'is_free_preview' => false,
     ]);
 
     $response = $this->actingAs($admin)->post(route('admin.courses.lessons.update', [$this->course->id, $lesson->id]), [
         'module_name' => 'Module 1: Intro',
         'title' => 'Updated Title',
-        'is_free_preview' => true,
     ]);
 
     $response->assertRedirect();
@@ -126,7 +122,6 @@ test('admin can update a lesson', function () {
     $this->assertDatabaseHas('course_lessons', [
         'id' => $lesson->id,
         'title' => 'Updated Title',
-        'is_free_preview' => 1,
     ]);
 
     $this->assertDatabaseHas('course_modules', [
@@ -148,7 +143,6 @@ test('admin can delete a lesson', function () {
         'module_id' => $module->id,
         'title' => 'To Be Deleted',
         'sort_order' => 1,
-        'is_free_preview' => false,
     ]);
 
     $response = $this->actingAs($admin)->delete(route('admin.courses.lessons.destroy', [$this->course->id, $lesson->id]));
@@ -169,7 +163,6 @@ test('students can view syllabus overview on the public course show page', funct
     $lesson = CourseLesson::create([
         'module_id' => $module->id,
         'title' => 'Introduction to Laravel',
-        'is_free_preview' => true,
         'sort_order' => 1,
     ]);
 
@@ -201,7 +194,6 @@ test('enrolled student can access the course learning classroom page to watch le
     $lesson = CourseLesson::create([
         'module_id' => $module->id,
         'title' => 'Introduction to Laravel',
-        'is_free_preview' => false,
         'sort_order' => 1,
     ]);
 
@@ -228,4 +220,155 @@ test('unenrolled student is redirected from course learning classroom page', fun
     $response = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
 
     $response->assertRedirect(route('courses.show', $this->course->slug));
+});
+
+test('enrolled student can toggle a lesson as completed and uncompleted', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Introduction to Laravel',
+        'sort_order' => 1,
+    ]);
+
+    // Mark as completed
+    $response = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson->id,
+    ]));
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson->id,
+    ]);
+
+    // Toggle again to uncomplete
+    $response2 = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson->id,
+    ]));
+
+    $response2->assertRedirect();
+    $this->assertDatabaseMissing('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson->id,
+    ]);
+});
+
+test('unenrolled student cannot toggle lesson completion', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Introduction to Laravel',
+        'sort_order' => 1,
+    ]);
+
+    $response = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson->id,
+    ]));
+
+    $response->assertRedirect();
+    $this->assertDatabaseMissing('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson->id,
+    ]);
+});
+
+test('course learning classroom page provides progress and completedLessonIds to Inertia', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson1 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson2 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 2',
+        'sort_order' => 2,
+    ]);
+
+    // Complete lesson 1
+    $student->completedLessons()->attach($lesson1->id, ['completed_at' => now()]);
+
+    $response = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Courses/Learn')
+        ->has('progress')
+        ->where('progress.total_lessons', 2)
+        ->where('progress.completed_lessons', 1)
+        ->where('progress.progress_percentage', 50)
+        ->where('completedLessonIds', [$lesson1->id])
+    );
+});
+
+test('enrolled courses list provides course progress data to Inertia', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Getting Started',
+        'sort_order' => 1,
+    ]);
+
+    $lesson1 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+
+    $student->completedLessons()->attach($lesson1->id, ['completed_at' => now()]);
+
+    $response = $this->actingAs($student)->get(route('student.courses.enrolled'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Courses/Enrolled')
+        ->has('enrollments.data.0.course.progress')
+        ->where('enrollments.data.0.course.progress.total_lessons', 1)
+        ->where('enrollments.data.0.course.progress.completed_lessons', 1)
+        ->where('enrollments.data.0.course.progress.progress_percentage', 100)
+    );
 });

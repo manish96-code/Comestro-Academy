@@ -292,7 +292,6 @@ class CourseController extends Controller
             'notes_file' => ['nullable', 'file', 'max:51200'],
             'notes_title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'is_free_preview' => ['boolean'],
             'order' => ['nullable', 'integer'],
         ]);
 
@@ -309,7 +308,6 @@ class CourseController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'sort_order' => $sortOrder,
-            'is_free_preview' => $validated['is_free_preview'] ?? false,
             'status' => 'published',
         ]);
 
@@ -359,7 +357,6 @@ class CourseController extends Controller
             'notes_file' => ['nullable', 'file', 'max:51200'],
             'notes_title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'is_free_preview' => ['boolean'],
             'order' => ['nullable', 'integer'],
         ]);
 
@@ -374,7 +371,6 @@ class CourseController extends Controller
 
         $lesson->title = $validated['title'];
         $lesson->description = $validated['description'] ?? null;
-        $lesson->is_free_preview = $validated['is_free_preview'] ?? false;
         if (isset($validated['order'])) {
             $lesson->sort_order = $validated['order'];
         }

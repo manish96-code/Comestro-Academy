@@ -18,12 +18,10 @@ class CourseLesson extends Model
         'title',
         'description',
         'sort_order',
-        'is_free_preview',
         'status',
     ];
 
     protected $casts = [
-        'is_free_preview' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -58,6 +56,11 @@ class CourseLesson extends Model
     public function liveClasses(): HasMany
     {
         return $this->hasMany(LiveClass::class, 'lesson_id');
+    }
+
+    public function completions(): HasMany
+    {
+        return $this->hasMany(LessonCompletion::class, 'lesson_id');
     }
 
     // Backward-compatibility accessors

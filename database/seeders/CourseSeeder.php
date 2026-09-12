@@ -110,7 +110,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Comprehensive walkthrough of Laravel 12 folder layout, environment configuration, and booting lifecycle.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -150,7 +149,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Understanding contextual binding, singletons, interface contracts, and automated dependency injection.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -180,7 +178,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Route caching, custom route constraints, model binding, pipeline middleware, and rate limiters.',
                     'sort_order' => 3,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -209,7 +206,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Relational database normalization, constraints, composite indexes, and query execution plan optimization.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -239,7 +235,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Building complex relational models, polymorphism, subquery selections, and preventing N+1 bottlenecks.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -269,7 +264,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Leveraging clean query scopes, immutable Value Objects with custom casts, and modern attribute accessors.',
                     'sort_order' => 3,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -298,7 +292,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Shared layout architecture, page props pipeline, client-side routing, and zero-latency page transitions.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -328,7 +321,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Building resilient forms with useForm helper, server-side validation binding, and instantaneous UI updates.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -348,7 +340,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Unleashing cutting-edge Inertia v2 capabilities: deferred props with skeletons, smart polling, and link prefetching.',
                     'sort_order' => 3,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -387,7 +378,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Implementing Razorpay order creation, client checkout modal, and secure HMAC SHA256 signature verification.',
                     'sort_order' => 1,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -417,7 +407,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Design clean, readable, high-speed automated Pest tests covering authentication, transactions, and API routes.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -447,7 +436,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Containerizing Laravel and React with PHP-FPM, Nginx, OPcache optimization, and zero-downtime CI/CD deployment.',
                     'sort_order' => 3,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -558,7 +546,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Core elements, heading hierarchy, main, section, article, aside, and SEO markup.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -588,7 +575,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Building accessible forms with labels, fieldsets, ARIA roles, and native client validation.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -617,7 +603,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Understanding margin collapse, padding, borders, box-sizing, and cascade specificity calculation.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -647,7 +632,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Flex direction, wrap, justify-content, align-items, flex-grow, flex-shrink, and fluid card grids.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -667,7 +651,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Grid template areas, auto-fit, minmax(), repeat(), and complex multi-column responsive dashboard layouts.',
                     'sort_order' => 3,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -696,7 +679,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Configuring custom color tokens, font stacks, spacing scales, and Vite asset compilation.',
                     'sort_order' => 1,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -726,7 +708,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Crafting modern hero sections, sticky navigation, interactive dropdowns, and automated dark theme toggles.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -755,7 +736,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Arrow functions, destructuring, spread/rest operators, modules, async/await, and consuming REST APIs.',
                     'sort_order' => 1,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -785,7 +765,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Configuring custom domains, automated Git push deployments, SSL certificates, and performance audits with Lighthouse.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -859,7 +838,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Crafting actionable user personas, mapping empathy journeys, and organizing intuitive site architecture.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -889,7 +867,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Rapid prototyping of structure, grayscale layouts, screen flows, and stakeholder review loops.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -918,7 +895,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Deep dive into hug, fill, fixed sizing, negative spacing, stroke inclusion, and absolute positioning.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -948,7 +924,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'WCAG contrast compliance, type scale ratios, variable typography, and modular design token structures.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -977,7 +952,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Crafting micro-interactions, modal overlays, draggable carousels, and realistic mobile navigation.',
                     'sort_order' => 1,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -997,7 +971,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Organizing component sheets, documenting token mappings, redlining, and using Dev Mode in Figma.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -1095,7 +1068,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Understanding how Docker builds images, layer caching, alpine bases, and security hardening.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -1125,7 +1097,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Networking, volumes, dependency ordering, environment substitution, and health checks.',
                     'sort_order' => 2,
-                    'is_free_preview' => false,
                     'status' => 'published',
                 ]
             );
@@ -1198,7 +1169,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Pattern matching, records, async/await streams, widget lifecycle, and rendering pipelines.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );
@@ -1295,7 +1265,6 @@ class CourseSeeder extends Seeder
                 [
                     'description' => 'Master advanced Python patterns for high-throughput enterprise applications.',
                     'sort_order' => 1,
-                    'is_free_preview' => true,
                     'status' => 'published',
                 ]
             );

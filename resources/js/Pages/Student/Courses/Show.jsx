@@ -101,7 +101,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         }));
     };
 
-    // Helper to dynamically load the official Razorpay Checkout SDK
+    // Load Razorpay SDK
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
             if (typeof window !== 'undefined' && window.Razorpay) {
@@ -127,17 +127,17 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         setEnrolling(true);
 
         try {
-            // Request order creation from backend
+            // Create order
             const { data } = await axios.post(route('courses.payment.create-order', course.id));
 
-            // If the course is free, user is directly enrolled
+            // Free course auto-enroll
             if (data.free) {
                 toast.success(data.message || 'Enrolled successfully!');
                 router.visit(data.redirect_url || route('student.courses.enrolled'));
                 return;
             }
 
-            // Load Razorpay checkout script if needed
+            // Load Razorpay script
             const isLoaded = await loadRazorpayScript();
             if (!isLoaded) {
                 toast.error('Failed to load Razorpay payment gateway. Please check your internet connection.');
@@ -145,7 +145,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 return;
             }
 
-            // Razorpay checkout modal options
+            // Razorpay modal options
             const options = {
                 key: data.key,
                 amount: data.amount,
@@ -173,7 +173,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     },
                 },
                 handler: function (response) {
-                    // Send signature to server for verification
+                    // Verify payment signature
                     router.post(
                         route('courses.payment.verify', course.id),
                         {
@@ -222,7 +222,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const instructorUser = instructor?.user;
     const isEnrolled = course.is_enrolled;
 
-    // Computed discount percentage
+    // Discount percentage
     const discountPercent =
         course.price && course.discount_price && Number(course.price) > Number(course.discount_price)
             ? Math.round(((Number(course.price) - Number(course.discount_price)) / Number(course.price)) * 100)
@@ -240,14 +240,14 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
     const totalModulesCount = curriculumModules.length;
 
-    // Automatically format module title with sequential module numbering
+    // Format module title
     const getModuleTitle = (title, index) => {
         if (!title) return `Module ${index + 1}`;
         const cleanTitle = title.replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim();
         return `Module ${index + 1}: ${cleanTitle || title}`;
     };
 
-    // Helper to parse subtitle or subtitles array into individual topics
+    // Parse module topics
     const parseTopics = (moduleOrSubtitle) => {
         if (!moduleOrSubtitle) {
             return [];
@@ -282,7 +282,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         return [moduleOrSubtitle.trim()];
     };
 
-    // Helper to map dynamic feature text to appropriate visual icon
+    // Feature icon helper
     const getFeatureIcon = (text) => {
         const lower = (text || '').toLowerCase();
         if (lower.includes('week') || lower.includes('hour') || lower.includes('month') || lower.includes('time') || lower.includes('duration') || lower.includes('pace')) {
@@ -310,10 +310,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         ? course.course_includes.filter(Boolean)
         : [];
 
-    // Course detail core body
+    // Course detail content
     const mainDetailContent = (
         <div className="space-y-8">
-            {/* Tab Navigation: About vs Curriculum (Matches LearnSyntax UI) */}
+            {/* Tab navigation */}
             <div className="border-b border-gray-200">
                 <div className="flex gap-8">
                     <button
@@ -352,7 +352,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             </div>
 
-            {/* TAB 1: ABOUT CONTENT (Matches LearnSyntax Screenshot 1) */}
+            {/* About tab */}
             {activeTab === 'about' && (
                 <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-5">
                     <div className="border-l-4 border-indigo-600 pl-3">
@@ -378,10 +378,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             )}
 
-            {/* TAB 2: CURRICULUM CONTENT (Matches LearnSyntax Screenshot 2) */}
+            {/* Curriculum tab */}
             {activeTab === 'curriculum' && (
                 <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-                    {/* Curriculum Header */}
+                    {/* Curriculum header */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-5">
                         <div className="border-l-4 border-indigo-600 pl-3">
                             <h2 className="text-lg sm:text-xl font-bold text-gray-900">
@@ -420,7 +420,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </div>
                     </div>
 
-                    {/* Modules List (View Only Syllabus) */}
+                    {/* Modules list */}
                     {curriculumModules.length > 0 ? (
                         <div className="space-y-4">
                             {curriculumModules.map((module, mIdx) => {
@@ -432,7 +432,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         key={mIdx}
                                         className="border border-gray-200 rounded-xl overflow-hidden transition-all shadow-2xs hover:border-indigo-200"
                                     >
-                                        {/* Module Header Toggle */}
+                                        {/* Module header */}
                                         <button
                                             type="button"
                                             onClick={() => toggleModule(mIdx)}
@@ -456,7 +456,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                             </span>
                                         </button>
 
-                                        {/* Expanded Topics List (View Only) */}
+                                        {/* Topics list */}
                                         {isOpen && (
                                             <div className="bg-white divide-y divide-gray-100">
                                                 {topics.length > 0 ? (
@@ -490,7 +490,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             )}
 
-            {/* Instructor Spotlight */}
+            {/* Instructor spotlight */}
             {instructor && (
                 <div className="bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs space-y-6">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -557,7 +557,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             )}
 
-            {/* Related Courses */}
+            {/* Related courses */}
             {relatedCourses && relatedCourses.length > 0 && (
                 <div className="space-y-4 pt-4">
                     <div className="flex items-center justify-between">
@@ -630,11 +630,11 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         </div>
     );
 
-    // Right Sticky Sidebar (Pricing Card & Enrollment Actions)
+    // Sticky pricing sidebar
     const stickyEnrollmentCard = (
         <div className="lg:sticky lg:top-24 space-y-6">
             <div className="bg-white rounded-2xl border border-gray-200/90 shadow-lg overflow-hidden">
-                {/* Media Preview / Thumbnail */}
+                {/* Course preview */}
                 <div className="relative h-48 sm:h-56 bg-gradient-to-tr from-slate-950 via-indigo-950 to-indigo-900 flex items-center justify-center overflow-hidden group">
                     {course.thumbnail ? (
                         <img
@@ -647,10 +647,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         />
                     ) : null}
 
-                    {/* Dark gradient overlay */}
+                    {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/30 transition backdrop-blur-xs" />
 
-                    {/* Centered Play / Preview Trigger */}
+                    {/* Preview trigger */}
                     <div className="relative z-10 flex flex-col items-center gap-2">
                         <div className="h-14 w-14 rounded-full bg-white/90 text-indigo-700 flex items-center justify-center shadow-xl group-hover:scale-110 transition duration-200">
                             <Play className="h-6 w-6 fill-current ml-1" />
@@ -660,7 +660,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </span>
                     </div>
 
-                    {/* Course Type Badge */}
+                    {/* Course type badge */}
                     <div className="absolute top-3 left-3 z-20">
                         {course.type === 'live' ? (
                             <span className="px-2.5 py-1 text-xs font-mono font-bold uppercase rounded-lg bg-rose-600/95 text-white shadow-md flex items-center gap-1.5 backdrop-blur-xs">
@@ -687,9 +687,9 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     )}
                 </div>
 
-                {/* Card Content & Action CTAs */}
+                {/* Card content & CTAs */}
                 <div className="p-6 space-y-6">
-                    {/* Price Block */}
+                    {/* Price block */}
                     <div className="space-y-1">
                         <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
                             Enrollment Fee
@@ -720,7 +720,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </p>
                     </div>
 
-                    {/* Main CTA Button */}
+                    {/* Enrollment CTA */}
                     <div className="space-y-2.5">
                         {isEnrolled ? (
                             <Link
@@ -762,12 +762,12 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         )}
                     </div>
 
-                    {/* Trust Signals */}
+                    {/* Trust signals */}
                     <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/70 text-center text-xs text-slate-600">
                         <span className="font-semibold text-slate-900">7-Day Money-Back Guarantee</span> · Full refund if you're not satisfied.
                     </div>
 
-                    {/* Dynamic "Course Includes" Feature List */}
+                    {/* Course includes */}
                     {courseIncludesList.length > 0 && (
                         <div className="space-y-3 pt-2 border-t border-gray-100">
                             <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
@@ -784,7 +784,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </div>
                     )}
 
-                    {/* Share Button */}
+                    {/* Share button */}
                     <div className="pt-2 border-t border-gray-100 flex items-center justify-center">
                         <button
                             type="button"
@@ -800,10 +800,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         </div>
     );
 
-    // Dynamic Hero Banner displaying course title & metadata
+    // Hero banner
     const heroHeaderSection = (
         <div className="relative bg-[#0b1120] text-white overflow-hidden py-10 sm:py-14 border-b border-slate-800">
-            {/* Background ambient glow */}
+            {/* Background glow */}
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute top-1/2 right-0 w-80 h-80 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -868,19 +868,19 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         )}
                     </div>
 
-                    {/* Course Title */}
+                    {/* Course title */}
                     <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
                         {course.title}
                     </h1>
 
-                    {/* Brief Subtitle / Excerpt */}
+                    {/* Subtitle */}
                     {(course.subtitle || course.description) && (
                         <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
                             {course.subtitle || course.description}
                         </p>
                     )}
 
-                    {/* Social Proof & Metrics Strip */}
+                    {/* Metrics strip */}
                     <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2 text-xs sm:text-sm text-slate-300">
                         {/* Rating */}
                         <div className="flex items-center gap-1.5 text-amber-400">
@@ -893,7 +893,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             <span className="text-slate-400 text-xs">({course.enrollments_count ? course.enrollments_count + 120 : 120} reviews)</span>
                         </div>
 
-                        {/* Enrolled Students */}
+                        {/* Enrolled students */}
                         <div className="flex items-center gap-1.5 text-slate-300">
                             <User className="h-4 w-4 text-emerald-400" />
                             <span>
@@ -904,7 +904,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             </span>
                         </div>
 
-                        {/* Mentor Mini Badge */}
+                        {/* Instructor */}
                         <div className="flex items-center gap-2">
                             <span className="text-slate-400">Instructor:</span>
                             <span className="text-white font-semibold underline decoration-emerald-500/40">
@@ -912,7 +912,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             </span>
                         </div>
 
-                        {/* Syllabus Modules */}
+                        {/* Modules count */}
                         <div className="flex items-center gap-1.5 text-slate-300">
                             <BookOpen className="h-4 w-4 text-indigo-400" />
                             <span>
@@ -963,7 +963,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         </div>
     );
 
-    // If student is logged in, wrap inside StudentLayout for unified portal experience
+    // Student portal view
     if (user && user.role === 'student') {
         return (
             <StudentLayout
@@ -1008,19 +1008,19 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             >
                 <Head title={`${course.title} - Comestro Academy`} />
 
-                {/* Dark Hero Banner */}
+                {/* Hero banner */}
                 {heroHeaderSection}
 
-                {/* Dual Column Layout: Content + Sticky Action Card */}
+                {/* Main content & sidebar */}
                 <div className="py-8 sm:py-12 bg-gray-50">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                            {/* Left Column: Details, Syllabus, Instructor */}
+                            {/* Course details */}
                             <div className="lg:col-span-8">
                                 {mainDetailContent}
                             </div>
 
-                            {/* Right Column: Sticky Pricing & Enrollment Card */}
+                            {/* Sticky card */}
                             <div className="lg:col-span-4">
                                 {stickyEnrollmentCard}
                             </div>
@@ -1031,13 +1031,13 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         );
     }
 
-    // Public Layout for Guests, Visitors, and Non-Student users
+    // Public visitor view
     return (
         <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans antialiased">
             <Head title={`${course.title} - Comestro Academy`} />
             <Toaster position="top-right" />
 
-            {/* Public Header / Navigation */}
+            {/* Public navigation */}
             <header className="sticky top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
                     {/* Brand */}
@@ -1062,7 +1062,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         </nav>
                     </div>
 
-                    {/* Auth CTAs */}
+                    {/* Auth buttons */}
                     <div className="hidden sm:flex items-center gap-3">
                         {user ? (
                             <Link
@@ -1090,7 +1090,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         )}
                     </div>
 
-                    {/* Mobile Menu Toggle */}
+                    {/* Mobile menu toggle */}
                     <button
                         type="button"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -1101,7 +1101,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     </button>
                 </div>
 
-                {/* Mobile Dropdown */}
+                {/* Mobile dropdown */}
                 {mobileMenuOpen && (
                     <div className="border-b border-slate-200 bg-white px-4 py-4 sm:hidden shadow-lg space-y-3 font-mono text-sm">
                         <Link
@@ -1147,19 +1147,19 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 )}
             </header>
 
-            {/* Dark Hero Banner */}
+            {/* Hero banner */}
             {heroHeaderSection}
 
-            {/* Main Content Area */}
+            {/* Main content */}
             <main className="flex-1 py-8 sm:py-12 bg-slate-50">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        {/* Left Column: Details, Syllabus, Instructor */}
+                        {/* Course details */}
                         <div className="lg:col-span-8">
                             {mainDetailContent}
                         </div>
 
-                        {/* Right Column: Sticky Pricing & Enrollment Card */}
+                        {/* Sticky card */}
                         <div className="lg:col-span-4">
                             {stickyEnrollmentCard}
                         </div>
@@ -1167,7 +1167,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             </main>
 
-            {/* Simple Footer */}
+            {/* Footer */}
             <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
                 <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div>
