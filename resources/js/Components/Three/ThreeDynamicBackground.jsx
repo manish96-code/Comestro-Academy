@@ -3,16 +3,17 @@ import * as THREE from 'three';
 
 /**
  * ThreeDynamicBackground:
- * An elegant, neat, high-performance 3D ambient background for Comestro Academy.
+ * A simple, ultra-satisfying, minimalist 3D interactive background.
  * Features:
- * - Fluid undulating cybernetic wave grid (Horizon Matrix)
- * - Soft glowing atmospheric quantum particles with procedural radial gradients
- * - Responsive cursor parallax with smooth inertia damping
- * - Scroll-reactive camera depth shift
- * - Seamless theme adaptation (Midnight Dark & Crisp Modern Light)
- * - 60+ FPS lightweight optimization with zero layout interference
+ * - Fluid interactive cybernetic mesh (calm, hypnotic wave terrain)
+ * - Satisfying cursor interaction: moving the pointer creates silky smooth
+ *   elastic ripples and a dynamic glowing cursor light aura that follows your movement
+ * - Minimalist, clean, distraction-free aesthetic (zero clutter)
+ * - 60+ FPS lightweight optimization with smooth spring physics
+ * - Seamless Midnight Dark & Crisp Light mode support
  */
-export default function ThreeDynamicBackground({ theme = 'light' }) {
+
+export default function ThreeDynamicBackground({ theme = 'dark' }) {
     const containerRef = useRef(null);
 
     useEffect(() => {
@@ -23,18 +24,22 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         let isVisible = true;
         const isDark = theme === 'dark';
 
+        const texturesToDispose = [];
+        const materialsToDispose = [];
+        const geometriesToDispose = [];
+
         // --- 1. Scene & Depth Fog ---
         const scene = new THREE.Scene();
-        // Fog matches the exact page background color to create infinite seamless falloff
         const fogColor = isDark ? 0x090d16 : 0xffffff;
-        scene.fog = new THREE.FogExp2(fogColor, 0.032);
+        // Gentle distance fog for infinite horizon falloff
+        scene.fog = new THREE.FogExp2(fogColor, isDark ? 0.016 : 0.018);
 
         // --- 2. Camera Setup ---
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
-        camera.position.set(0, 3.8, 14);
-        camera.lookAt(0, -0.8, 0);
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+        camera.position.set(0, 4.2, 13);
+        camera.lookAt(0, -0.6, 0);
 
         // --- 3. High Performance Renderer ---
         const renderer = new THREE.WebGLRenderer({
@@ -48,8 +53,8 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         renderer.setClearColor(0x000000, 0);
         container.appendChild(renderer.domElement);
 
-        // --- 4. Procedural Glowing Particle Sprites ---
-        const createParticleSprite = (stop0, stop1, stop2) => {
+        // --- 4. High-Quality Procedural Dot Sprite ---
+        const createDotTexture = (stop0, stop1, stop2) => {
             const canvas = document.createElement('canvas');
             canvas.width = 64;
             canvas.height = 64;
@@ -62,106 +67,157 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
             ctx.fillRect(0, 0, 64, 64);
             const tex = new THREE.CanvasTexture(canvas);
             tex.needsUpdate = true;
+            texturesToDispose.push(tex);
             return tex;
         };
 
-        // Dark mode: soft subtle cyan & deep indigo glow (subdued, non-intrusive)
-        // Light mode: gentle soft royal blue & slate shimmer
-        const waveSprite = isDark
-            ? createParticleSprite('rgba(56, 189, 248, 0.45)', 'rgba(14, 165, 233, 0.16)', 'rgba(9, 13, 22, 0)')
-            : createParticleSprite('rgba(37, 99, 235, 0.32)', 'rgba(59, 130, 246, 0.10)', 'rgba(255, 255, 255, 0)');
+        // --- 5. Soft Glow Cursor Aura Texture ---
+        const createCursorAuraTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            if (isDark) {
+                grad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+                grad.addColorStop(0.4, 'rgba(99, 102, 241, 0.20)');
+                grad.addColorStop(1, 'rgba(9, 13, 22, 0)');
+            } else {
+                grad.addColorStop(0, 'rgba(37, 99, 235, 0.30)');
+                grad.addColorStop(0.45, 'rgba(99, 102, 241, 0.12)');
+                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 128, 128);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.needsUpdate = true;
+            texturesToDispose.push(tex);
+            return tex;
+        };
 
-        const ambientSprite = isDark
-            ? createParticleSprite('rgba(168, 85, 247, 0.35)', 'rgba(99, 102, 241, 0.14)', 'rgba(9, 13, 22, 0)')
-            : createParticleSprite('rgba(99, 102, 241, 0.25)', 'rgba(129, 140, 248, 0.08)', 'rgba(255, 255, 255, 0)');
+        // --- 6. Layer 1: Satisfying Interactive Liquid Mesh ---
+        // Dark: vibrant glowing cyan on dark navy; Light: rich deep royal & indigo on white
+        const dotTexture = isDark
+            ? createDotTexture('rgba(56, 189, 248, 0.95)', 'rgba(14, 165, 233, 0.40)', 'rgba(9, 13, 22, 0)')
+            : createDotTexture('rgba(30, 58, 138, 0.95)', 'rgba(37, 99, 235, 0.50)', 'rgba(255, 255, 255, 0)');
 
-        // --- 5. Layer 1: Undulating Cybernetic Horizon Wave ---
-        const cols = isMobile ? 32 : 46;
-        const rows = isMobile ? 26 : 38;
-        const waveCount = cols * rows;
-        const wavePositions = new Float32Array(waveCount * 3);
-        const waveOffsets = new Float32Array(waveCount);
+        const cols = isMobile ? 36 : 56;
+        const rows = isMobile ? 28 : 42;
+        const totalPoints = cols * rows;
 
-        const spacingX = 0.85;
-        const spacingZ = 0.65;
+        const positions = new Float32Array(totalPoints * 3);
+        const originalY = new Float32Array(totalPoints);
+        const velocities = new Float32Array(totalPoints);
+
+        const spacingX = 0.82;
+        const spacingZ = 0.68;
         const offsetX = (cols * spacingX) / 2;
         const offsetZ = (rows * spacingZ) / 2;
 
-        let widx = 0;
+        let idx = 0;
         for (let ix = 0; ix < cols; ix++) {
             for (let iz = 0; iz < rows; iz++) {
                 const x = ix * spacingX - offsetX;
                 const z = iz * spacingZ - offsetZ;
-                const y = 0;
-
-                wavePositions[widx * 3] = x;
-                wavePositions[widx * 3 + 1] = y;
-                wavePositions[widx * 3 + 2] = z;
-
-                // Subtle individual variation
-                waveOffsets[widx] = Math.sin(ix * 0.4) * 0.3 + Math.cos(iz * 0.4) * 0.3;
-                widx++;
+                positions[idx * 3] = x;
+                positions[idx * 3 + 1] = 0;
+                positions[idx * 3 + 2] = z;
+                originalY[idx] = 0;
+                velocities[idx] = 0;
+                idx++;
             }
         }
 
         const waveGeometry = new THREE.BufferGeometry();
-        waveGeometry.setAttribute('position', new THREE.BufferAttribute(wavePositions, 3));
+        waveGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometriesToDispose.push(waveGeometry);
 
         const waveMaterial = new THREE.PointsMaterial({
-            size: isMobile ? 0.24 : 0.30,
-            map: waveSprite,
+            size: isMobile ? 0.30 : 0.38,
+            map: dotTexture,
             transparent: true,
-            opacity: isDark ? 0.22 : 0.15,
-            blending: THREE.NormalBlending,
+            opacity: isDark ? 0.45 : 0.52,
+            blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
             depthWrite: false,
         });
+        materialsToDispose.push(waveMaterial);
 
         const waveMesh = new THREE.Points(waveGeometry, waveMaterial);
-        waveMesh.position.set(0, -3.2, -4);
+        waveMesh.position.set(0, -3.0, -3.5);
         scene.add(waveMesh);
 
-        // --- 6. Layer 2: Floating Ambient Quantum Starfield ---
-        const ambientCount = isMobile ? 100 : 200;
-        const ambientPositions = new Float32Array(ambientCount * 3);
-        const ambientVelocity = new Float32Array(ambientCount * 3);
-
-        for (let i = 0; i < ambientCount; i++) {
-            ambientPositions[i * 3] = (Math.random() - 0.5) * 44;
-            ambientPositions[i * 3 + 1] = (Math.random() - 0.5) * 28 + 2;
-            ambientPositions[i * 3 + 2] = (Math.random() - 0.5) * 26 - 2;
-
-            ambientVelocity[i * 3] = (Math.random() - 0.5) * 0.005;
-            ambientVelocity[i * 3 + 1] = Math.random() * 0.006 + 0.002; // Gentle upward drift
-            ambientVelocity[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
-        }
-
-        const ambientGeometry = new THREE.BufferGeometry();
-        ambientGeometry.setAttribute('position', new THREE.BufferAttribute(ambientPositions, 3));
-
-        const ambientMaterial = new THREE.PointsMaterial({
-            size: isMobile ? 0.18 : 0.24,
-            map: ambientSprite,
+        // --- 7. Layer 2: Satisfying Glowing Cursor Spotlight Aura ---
+        const cursorAuraMat = new THREE.SpriteMaterial({
+            map: createCursorAuraTexture(),
             transparent: true,
-            opacity: isDark ? 0.18 : 0.12,
-            blending: THREE.NormalBlending,
+            opacity: isDark ? 0.75 : 0.60,
+            blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
             depthWrite: false,
         });
+        materialsToDispose.push(cursorAuraMat);
 
-        const ambientMesh = new THREE.Points(ambientGeometry, ambientMaterial);
-        scene.add(ambientMesh);
+        const cursorAura = new THREE.Sprite(cursorAuraMat);
+        cursorAura.scale.set(7.5, 7.5, 1);
+        cursorAura.position.set(0, -2.8, -3.5);
+        scene.add(cursorAura);
 
-        // --- 7. Cursor Parallax & Scroll Reaction ---
+        // --- 8. Layer 3: Faint Atmospheric Floating Specks ---
+        const dustCount = isMobile ? 35 : 70;
+        const dustPositions = new Float32Array(dustCount * 3);
+        const dustVelocities = new Float32Array(dustCount * 3);
+
+        for (let i = 0; i < dustCount; i++) {
+            dustPositions[i * 3] = (Math.random() - 0.5) * 36;
+            dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 20 + 2;
+            dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 22 - 2;
+
+            dustVelocities[i * 3] = (Math.random() - 0.5) * 0.003;
+            dustVelocities[i * 3 + 1] = Math.random() * 0.004 + 0.0015;
+            dustVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.003;
+        }
+
+        const dustGeometry = new THREE.BufferGeometry();
+        dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+        geometriesToDispose.push(dustGeometry);
+
+        const dustMaterial = new THREE.PointsMaterial({
+            size: isMobile ? 0.18 : 0.24,
+            map: dotTexture,
+            transparent: true,
+            opacity: isDark ? 0.28 : 0.18,
+            blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
+            depthWrite: false,
+        });
+        materialsToDispose.push(dustMaterial);
+
+        const dustMesh = new THREE.Points(dustGeometry, dustMaterial);
+        scene.add(dustMesh);
+
+        // --- 9. Cursor Pointer & Physics State ---
+        let mouseX = 0;
+        let mouseY = 0;
         let targetCamX = 0;
-        let targetCamY = 3.8;
+        let targetCamY = 4.2;
         let targetRotX = -0.15;
         let scrollY = 0;
 
+        // Smoothly interpolated cursor coordinates on the 3D plane
+        let smoothCursorPlaneX = 0;
+        let smoothCursorPlaneZ = -3.5;
+        let cursorActive = false;
+
         const handleMouseMove = (e) => {
-            const nx = (e.clientX / window.innerWidth) * 2 - 1;
-            const ny = -(e.clientY / window.innerHeight) * 2 + 1;
-            targetCamX = nx * 1.8;
-            targetCamY = 3.8 + ny * 1.2;
-            targetRotX = -0.15 + ny * 0.06;
+            cursorActive = true;
+            const ndcX = (e.clientX / window.innerWidth) * 2 - 1;
+            const ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            mouseX = ndcX;
+            mouseY = ndcY;
+
+            // Subtle parallax
+            targetCamX = ndcX * 1.5;
+            targetCamY = 4.2 + ndcY * 0.9;
+            targetRotX = -0.15 + ndcY * 0.04;
         };
         window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
@@ -172,15 +228,15 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
 
         const handleResize = () => {
             if (!container) return;
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            camera.aspect = w / h;
+            width = window.innerWidth;
+            height = window.innerHeight;
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
+            renderer.setSize(width, height);
         };
         window.addEventListener('resize', handleResize);
 
-        // --- 8. Visibility Observer ---
+        // --- 10. Intersection Observer ---
         const observer = new IntersectionObserver(
             ([entry]) => {
                 isVisible = entry.isIntersecting;
@@ -189,7 +245,7 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         );
         observer.observe(container);
 
-        // --- 9. Butter-Smooth Animation Loop ---
+        // --- 11. Butter-Smooth Animation Loop ---
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -198,7 +254,23 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
 
             const elapsed = clock.getElapsedTime();
 
-            // 1. Wave Surface Undulation
+            // Map mouse to wave plane coordinates with fluid spring lag
+            const targetPlaneX = mouseX * 18.0;
+            const targetPlaneZ = -mouseY * 12.0 - 3.5;
+
+            smoothCursorPlaneX += (targetPlaneX - smoothCursorPlaneX) * 0.08;
+            smoothCursorPlaneZ += (targetPlaneZ - smoothCursorPlaneZ) * 0.08;
+
+            // Move the soft glowing spotlight aura with the cursor
+            cursorAura.position.x = smoothCursorPlaneX;
+            cursorAura.position.z = smoothCursorPlaneZ;
+            cursorAura.position.y = -2.8 + Math.sin(elapsed * 1.5) * 0.1;
+
+            // Subtle breathing pulse on cursor aura
+            const auraScale = 7.0 + Math.sin(elapsed * 2.0) * 0.6;
+            cursorAura.scale.set(auraScale, auraScale, 1);
+
+            // 1. Fluid Wave & Satisfying Ripple Physics on the Matrix Grid
             const posAttr = waveGeometry.attributes.position;
             const posArr = posAttr.array;
 
@@ -209,34 +281,53 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
                     const x = posArr[pi * 3];
                     const z = posArr[pi * 3 + 2];
 
-                    // Multi-harmonic sine/cosine ripple wave
-                    posArr[iy] =
-                        Math.sin(x * 0.28 + elapsed * 0.9) * 0.6 +
-                        Math.cos(z * 0.32 + elapsed * 0.7) * 0.45 +
-                        Math.sin((x + z) * 0.22 + elapsed * 1.1) * 0.25 +
-                        waveOffsets[pi];
+                    // Gentle, relaxing oceanic ambient wave
+                    let baseWave =
+                        Math.sin(x * 0.25 + elapsed * 0.85) * 0.55 +
+                        Math.cos(z * 0.30 + elapsed * 0.65) * 0.40 +
+                        Math.sin((x + z) * 0.18 + elapsed * 1.0) * 0.22;
 
+                    // Satisfying Interactive Cursor Elastic Wave
+                    if (cursorActive) {
+                        const dx = x - smoothCursorPlaneX;
+                        const dz = z - smoothCursorPlaneZ;
+                        const dist = Math.sqrt(dx * dx + dz * dz);
+
+                        if (dist < 8.5) {
+                            // Smooth Gaussian elevation + surrounding harmonic ripple
+                            const ripple =
+                                Math.exp(-dist * 0.38) *
+                                Math.sin(dist * 1.5 - elapsed * 4.2) *
+                                0.65;
+
+                            // Gentle magnetic lift under the pointer
+                            const lift = Math.exp(-dist * 0.45) * 0.50;
+
+                            baseWave += ripple + lift;
+                        }
+                    }
+
+                    posArr[iy] = baseWave;
                     pi++;
                 }
             }
             posAttr.needsUpdate = true;
 
-            // 2. Ambient Particles Drift
-            const ambAttr = ambientGeometry.attributes.position;
-            const ambArr = ambAttr.array;
+            // 2. Slow Ambient Specks Drift
+            const dustAttr = dustGeometry.attributes.position;
+            const dustArr = dustAttr.array;
 
-            for (let i = 0; i < ambientCount; i++) {
-                ambArr[i * 3] += ambientVelocity[i * 3];
-                ambArr[i * 3 + 1] += ambientVelocity[i * 3 + 1];
-                ambArr[i * 3 + 2] += ambientVelocity[i * 3 + 2];
+            for (let i = 0; i < dustCount; i++) {
+                dustArr[i * 3] += dustVelocities[i * 3];
+                dustArr[i * 3 + 1] += dustVelocities[i * 3 + 1];
+                dustArr[i * 3 + 2] += dustVelocities[i * 3 + 2];
 
-                // Wrap-around loop for continuous floating atmosphere
-                if (ambArr[i * 3 + 1] > 18) {
-                    ambArr[i * 3 + 1] = -12;
-                    ambArr[i * 3] = (Math.random() - 0.5) * 44;
+                if (dustArr[i * 3 + 1] > 16) {
+                    dustArr[i * 3 + 1] = -10;
+                    dustArr[i * 3] = (Math.random() - 0.5) * 36;
                 }
             }
-            ambAttr.needsUpdate = true;
+            dustAttr.needsUpdate = true;
 
             // 3. Smooth Camera Interpolation (Parallax + Scroll)
             const scrollOffset = Math.min(scrollY * 0.0025, 4.0);
@@ -244,15 +335,15 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
             camera.position.y += (targetCamY - scrollOffset * 0.6 - camera.position.y) * 0.04;
             camera.rotation.x += (targetRotX - scrollOffset * 0.05 - camera.rotation.x) * 0.04;
 
-            // Subtle rotation of wave mesh to enhance spatial depth
-            waveMesh.rotation.y = Math.sin(elapsed * 0.08) * 0.04;
+            // Gentle spatial rotation
+            waveMesh.rotation.y = Math.sin(elapsed * 0.06) * 0.025;
 
             renderer.render(scene, camera);
         };
 
         animate();
 
-        // --- 10. Clean Disposal on Unmount or Theme Change ---
+        // --- 12. Clean Disposal on Unmount or Theme Change ---
         return () => {
             cancelAnimationFrame(animationFrameId);
             observer.disconnect();
@@ -260,13 +351,9 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('scroll', handleScroll);
 
-            waveGeometry.dispose();
-            waveMaterial.dispose();
-            waveSprite.dispose();
-
-            ambientGeometry.dispose();
-            ambientMaterial.dispose();
-            ambientSprite.dispose();
+            texturesToDispose.forEach((t) => t.dispose());
+            materialsToDispose.forEach((m) => m.dispose());
+            geometriesToDispose.forEach((g) => g.dispose());
 
             renderer.dispose();
             if (renderer.domElement && renderer.domElement.parentNode) {
@@ -279,7 +366,7 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         <div
             ref={containerRef}
             aria-hidden="true"
-            className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none opacity-55 dark:opacity-45"
+            className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
         />
     );
 }

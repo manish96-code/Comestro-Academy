@@ -1,54 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" width="100%" height="100%">
   <defs>
-    <linearGradient id="sysGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="sysBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#090d16" />
-      <stop offset="100%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#1c1917" />
     </linearGradient>
-    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f59e0b" />
-      <stop offset="100%" stop-color="#d97706" />
-    </linearGradient>
+    <radialGradient id="sysGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+    </radialGradient>
   </defs>
-  <rect width="400" height="240" rx="16" fill="url(#sysGrad)" />
-  
-  <g opacity="0.12" stroke="#f59e0b" stroke-width="1">
-    <rect x="70" y="50" width="80" height="40" rx="4" fill="none" />
-    <rect x="250" y="50" width="80" height="40" rx="4" fill="none" />
-    <rect x="160" y="140" width="80" height="40" rx="4" fill="none" />
-    <line x1="110" y1="90" x2="200" y2="140" />
-    <line x1="290" y1="90" x2="200" y2="140" />
+
+  <!-- Background -->
+  <rect width="400" height="220" fill="url(#sysBg)" />
+
+  <!-- Ambient Glow -->
+  <circle cx="200" cy="110" r="95" fill="url(#sysGlow)" />
+
+  <!-- Subtle Blueprint Grid -->
+  <g opacity="0.08" stroke="#f59e0b" stroke-width="1">
+    <rect x="60" y="40" width="70" height="35" rx="4" fill="none" />
+    <rect x="270" y="40" width="70" height="35" rx="4" fill="none" />
+    <rect x="165" y="150" width="70" height="35" rx="4" fill="none" />
+    <line x1="95" y1="75" x2="200" y2="150" />
+    <line x1="305" y1="75" x2="200" y2="150" />
   </g>
 
-  <!-- Glowing Radial Orb -->
-  <circle cx="200" cy="115" r="70" fill="#f59e0b" opacity="0.15" filter="blur(22px)" />
+  <!-- Centered Distributed Architecture Graphic -->
+  <g transform="translate(200, 110)">
+    <!-- Gateway Box -->
+    <rect x="-38" y="-22" width="76" height="44" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2" />
+    <!-- Gateway Icon (Server Stack Lines) -->
+    <line x1="-20" y1="-8" x2="20" y2="-8" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="-20" y1="8" x2="20" y2="8" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
 
-  <!-- Distributed Architecture Architecture Graphic -->
-  <g transform="translate(200, 115)">
-    <!-- Load Balancer Center Box -->
-    <rect x="-35" y="-22" width="70" height="44" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5" />
-    <text x="0" y="4" fill="#fbbf24" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">GATEWAY</text>
+    <!-- Cluster Nodes (Top Left, Top Right, Bottom Left, Bottom Right) -->
+    <line x1="-60" y1="-32" x2="-38" y2="-12" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" />
+    <circle cx="-68" cy="-36" r="9" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="-68" cy="-36" r="3.5" fill="#38bdf8" />
 
-    <!-- Cluster Nodes -->
-    <circle cx="-65" cy="-35" r="10" fill="#38bdf8" />
-    <line x1="-55" y1="-30" x2="-35" y2="-15" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 3" />
+    <line x1="60" y1="-32" x2="38" y2="-12" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" />
+    <circle cx="68" cy="-36" r="9" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="68" cy="-36" r="3.5" fill="#38bdf8" />
 
-    <circle cx="65" cy="-35" r="10" fill="#38bdf8" />
-    <line x1="55" y1="-30" x2="35" y2="-15" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 3" />
+    <line x1="-60" y1="32" x2="-38" y2="12" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3" />
+    <circle cx="-68" cy="36" r="9" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+    <circle cx="-68" cy="36" r="3.5" fill="#10b981" />
 
-    <circle cx="-65" cy="35" r="10" fill="#10b981" />
-    <line x1="-55" y1="30" x2="-35" y2="15" stroke="#10b981" stroke-width="2" stroke-dasharray="3 3" />
-
-    <circle cx="65" cy="35" r="10" fill="#10b981" />
-    <line x1="55" y1="30" x2="35" y2="15" stroke="#10b981" stroke-width="2" stroke-dasharray="3 3" />
+    <line x1="60" y1="32" x2="38" y2="12" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3" />
+    <circle cx="68" cy="36" r="9" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+    <circle cx="68" cy="36" r="3.5" fill="#10b981" />
   </g>
-
-  <!-- High Concurrency Badge -->
-  <g transform="translate(285, 25)">
-    <rect width="90" height="24" rx="12" fill="#451a03" stroke="#f59e0b" stroke-width="1" />
-    <circle cx="14" cy="12" r="5" fill="#f59e0b" />
-    <text x="25" y="16" fill="#fef08a" font-family="-apple-system, sans-serif" font-size="10" font-weight="700">SCALE 10M+</text>
-  </g>
-
-  <text x="24" y="210" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="15" font-weight="800" letter-spacing="0.5">SYSTEM DESIGN</text>
-  <text x="24" y="226" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="11" font-weight="500">Sharding · Rate Limiting · Consensus</text>
 </svg>

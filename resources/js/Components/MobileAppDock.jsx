@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { Home, BookOpen, Video, Layers, User, Terminal, Sun, Moon } from 'lucide-react';
 
-export default function MobileAppDock({ auth, activeTab = 'home', theme = 'light', onToggleTheme }) {
+export default function MobileAppDock({ auth, activeTab = 'home', theme = 'dark', onToggleTheme }) {
     const isDark = theme === 'dark';
 
     return (

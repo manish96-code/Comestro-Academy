@@ -18,7 +18,7 @@ import * as THREE from 'three';
  * - Zero boxes, borders, cards, or button frames enclosing the canvas.
  */
 export default function ThreeLaptopCanvas({
-    theme = 'light',
+    theme = 'dark',
     activeCourse = null,
     className = '',
 }) {
@@ -45,7 +45,7 @@ export default function ThreeLaptopCanvas({
 
         // --- 1. Scene, Camera & Renderer ---
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(isDark ? 0x090d16 : 0xf8fafc, 0.015);
+        scene.fog = new THREE.FogExp2(isDark ? 0x090d16 : 0xffffff, 0.015);
 
         const width = container.clientWidth || 500;
         const height = container.clientHeight || 450;
@@ -55,10 +55,10 @@ export default function ThreeLaptopCanvas({
         const camera = new THREE.PerspectiveCamera(cameraFov, aspect, 0.1, 100);
 
         // Mathematical Auto-Fit Function:
-        // Guarantees that the bounding sphere of the open & rotated MacBook Air
-        // ALWAYS fits inside both the vertical AND horizontal camera frustum with safe margin!
-        const boundingRadius = 2.95;
-        const safeMargin = 1.16; // 16% breathing room around all edges
+        // Calibrated with tight safe margin so the MacBook Air is large and prominent
+        // while 100% fitting inside the camera frustum without cropping
+        const boundingRadius = 2.60;
+        const safeMargin = 1.04; // 4% breathing room for maximized prominence
 
         const updateCameraDistance = (currAspect) => {
             const fovVRad = (cameraFov * Math.PI) / 180;
@@ -89,40 +89,41 @@ export default function ThreeLaptopCanvas({
         container.appendChild(renderer.domElement);
 
         // --- 2. Studio Lighting for Apple MacBook Air Aluminum ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 2.2 : 2.7);
+        // Calibrated intensities so light mode does not blow out highlights
+        const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 2.2 : 1.7);
         scene.add(ambientLight);
 
         // Key light (top-right-front)
-        const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 2.7 : 3.0);
+        const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 2.7 : 1.9);
         keyLight.position.set(5.5, 8, 6.5);
         scene.add(keyLight);
 
         // Soft rim fill light (left-rear)
-        const fillLight = new THREE.DirectionalLight(0xffffff, 1.3);
+        const fillLight = new THREE.DirectionalLight(0xffffff, isDark ? 1.3 : 1.0);
         fillLight.position.set(-6.5, 3.5, -4);
         scene.add(fillLight);
 
         // Backlight to accentuate the thin lid edge & Apple logo
-        const backLight = new THREE.DirectionalLight(0xffffff, 1.1);
+        const backLight = new THREE.DirectionalLight(0xffffff, isDark ? 1.1 : 0.8);
         backLight.position.set(0, 5, -6.5);
         scene.add(backLight);
 
         // Ground bounce light
-        const bounceLight = new THREE.DirectionalLight(isDark ? 0x1e2738 : 0xe2e8f0, 0.85);
+        const bounceLight = new THREE.DirectionalLight(isDark ? 0x1e2738 : 0xd1d5db, isDark ? 0.85 : 0.55);
         bounceLight.position.set(0, -4, 2.5);
         scene.add(bounceLight);
 
         // --- 3. Master Group & Materials ---
         const macMaster = new THREE.Group();
-        macMaster.position.y = -0.22;
+        macMaster.position.y = -0.10;
         scene.add(macMaster);
 
-        // Apple MacBook Air Anodized Aluminum: Midnight in dark mode, Starlight/Silver in light mode
-        const aluminumColor = isDark ? 0x222a38 : 0xdde3ee;
+        // Apple MacBook Air Anodized Aluminum: Midnight in dark mode, Space Gray / Starlight in light mode
+        const aluminumColor = isDark ? 0x222a38 : 0x9ca3af;
         const chassisMaterial = new THREE.MeshStandardMaterial({
             color: aluminumColor,
-            roughness: 0.22,
-            metalness: 0.88,
+            roughness: isDark ? 0.22 : 0.35,
+            metalness: isDark ? 0.88 : 0.78,
         });
 
         // Matte Dark Bezel & Recessed Well Material
@@ -177,12 +178,44 @@ export default function ThreeLaptopCanvas({
         // Front Thumb Scoop (Apple Centered Notch on bottom lip)
         const scoopGeo = new THREE.BoxGeometry(0.85, 0.03, 0.05);
         const scoopMat = new THREE.MeshStandardMaterial({
-            color: isDark ? 0x181e28 : 0xb4bcc9,
+            color: isDark ? 0x181e28 : 0x717b8c,
             roughness: 0.5,
         });
         const scoopMesh = new THREE.Mesh(scoopGeo, scoopMat);
         scoopMesh.position.set(0, topBaseY - 0.012, frontBaseZ - 0.014);
         macMaster.add(scoopMesh);
+
+        // Procedural Ambient Contact Ground Shadow (Grounds the laptop realistically on white and dark backgrounds)
+        const createContactShadowTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            grad.addColorStop(0, 'rgba(15, 23, 42, 0.40)');
+            grad.addColorStop(0.35, 'rgba(15, 23, 42, 0.20)');
+            grad.addColorStop(0.70, 'rgba(15, 23, 42, 0.05)');
+            grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.needsUpdate = true;
+            return tex;
+        };
+
+        const shadowTexture = createContactShadowTexture();
+        const shadowPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(baseWidth * 1.35, baseDepth * 1.35),
+            new THREE.MeshBasicMaterial({
+                map: shadowTexture,
+                transparent: true,
+                opacity: isDark ? 0.35 : 0.55,
+                depthWrite: false,
+            })
+        );
+        shadowPlane.rotation.x = -Math.PI / 2;
+        shadowPlane.position.set(0, -topBaseY - 0.012, 0.1);
+        macMaster.add(shadowPlane);
 
         // Four Black Silicone Rubber Feet on Bottom Plate
         const footGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.014, 16);
@@ -469,9 +502,9 @@ export default function ThreeLaptopCanvas({
 
         // MacBook Air Force Touch Glass Trackpad (Expansive palm rests on sides!)
         const trackpadMat = new THREE.MeshStandardMaterial({
-            color: isDark ? 0x222a38 : 0xd1d7e2,
-            roughness: 0.28,
-            metalness: 0.72,
+            color: isDark ? 0x222a38 : 0x8c96a5,
+            roughness: 0.32,
+            metalness: 0.65,
         });
         const trackpadMesh = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.008, 1.15), trackpadMat);
         trackpadMesh.position.set(0, topBaseY + 0.005, 0.75);
@@ -681,57 +714,51 @@ export default function ThreeLaptopCanvas({
         lidPivot.add(screenMesh);
 
         // --- 7. Smooth Scroll-Driven Orbit & Lid Animation ---
-        let targetLidAngle = -1.9;
-        let currentLidAngle = -1.9;
-        let scrollBaseRotY = -0.28;
-        let scrollBaseRotX = 0.22;
+        let targetLidAngle = -0.05; // Starts CLOSED at hero / top of page
+        let currentLidAngle = -0.05;
+        let scrollBaseRotY = -0.08;
+        let scrollBaseRotX = 0.24;
         let targetPosX = 0;
         let currentPosX = 0;
 
-        const handleScroll = () => {
-            if (isManuallyToggledRef.current) return;
-            const scrollY = window.scrollY;
-            const isDesktopScreen = window.innerWidth >= 1024;
-            const heroOffset = isDesktopScreen ? 0.35 : 0;
+        let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
 
-            // Step 1: In Hero (0 - 80px) -> Fully Open, positioned in Hero right space on desktop
-            // Step 2: Moving down (80 - 280px) -> Centers and Smoothly CLOSES lid (reveals Apple logo)
-            // Step 3: Arriving in Courses (280 - 520px) -> Centered and Smoothly OPENS lid back up
-            // Step 4: Inside Courses (520 - 1350px) -> Stays Open displaying active course code
-            // Step 5: Past Courses (> 1350px) -> Smoothly closes as user explores roadmaps
-            if (scrollY < 80) {
-                targetLidAngle = -1.9;
-                targetPosX = heroOffset;
-                scrollBaseRotY = -0.28;
-                scrollBaseRotX = 0.22;
-            } else if (scrollY < 280) {
-                // Moves and CLOSES
-                const t = Math.min((scrollY - 80) / 200, 1);
-                const smooth = t * t * (3 - 2 * t);
-                targetLidAngle = -1.9 + smooth * 1.88; // Closes to -0.02
-                targetPosX = heroOffset * (1 - smooth); // Moves to center
-                scrollBaseRotY = -0.28 + smooth * 0.28;
-                scrollBaseRotX = 0.22 - smooth * 0.04;
-            } else if (scrollY < 520) {
-                // Lands in Courses and OPENS back up
-                const t = Math.min((scrollY - 280) / 240, 1);
-                const smooth = t * t * (3 - 2 * t);
-                targetLidAngle = -0.02 - smooth * 1.88; // Opens back to -1.9
-                targetPosX = 0;
-                scrollBaseRotY = smooth * 0.16; // Rotates to +0.16
-                scrollBaseRotX = 0.18;
-            } else if (scrollY < 1350) {
-                // Fully Open inside Courses section
-                targetLidAngle = -1.9;
-                targetPosX = 0;
-                scrollBaseRotY = 0.16;
-                scrollBaseRotX = 0.18;
-            } else {
-                // Past Courses: Closes
-                const t = Math.min((scrollY - 1350) / 300, 1);
-                targetLidAngle = -1.9 + t * 1.88;
-                targetPosX = 0;
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+
+            // Re-engage scroll animation if user scrolls more than 80px after manual toggle
+            if (isManuallyToggledRef.current && Math.abs(scrollY - lastScrollY) > 80) {
+                isManuallyToggledRef.current = false;
             }
+
+            if (isManuallyToggledRef.current) return;
+            if (!container) return;
+
+            const rect = container.getBoundingClientRect();
+            const windowH = window.innerHeight;
+
+            // When user is at Hero / top of page:
+            // Course section is below viewport (rect.top > enterTrigger) -> Lid is flat CLOSED (-0.05)
+            // As user scrolls down from hero to course section:
+            // As rect.top comes into view -> Lid smoothly animates OPEN to -1.90 (~110°), revealing code screen
+            const enterTrigger = windowH * 1.05;
+            const openTrigger = windowH * 0.35;
+
+            let progress = (enterTrigger - rect.top) / (enterTrigger - openTrigger);
+            progress = Math.max(0, Math.min(1, progress));
+
+            // Smooth cubic ease in-out
+            const ease = progress * progress * (3 - 2 * progress);
+
+            // Animate Lid: CLOSED (-0.05) at Hero -> OPENS to (-1.90) at Course section
+            targetLidAngle = -0.05 - ease * 1.85;
+
+            // Smooth presentation rotation as lid opens:
+            // Starts facing slightly front-closed (-0.08) -> opens to angled workstation view (+0.16)
+            scrollBaseRotY = -0.08 + ease * 0.24;
+            scrollBaseRotX = 0.24 - ease * 0.06;
+
+            lastScrollY = scrollY;
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -752,10 +779,10 @@ export default function ThreeLaptopCanvas({
         // --- 8. Drag to Orbit & Parallax ---
         let mouseX = 0;
         let mouseY = 0;
-        let targetRotY = -0.28;
-        let targetRotX = 0.22;
-        let currentRotY = -0.28;
-        let currentRotX = 0.22;
+        let targetRotY = -0.08;
+        let targetRotX = 0.24;
+        let currentRotY = -0.08;
+        let currentRotX = 0.24;
 
         let isDragging = false;
         let previousPointer = { x: 0, y: 0 };
@@ -858,7 +885,7 @@ export default function ThreeLaptopCanvas({
             macMaster.rotation.x = currentRotX;
 
             // Gentle floating hover
-            macMaster.position.y = -0.22 + Math.sin(elapsed * 1.6) * 0.03;
+            macMaster.position.y = -0.10 + Math.sin(elapsed * 1.6) * 0.03;
 
             renderer.render(scene, camera);
         };
@@ -901,6 +928,9 @@ export default function ThreeLaptopCanvas({
             screenMesh.geometry.dispose();
             screenMesh.material.dispose();
             screenTexture.dispose();
+            shadowPlane.geometry.dispose();
+            shadowPlane.material.dispose();
+            shadowTexture.dispose();
 
             renderer.dispose();
             if (dom && dom.parentNode) {
@@ -910,11 +940,11 @@ export default function ThreeLaptopCanvas({
     }, [theme]);
 
     return (
-        <div className="relative w-full h-[440px] sm:h-[500px] lg:h-[560px] xl:h-[600px] flex items-center justify-center select-none overflow-visible">
+        <div className={`relative w-full h-full flex items-center justify-center select-none overflow-hidden ${className}`}>
             {/* Pure Three.js Canvas Container — MacBook Air, completely borderless, mathematical fit */}
             <div
                 ref={containerRef}
-                className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
+                className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y overflow-hidden"
                 style={{ touchAction: 'pan-y' }}
                 title="Apple MacBook Air. Scroll down to close lid, scroll up to open, drag to rotate."
             />
