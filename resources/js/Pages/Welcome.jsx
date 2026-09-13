@@ -70,41 +70,6 @@ export default function Welcome({ auth }) {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
 
-    const PATHS = [
-        {
-            id: 'java',
-            title: 'Java Backend Developer',
-            duration: '14 Weeks',
-            modules: 16,
-            stack: 'Java 21 · Spring Boot 3 · PostgreSQL · Kafka · Docker',
-            description: 'Core Java, enterprise microservices, transactional consistency, distributed caching, and cloud deployments.',
-        },
-        {
-            id: 'fullstack',
-            title: 'Full Stack Web Engineer',
-            duration: '18 Weeks',
-            modules: 20,
-            stack: 'TypeScript · React 19 · Node.js · SQL · Next.js',
-            description: 'Modern reactive frontend architectures, RESTful APIs, state machines, automated testing, and CI/CD pipelines.',
-        },
-        {
-            id: 'python',
-            title: 'Python Backend & Systems',
-            duration: '12 Weeks',
-            modules: 14,
-            stack: 'Python 3.12 · FastAPI · Celery · Redis · PostgreSQL',
-            description: 'Idiomatic asynchronous programming, high-throughput APIs, background task queues, and containerization.',
-        },
-        {
-            id: 'ai',
-            title: 'Generative AI & LLMs',
-            duration: '16 Weeks',
-            modules: 18,
-            stack: 'Python · LangChain · Vector DBs · RAG · Autonomous Agents',
-            description: 'Production RAG systems, LLM function calling, multimodal pipelines, vector embeddings, and evaluation.',
-        },
-    ];
-
     const PROJECTS = [
         {
             title: 'Distributed E-Commerce Engine',
@@ -189,12 +154,6 @@ public class OrderController {
                         >
                             Courses
                         </Link>
-                        <a
-                            href="#paths"
-                            className={isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-950'}
-                        >
-                            Roadmaps
-                        </a>
                         <a
                             href="#live"
                             className={isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-950'}
@@ -283,9 +242,6 @@ public class OrderController {
                             >
                                 All Courses
                             </Link>
-                            <a href="#paths" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300">
-                                Roadmaps
-                            </a>
                             <a href="#live" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300">
                                 Live Classes
                             </a>
@@ -331,12 +287,12 @@ public class OrderController {
                             <ArrowRight className="h-3.5 w-3.5" />
                         </a>
 
-                        <a
-                            href="#paths"
+                        <Link
+                            href={route('courses.index')}
                             className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent px-5 py-3 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                         >
-                            <span>View Roadmaps</span>
-                        </a>
+                            <span>All Courses</span>
+                        </Link>
                     </div>
 
                     {/* Trust metrics */}
@@ -410,62 +366,6 @@ public class OrderController {
                         activeCourseIndex={activeCourseIndex}
                         theme={theme}
                     />
-                </div>
-            </section>
-
-            {/* 3. Structured Career Roadmaps */}
-            <section id="paths" className="py-20 border-t border-slate-200 dark:border-slate-800">
-                <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-                    <div className="mb-10 max-w-xl">
-                        <div className="text-xs font-mono text-blue-600 dark:text-blue-400 font-semibold mb-1">
-                            // CURRICULUM
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                            Engineering Roadmaps
-                        </h2>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Curated paths from foundational syntax to production architectures.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {PATHS.map((path) => (
-                            <div
-                                key={path.id}
-                                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-slate-400 dark:hover:border-slate-600 transition"
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between text-xs text-slate-500 font-mono mb-2">
-                                        <span>{path.duration}</span>
-                                        <span>{path.modules} Modules</span>
-                                    </div>
-
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                                        {path.title}
-                                    </h3>
-
-                                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                                        {path.description}
-                                    </p>
-
-                                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-500">
-                                        {path.stack}
-                                    </div>
-                                </div>
-
-                                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                    <span className="text-xs text-slate-400">Live Classes + Recordings</span>
-                                    <Link
-                                        href={route('register')}
-                                        className="text-xs font-medium text-slate-900 dark:text-white hover:underline inline-flex items-center gap-1"
-                                    >
-                                        <span>View Syllabus</span>
-                                        <ArrowRight className="h-3 w-3" />
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </section>
 
@@ -620,9 +520,13 @@ public class OrderController {
             {/* 8. Minimalist Footer */}
             <footer className="border-t border-slate-200 dark:border-slate-800 py-10 text-xs text-slate-500">
                 <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p>© 2026 Comestro Academy. All rights reserved.</p>
+                    <div className="flex items-center gap-3">
+                        <ApplicationLogo dark={isDark} imgClassName="h-7 w-auto" />
+                        <span className="text-slate-400 hidden sm:inline">•</span>
+                        <p>© 2026 Comestro Academy. All rights reserved.</p>
+                    </div>
                     <div className="flex items-center gap-6">
-                        <a href="#paths" className="hover:text-slate-900 dark:hover:text-white">Roadmaps</a>
+                        <Link href={route('courses.index')} className="hover:text-slate-900 dark:hover:text-white">Courses</Link>
                         <a href="#live" className="hover:text-slate-900 dark:hover:text-white">Live Classes</a>
                         <a href="#projects" className="hover:text-slate-900 dark:hover:text-white">Projects</a>
                         <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white">Log in</Link>
