@@ -17,9 +17,23 @@ import * as THREE from 'three';
  * - Scroll-driven lid closing: Starts OPEN at scroll 0, smoothly folds CLOSED as user scrolls down.
  * - Zero boxes, borders, cards, or button frames enclosing the canvas.
  */
-export default function ThreeLaptopCanvas({ theme = 'light' }) {
+export default function ThreeLaptopCanvas({
+    theme = 'light',
+    activeCourse = null,
+    className = '',
+}) {
     const containerRef = useRef(null);
     const isManuallyToggledRef = useRef(false);
+    const drawScreenRef = useRef(null);
+    const screenTextureRef = useRef(null);
+
+    // Live-sync screen when activeCourse changes
+    useEffect(() => {
+        if (drawScreenRef.current && screenTextureRef.current) {
+            drawScreenRef.current(activeCourse);
+            screenTextureRef.current.needsUpdate = true;
+        }
+    }, [activeCourse]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -576,7 +590,7 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
         screenCanvas.height = 680;
         const sCtx = screenCanvas.getContext('2d');
 
-        const drawMacScreen = () => {
+        const drawMacScreen = (course = null) => {
             sCtx.fillStyle = '#0a0d14';
             sCtx.fillRect(0, 0, 1024, 680);
 
@@ -604,35 +618,41 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
             sCtx.fillRect(455, 0, 114, 28);
 
             // Active Code Tab
+            const targetCourse = course || activeCourse;
+            const snippet = targetCourse?.codeSnippet;
+            const tabTitle = snippet?.filename || '⚡ ComestroAcademy.java';
+            const statusText = snippet?.status || '● Build Succeeded · 0 errors · 10,000+ Active Engineers';
+
             sCtx.fillStyle = '#1b2234';
-            sCtx.fillRect(115, 10, 240, 46);
+            sCtx.fillRect(115, 10, 320, 46);
             sCtx.fillStyle = '#38bdf8';
-            sCtx.font = 'bold 17px "JetBrains Mono", monospace';
-            sCtx.fillText('⚡ ComestroAcademy.java', 130, 39);
+            sCtx.font = 'bold 16px "JetBrains Mono", monospace';
+            sCtx.fillText(tabTitle, 130, 39);
 
             // Syntax Highlighted Code Lines
             sCtx.font = '21px "JetBrains Mono", monospace';
-            const lines = [
-                { num: '01', color: '#64748b', text: '// Comestro Academy — Online Learning' },
-                { num: '02', color: '#c084fc', text: 'package com.comestro.academy.engine;' },
-                { num: '03', color: '#64748b', text: '' },
-                { num: '04', color: '#38bdf8', text: '@SpringBootApplication' },
-                { num: '05', color: '#f59e0b', text: 'public class ComestroEngine {' },
-                { num: '06', color: '#e2e8f0', text: '    private final LearningPlatform platform;' },
-                { num: '07', color: '#64748b', text: '' },
-                { num: '08', color: '#38bdf8', text: '    @EventListener(CohortLaunchEvent.class)' },
-                { num: '09', color: '#34d399', text: '    public void initializeCohort() {' },
-                { num: '10', color: '#fbbf24', text: '        platform.deployInteractiveSandbox();' },
-                { num: '11', color: '#38bdf8', text: '        System.out.println("Status: 60FPS LIVE");' },
-                { num: '12', color: '#34d399', text: '    }' },
-                { num: '13', color: '#f59e0b', text: '}' },
+            const lines = snippet?.lines || [
+                { text: '// Comestro Academy — Online Learning', color: '#64748b' },
+                { text: 'package com.comestro.academy.engine;', color: '#c084fc' },
+                { text: '', color: '#64748b' },
+                { text: '@SpringBootApplication', color: '#38bdf8' },
+                { text: 'public class ComestroEngine {', color: '#f59e0b' },
+                { text: '    private final LearningPlatform platform;', color: '#e2e8f0' },
+                { text: '', color: '#64748b' },
+                { text: '    @EventListener(CohortLaunchEvent.class)', color: '#38bdf8' },
+                { text: '    public void initializeCohort() {', color: '#34d399' },
+                { text: '        platform.deployInteractiveSandbox();', color: '#fbbf24' },
+                { text: '        System.out.println("Status: 60FPS LIVE");', color: '#38bdf8' },
+                { text: '    }', color: '#34d399' },
+                { text: '}', color: '#f59e0b' },
             ];
 
             let y = 104;
-            lines.forEach((line) => {
+            lines.forEach((line, idx) => {
+                const lineNum = String(idx + 1).padStart(2, '0');
                 sCtx.fillStyle = '#475569';
-                sCtx.fillText(line.num, 30, y);
-                sCtx.fillStyle = line.color;
+                sCtx.fillText(lineNum, 30, y);
+                sCtx.fillStyle = line.color || '#e2e8f0';
                 sCtx.fillText(line.text, 80, y);
                 y += 35;
             });
@@ -642,12 +662,15 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
             sCtx.fillRect(0, 616, 1024, 64);
             sCtx.fillStyle = '#10b981';
             sCtx.font = 'bold 17px "JetBrains Mono", monospace';
-            sCtx.fillText('● Build Succeeded · 0 errors · 10,000+ Active Engineers', 30, 654);
+            sCtx.fillText(statusText, 30, 654);
         };
 
-        drawMacScreen();
+        drawMacScreen(activeCourse);
+        drawScreenRef.current = drawMacScreen;
+
         const screenTexture = new THREE.CanvasTexture(screenCanvas);
         screenTexture.anisotropy = 4;
+        screenTextureRef.current = screenTexture;
 
         const screenMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(baseWidth - 0.32, baseDepth - 0.32),
@@ -657,16 +680,58 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
         screenMesh.position.set(0, -0.003, baseDepth / 2);
         lidPivot.add(screenMesh);
 
-        // --- 7. Smooth Scroll-Driven Lid Closing Animation ---
+        // --- 7. Smooth Scroll-Driven Orbit & Lid Animation ---
         let targetLidAngle = -1.9;
         let currentLidAngle = -1.9;
+        let scrollBaseRotY = -0.28;
+        let scrollBaseRotX = 0.22;
+        let targetPosX = 0;
+        let currentPosX = 0;
 
         const handleScroll = () => {
             if (isManuallyToggledRef.current) return;
             const scrollY = window.scrollY;
-            const progress = Math.min(Math.max(scrollY / 300, 0), 1);
-            const smoothProgress = progress * progress * (3 - 2 * progress);
-            targetLidAngle = -1.9 + smoothProgress * 1.85;
+            const isDesktopScreen = window.innerWidth >= 1024;
+            const heroOffset = isDesktopScreen ? 0.35 : 0;
+
+            // Step 1: In Hero (0 - 80px) -> Fully Open, positioned in Hero right space on desktop
+            // Step 2: Moving down (80 - 280px) -> Centers and Smoothly CLOSES lid (reveals Apple logo)
+            // Step 3: Arriving in Courses (280 - 520px) -> Centered and Smoothly OPENS lid back up
+            // Step 4: Inside Courses (520 - 1350px) -> Stays Open displaying active course code
+            // Step 5: Past Courses (> 1350px) -> Smoothly closes as user explores roadmaps
+            if (scrollY < 80) {
+                targetLidAngle = -1.9;
+                targetPosX = heroOffset;
+                scrollBaseRotY = -0.28;
+                scrollBaseRotX = 0.22;
+            } else if (scrollY < 280) {
+                // Moves and CLOSES
+                const t = Math.min((scrollY - 80) / 200, 1);
+                const smooth = t * t * (3 - 2 * t);
+                targetLidAngle = -1.9 + smooth * 1.88; // Closes to -0.02
+                targetPosX = heroOffset * (1 - smooth); // Moves to center
+                scrollBaseRotY = -0.28 + smooth * 0.28;
+                scrollBaseRotX = 0.22 - smooth * 0.04;
+            } else if (scrollY < 520) {
+                // Lands in Courses and OPENS back up
+                const t = Math.min((scrollY - 280) / 240, 1);
+                const smooth = t * t * (3 - 2 * t);
+                targetLidAngle = -0.02 - smooth * 1.88; // Opens back to -1.9
+                targetPosX = 0;
+                scrollBaseRotY = smooth * 0.16; // Rotates to +0.16
+                scrollBaseRotX = 0.18;
+            } else if (scrollY < 1350) {
+                // Fully Open inside Courses section
+                targetLidAngle = -1.9;
+                targetPosX = 0;
+                scrollBaseRotY = 0.16;
+                scrollBaseRotX = 0.18;
+            } else {
+                // Past Courses: Closes
+                const t = Math.min((scrollY - 1350) / 300, 1);
+                targetLidAngle = -1.9 + t * 1.88;
+                targetPosX = 0;
+            }
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -712,8 +777,8 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
                 targetRotX += dragVelocity.y;
                 previousPointer = { x: clientX, y: clientY };
             } else {
-                targetRotY = -0.28 + mouseX * 0.28;
-                targetRotX = 0.22 - mouseY * 0.16;
+                targetRotY = scrollBaseRotY + mouseX * 0.25;
+                targetRotX = scrollBaseRotX - mouseY * 0.15;
             }
         };
 
@@ -773,6 +838,10 @@ export default function ThreeLaptopCanvas({ theme = 'light' }) {
             // Spring physics interpolation for lid opening/closing
             currentLidAngle += (targetLidAngle - currentLidAngle) * 0.075;
             lidPivot.rotation.x = currentLidAngle;
+
+            // Smooth position interpolation between Hero offset and centered showcase
+            currentPosX += (targetPosX - currentPosX) * 0.075;
+            macMaster.position.x = currentPosX;
 
             // Damped body orbit rotation
             currentRotY += (targetRotY - currentRotY) * 0.08;

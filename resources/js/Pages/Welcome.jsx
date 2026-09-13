@@ -4,6 +4,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import ThreeLaptopCanvas from '@/Components/Three/ThreeLaptopCanvas';
 import ThreeDynamicBackground from '@/Components/Three/ThreeDynamicBackground';
 import MobileAppDock from '@/Components/MobileAppDock';
+import SwappableCourseCards, { COURSES_DATA } from '@/Components/SwappableCourseCards';
 import {
     Terminal,
     ArrowRight,
@@ -16,6 +17,7 @@ import {
     Compass,
     Video,
     MessageSquare,
+    Sparkles,
     Menu,
     X,
     Sun,
@@ -27,6 +29,13 @@ export default function Welcome({ auth }) {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('java');
+    const [activeCourse, setActiveCourse] = useState(COURSES_DATA[0]);
+    const [activeCourseIndex, setActiveCourseIndex] = useState(0);
+
+    const handleCourseSelect = (course, idx) => {
+        setActiveCourse(course);
+        setActiveCourseIndex(idx);
+    };
 
     const isDark = theme === 'dark';
 
@@ -38,12 +47,26 @@ export default function Welcome({ auth }) {
         }
     }, [theme]);
 
+    const [laptopOffset, setLaptopOffset] = useState(0);
+
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 15);
+        const updatePosition = () => {
+            const y = window.scrollY;
+            setScrolled(y > 15);
+            if (window.innerWidth >= 1024) {
+                const p = Math.min(Math.max((y - 40) / 280, 0), 1);
+                setLaptopOffset((1 - p) * 260);
+            } else {
+                setLaptopOffset(0);
+            }
         };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', updatePosition, { passive: true });
+        window.addEventListener('resize', updatePosition);
+        updatePosition();
+        return () => {
+            window.removeEventListener('scroll', updatePosition);
+            window.removeEventListener('resize', updatePosition);
+        };
     }, []);
 
     const toggleTheme = () => {
@@ -288,66 +311,110 @@ public class OrderController {
                 )}
             </header>
 
-            {/* 2. Hero Section: Clean, Concise & 3D Laptop Animation */}
-            <section className="relative pt-24 pb-12 sm:pt-32 sm:pb-16 overflow-hidden">
-                <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
-                        {/* Left: Concise Text */}
-                        <div className="lg:col-span-5 space-y-5">
-                            <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 text-xs font-mono text-slate-600 dark:text-slate-400">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                <span>Cohorts for 2026 Open</span>
-                            </div>
-
-                            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                                From Hello World to Production.
-                            </h1>
-
-                            <p className="text-base text-slate-600 dark:text-slate-300 max-w-lg leading-relaxed">
-                                Learn enterprise backend, full-stack, and AI engineering through structured curriculums, interactive live classes, and real capstone projects.
-                            </p>
-
-                            <div className="flex flex-wrap items-center gap-3 pt-1">
-                                <Link
-                                    href={route('courses.index')}
-                                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 dark:bg-white px-5 py-2.5 text-xs font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition"
-                                >
-                                    <span>Explore Courses</span>
-                                    <ArrowRight className="h-3.5 w-3.5" />
-                                </Link>
-
-                                <a
-                                    href="#paths"
-                                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
-                                >
-                                    <span>View Roadmaps</span>
-                                </a>
-                            </div>
-
-                            {/* Trust metrics */}
-                            <div className="pt-5 border-t border-slate-200 dark:border-slate-800 flex items-center gap-8 text-xs font-mono text-slate-500">
-                                <div>
-                                    <span className="font-bold text-slate-900 dark:text-white text-base">10,000+</span>
-                                    <span className="block text-[11px] text-slate-500">Learners</span>
-                                </div>
-                                <div>
-                                    <span className="font-bold text-slate-900 dark:text-white text-base">50+</span>
-                                    <span className="block text-[11px] text-slate-500">Courses</span>
-                                </div>
-                                <div>
-                                    <span className="font-bold text-slate-900 dark:text-white text-base">4.9/5</span>
-                                    <span className="block text-[11px] text-slate-500">Rating</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right: Three.js 3D MacBook Pro Visual (Prominent 7-column layout, zero box/border) */}
-                        <div className="lg:col-span-7 flex items-center justify-center w-full">
-                            <ThreeLaptopCanvas theme={theme} />
-                        </div>
+            {/* 2. Hero & Our Courses Scrollytelling Stage */}
+            <div className="relative overflow-visible pb-16">
+                {/* Traveling Sticky 3D MacBook Air Animation Stage */}
+                <div className="lg:sticky lg:top-20 z-20 w-full pointer-events-none flex items-center justify-center">
+                    <div
+                        className="w-full max-w-4xl h-[380px] sm:h-[430px] lg:h-[470px] mx-auto pointer-events-auto will-change-transform"
+                        style={{
+                            transform: `translate3d(${laptopOffset}px, 0, 0)`,
+                            transition: 'transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                        }}
+                    >
+                        <ThreeLaptopCanvas
+                            theme={theme}
+                            activeCourse={activeCourse}
+                        />
                     </div>
                 </div>
-            </section>
+
+                {/* Section 1: Hero (Text on Left, Right column for laptop) */}
+                <section className="relative pt-24 pb-16 sm:pt-32 sm:pb-24 -mt-[380px] sm:-mt-[430px] lg:-mt-[470px] z-10 pointer-events-none">
+                    <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[460px]">
+                            {/* Left Column: Hero Text */}
+                            <div className="lg:col-span-6 space-y-6 pointer-events-auto">
+                                <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 text-xs font-mono text-slate-600 dark:text-slate-400">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span>Cohorts for 2026 Open · Interactive Workstation</span>
+                                </div>
+
+                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                                    From Hello World <br className="hidden sm:inline" />
+                                    to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500">Production</span>.
+                                </h1>
+
+                                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-lg leading-relaxed">
+                                    Learn enterprise backend microservices, full-stack, cloud DevOps, and AI engineering through structured curriculums, interactive live classes, and real capstone projects.
+                                </p>
+
+                                <div className="flex flex-wrap items-center gap-3 pt-1">
+                                    <a
+                                        href="#courses"
+                                        className="inline-flex items-center gap-2 rounded-xl bg-slate-900 dark:bg-white px-5 py-3 text-xs font-semibold text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition shadow-lg shadow-blue-500/10"
+                                    >
+                                        <span>Explore 5 Courses</span>
+                                        <ArrowRight className="h-3.5 w-3.5" />
+                                    </a>
+
+                                    <a
+                                        href="#paths"
+                                        className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent px-4 py-3 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                                    >
+                                        <span>View Roadmaps</span>
+                                    </a>
+                                </div>
+
+                                {/* Trust metrics */}
+                                <div className="pt-5 border-t border-slate-200 dark:border-slate-800 flex items-center gap-8 text-xs font-mono text-slate-500">
+                                    <div>
+                                        <span className="font-bold text-slate-900 dark:text-white text-base">10,000+</span>
+                                        <span className="block text-[11px] text-slate-500">Learners</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-slate-900 dark:text-white text-base">50+</span>
+                                        <span className="block text-[11px] text-slate-500">Courses</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-slate-900 dark:text-white text-base">4.9/5</span>
+                                        <span className="block text-[11px] text-slate-500">Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column: Empty space so Hero text doesn't overlap laptop on desktop */}
+                            <div className="hidden lg:block lg:col-span-6 h-[460px] pointer-events-none" />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Section 2: Our Courses (Full Width 5 Cards Row) */}
+                <section id="courses" className="relative pt-12 pb-20 border-t border-slate-200 dark:border-slate-800 z-10">
+                    <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+                        {/* Prominent Section Title */}
+                        <div className="text-center max-w-3xl mx-auto mb-10 space-y-2.5">
+                            <div className="inline-flex items-center gap-2 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-mono font-semibold text-blue-600 dark:text-blue-400">
+                                <Sparkles className="h-3.5 w-3.5" />
+                                <span>// OUR COURSES</span>
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                                Our Courses
+                            </h2>
+                            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                                Production-grade engineering curriculums designed by industry veterans. Select any course below to inspect live architecture on the MacBook Air workstation.
+                            </p>
+                        </div>
+
+                        {/* 5 Course Cards in ONE Single Row on Desktop */}
+                        <SwappableCourseCards
+                            onSelectCourse={handleCourseSelect}
+                            activeCourseIndex={activeCourseIndex}
+                            theme={theme}
+                        />
+                    </div>
+                </section>
+            </div>
 
             {/* 3. Structured Career Roadmaps */}
             <section id="paths" className="py-20 border-t border-slate-200 dark:border-slate-800">

@@ -65,15 +65,15 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
             return tex;
         };
 
-        // Dark mode: vibrant cyan & electric indigo glow
-        // Light mode: clean royal blue & soft slate glow
+        // Dark mode: soft subtle cyan & deep indigo glow (subdued, non-intrusive)
+        // Light mode: gentle soft royal blue & slate shimmer
         const waveSprite = isDark
-            ? createParticleSprite('rgba(56, 189, 248, 1.0)', 'rgba(14, 165, 233, 0.45)', 'rgba(9, 13, 22, 0)')
-            : createParticleSprite('rgba(37, 99, 235, 0.95)', 'rgba(59, 130, 246, 0.35)', 'rgba(255, 255, 255, 0)');
+            ? createParticleSprite('rgba(56, 189, 248, 0.45)', 'rgba(14, 165, 233, 0.16)', 'rgba(9, 13, 22, 0)')
+            : createParticleSprite('rgba(37, 99, 235, 0.32)', 'rgba(59, 130, 246, 0.10)', 'rgba(255, 255, 255, 0)');
 
         const ambientSprite = isDark
-            ? createParticleSprite('rgba(168, 85, 247, 1.0)', 'rgba(99, 102, 241, 0.4)', 'rgba(9, 13, 22, 0)')
-            : createParticleSprite('rgba(99, 102, 241, 0.85)', 'rgba(129, 140, 248, 0.3)', 'rgba(255, 255, 255, 0)');
+            ? createParticleSprite('rgba(168, 85, 247, 0.35)', 'rgba(99, 102, 241, 0.14)', 'rgba(9, 13, 22, 0)')
+            : createParticleSprite('rgba(99, 102, 241, 0.25)', 'rgba(129, 140, 248, 0.08)', 'rgba(255, 255, 255, 0)');
 
         // --- 5. Layer 1: Undulating Cybernetic Horizon Wave ---
         const cols = isMobile ? 32 : 46;
@@ -108,11 +108,11 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         waveGeometry.setAttribute('position', new THREE.BufferAttribute(wavePositions, 3));
 
         const waveMaterial = new THREE.PointsMaterial({
-            size: isMobile ? 0.35 : 0.42,
+            size: isMobile ? 0.24 : 0.30,
             map: waveSprite,
             transparent: true,
-            opacity: isDark ? 0.55 : 0.38,
-            blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
+            opacity: isDark ? 0.22 : 0.15,
+            blending: THREE.NormalBlending,
             depthWrite: false,
         });
 
@@ -121,7 +121,7 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         scene.add(waveMesh);
 
         // --- 6. Layer 2: Floating Ambient Quantum Starfield ---
-        const ambientCount = isMobile ? 120 : 260;
+        const ambientCount = isMobile ? 100 : 200;
         const ambientPositions = new Float32Array(ambientCount * 3);
         const ambientVelocity = new Float32Array(ambientCount * 3);
 
@@ -130,20 +130,20 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
             ambientPositions[i * 3 + 1] = (Math.random() - 0.5) * 28 + 2;
             ambientPositions[i * 3 + 2] = (Math.random() - 0.5) * 26 - 2;
 
-            ambientVelocity[i * 3] = (Math.random() - 0.5) * 0.006;
-            ambientVelocity[i * 3 + 1] = Math.random() * 0.008 + 0.003; // Gentle upward drift
-            ambientVelocity[i * 3 + 2] = (Math.random() - 0.5) * 0.006;
+            ambientVelocity[i * 3] = (Math.random() - 0.5) * 0.005;
+            ambientVelocity[i * 3 + 1] = Math.random() * 0.006 + 0.002; // Gentle upward drift
+            ambientVelocity[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
         }
 
         const ambientGeometry = new THREE.BufferGeometry();
         ambientGeometry.setAttribute('position', new THREE.BufferAttribute(ambientPositions, 3));
 
         const ambientMaterial = new THREE.PointsMaterial({
-            size: isMobile ? 0.28 : 0.36,
+            size: isMobile ? 0.18 : 0.24,
             map: ambientSprite,
             transparent: true,
-            opacity: isDark ? 0.45 : 0.28,
-            blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
+            opacity: isDark ? 0.18 : 0.12,
+            blending: THREE.NormalBlending,
             depthWrite: false,
         });
 
@@ -279,7 +279,7 @@ export default function ThreeDynamicBackground({ theme = 'light' }) {
         <div
             ref={containerRef}
             aria-hidden="true"
-            className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
+            className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none opacity-55 dark:opacity-45"
         />
     );
 }

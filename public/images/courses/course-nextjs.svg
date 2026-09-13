@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nextGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#172554" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="16" fill="url(#nextGrad)" />
+  
+  <g opacity="0.12" stroke="#60a5fa" stroke-width="1">
+    <circle cx="200" cy="115" r="50" fill="none" />
+    <circle cx="200" cy="115" r="90" fill="none" />
+    <line x1="0" y1="115" x2="400" y2="115" />
+    <line x1="200" y1="0" x2="200" y2="240" />
+  </g>
+
+  <!-- Glowing Radial Orb -->
+  <circle cx="200" cy="115" r="70" fill="#38bdf8" opacity="0.16" filter="blur(22px)" />
+
+  <!-- React 19 Atom Geometry -->
+  <g transform="translate(200, 115)">
+    <!-- Center Nucleus -->
+    <circle cx="0" cy="0" r="10" fill="#38bdf8" />
+    <!-- Ellipse 1 -->
+    <ellipse cx="0" cy="0" rx="55" ry="20" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.9" />
+    <!-- Ellipse 2 -->
+    <ellipse cx="0" cy="0" rx="55" ry="20" fill="none" stroke="#60a5fa" stroke-width="3" transform="rotate(60)" opacity="0.85" />
+    <!-- Ellipse 3 -->
+    <ellipse cx="0" cy="0" rx="55" ry="20" fill="none" stroke="#818cf8" stroke-width="3" transform="rotate(120)" opacity="0.85" />
+  </g>
+
+  <!-- Next.js 15 Badge -->
+  <g transform="translate(285, 25)">
+    <rect width="90" height="24" rx="12" fill="#1e1b4b" stroke="#38bdf8" stroke-width="1" />
+    <circle cx="14" cy="12" r="5" fill="#38bdf8" />
+    <text x="25" y="16" fill="#93c5fd" font-family="-apple-system, sans-serif" font-size="10" font-weight="700">NEXT.JS 15</text>
+  </g>
+
+  <text x="24" y="210" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="15" font-weight="800" letter-spacing="0.5">FULL-STACK REACT 19</text>
+  <text x="24" y="226" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="11" font-weight="500">TypeScript · WebSockets · Tailwind</text>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="devopsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <linearGradient id="k8sBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="16" fill="url(#devopsGrad)" />
+  
+  <g opacity="0.12" stroke="#34d399" stroke-width="1">
+    <polygon points="200,40 270,80 270,160 200,200 130,160 130,80" fill="none" />
+    <polygon points="200,60 250,90 250,150 200,180 150,150 150,90" fill="none" />
+  </g>
+
+  <!-- Glowing Radial Orb -->
+  <circle cx="200" cy="115" r="70" fill="#10b981" opacity="0.18" filter="blur(22px)" />
+
+  <!-- Kubernetes Helm Wheel -->
+  <g transform="translate(200, 115)">
+    <!-- Hub -->
+    <circle cx="0" cy="0" r="14" fill="#38bdf8" />
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#38bdf8" stroke-width="5" />
+    <!-- 7 Spokes -->
+    <line x1="0" y1="-14" x2="0" y2="-48" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <line x1="0" y1="14" x2="0" y2="48" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <line x1="-12" y1="-7" x2="-42" y2="-24" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <line x1="12" y1="7" x2="42" y2="24" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <line x1="-12" y1="7" x2="-42" y2="24" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <line x1="12" y1="-7" x2="42" y2="-24" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+  </g>
+
+  <!-- AWS Badge -->
+  <g transform="translate(290, 25)">
+    <rect width="85" height="24" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-width="1" />
+    <circle cx="14" cy="12" r="5" fill="#f59e0b" />
+    <text x="25" y="16" fill="#fcd34d" font-family="-apple-system, sans-serif" font-size="10" font-weight="700">K8S · AWS</text>
+  </g>
+
+  <text x="24" y="210" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="15" font-weight="800" letter-spacing="0.5">CLOUD &amp; KUBERNETES</text>
+  <text x="24" y="226" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="11" font-weight="500">Docker · Terraform · Istio · AWS</text>
+</svg>
