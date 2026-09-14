@@ -1,5 +1,5 @@
 import Dropdown from '@/Components/Dropdown';
-import AdminNotificationBell from '@/Components/Admin/AdminNotificationBell';
+import NotificationBell from '@/Components/NotificationBell';
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
@@ -316,7 +316,7 @@ export default function AdminLayout({ header, children }) {
                         </Link>
 
                         {/* Real-time Live Notifications */}
-                        <AdminNotificationBell user={user} />
+                        <NotificationBell user={user} />
 
                         {/* User Menu Dropdown */}
                         <div className="relative">

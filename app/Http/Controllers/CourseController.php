@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CourseContentAddedEvent;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
@@ -300,6 +301,7 @@ class CourseController extends Controller
             ['course_id' => $course->id, 'title' => $moduleName],
             ['sort_order' => ($course->modules()->max('sort_order') ?? 0) + 1]
         );
+        $wasNewModule = $module->wasRecentlyCreated;
 
         $maxSortOrder = $module->lessons()->max('sort_order') ?? 0;
         $sortOrder = $validated['order'] ?? ($maxSortOrder + 1);
@@ -342,6 +344,10 @@ class CourseController extends Controller
                 return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
             }
         }
+
+        // Notify all active enrolled students about the new module/lesson
+        $enrolledStudents = $course->students()->wherePivot('status', 'active')->get();
+        CourseContentAddedEvent::dispatchSafely($course, $module, $lesson, $wasNewModule, $enrolledStudents);
 
         return back()->with('success', 'Lesson with video and notes added successfully.');
     }

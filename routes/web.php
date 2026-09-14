@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
 use App\Models\Course;
@@ -123,6 +124,13 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::match(['post', 'patch'], '/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
     Route::delete('/profile/pic', [StudentController::class, 'destroyProfilePic'])->name('profile.pic.destroy');
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');
+});
+
+// Unified Notification Management Routes (Admin & Student)
+Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifications.')->group(function () {
+    Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+    Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('readAll');
+    Route::delete('/clear', [NotificationController::class, 'clear'])->name('clear');
 });
 
 // Razorpay Course Enrollment Payment Routes

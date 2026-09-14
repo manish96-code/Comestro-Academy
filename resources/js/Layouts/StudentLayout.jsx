@@ -1,4 +1,5 @@
 import Dropdown from '@/Components/Dropdown';
+import NotificationBell from '@/Components/NotificationBell';
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
@@ -131,8 +132,6 @@ export default function StudentLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-gray-50/70 flex antialiased text-gray-800">
-            <Toaster position="top-right" />
-
             {/* Desktop Left Sidebar */}
             <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white text-gray-800 border-r border-gray-200 fixed inset-y-0 z-30">
                 
@@ -253,8 +252,10 @@ export default function StudentLayout({ header, children }) {
                         </div>
                     </div>
 
-                    {/* Right: User Menu Dropdown */}
-                    <div className="flex items-center space-x-4">
+                    {/* Right: Notifications & User Menu Dropdown */}
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                        <NotificationBell user={user} />
+
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <button className="flex items-center space-x-2 text-xs font-semibold text-gray-700 hover:text-indigo-600 py-1.5 px-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/80 bg-white shadow-2xs transition">
@@ -301,6 +302,8 @@ export default function StudentLayout({ header, children }) {
                 <main className="flex-1">
                     {children}
                 </main>
+
+                <Toaster position="top-right" reverseOrder={false} />
             </div>
         </div>
     );

@@ -2,13 +2,18 @@
 
 namespace App\Events;
 
+use App\Mail\CourseEnrollmentMail;
 use App\Models\Enrollment;
+use App\Models\User;
+use App\Notifications\StudentEnrolledNotification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 class StudentEnrolledEvent implements ShouldBroadcastNow
 {
@@ -69,10 +74,21 @@ class StudentEnrolledEvent implements ShouldBroadcastNow
     }
 
     /**
-     * Safely dispatch the event without breaking the HTTP request if broadcasting fails (e.g. Reverb offline).
+     * Safely dispatch the event, store DB notification for admins, and queue confirmation email.
      */
     public static function dispatchSafely(Enrollment $enrollment): void
     {
         rescue(fn () => static::dispatch($enrollment));
+
+        rescue(function () use ($enrollment) {
+            $admins = User::where('role', 'admin')->get();
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new StudentEnrolledNotification($enrollment));
+            }
+        });
+
+        if ($enrollment->user?->email) {
+            rescue(fn () => Mail::to($enrollment->user->email)->queue(new CourseEnrollmentMail($enrollment)));
+        }
     }
 }

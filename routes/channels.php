@@ -9,3 +9,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('admin-notifications', function ($user) {
     return $user->isAdmin();
 });
+
+Broadcast::channel('student-notifications.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
