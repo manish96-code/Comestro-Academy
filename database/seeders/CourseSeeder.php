@@ -1291,27 +1291,407 @@ class CourseSeeder extends Seeder
         }
 
         // -------------------------------------------------------------
+        // COURSE 7: Next.js 15 & Full-Stack TypeScript Masterclass
+        // -------------------------------------------------------------
+        if ($webDev && $instructor1) {
+            $course7 = Course::updateOrCreate(
+                ['slug' => 'nextjs-15-fullstack-typescript-masterclass'],
+                [
+                    'category_id' => $webDev->id,
+                    'instructor_id' => $instructor1->id,
+                    'title' => 'Next.js 15 & Full-Stack TypeScript Masterclass',
+                    'subtitle' => 'Build high-performance, production-grade applications with Server Components, Server Actions, Prisma ORM, and Tailwind CSS.',
+                    'description' => "A comprehensive deep dive into modern full-stack web engineering with Next.js 15 and TypeScript.\n\nMaster the App Router, React Server Components (RSC), Server Actions for mutation without API boilerplate, optimistic UI updates, streaming SSR with Suspense, and edge caching strategies.\n\nYou will build and deploy a modern multi-tenant SaaS application with authentication via Auth.js, Prisma ORM connected to PostgreSQL, and automated deployment pipelines on Vercel and Docker.",
+                    'curriculum' => [
+                        [
+                            'title' => 'Next.js 15 App Router & React Server Components',
+                            'subtitle' => 'Server vs Client Components, Nested Layouts, Route Handlers, Streaming SSR & Suspense',
+                        ],
+                        [
+                            'title' => 'Server Actions, Forms & Mutation Architecture',
+                            'subtitle' => 'Type-safe Server Actions, useActionState, Optimistic Updates & Zod Validation',
+                        ],
+                        [
+                            'title' => 'Database Modeling with Prisma & Auth.js',
+                            'subtitle' => 'PostgreSQL Schema Design, Migrations, OAuth & Credentials Auth, RBAC Middleware',
+                        ],
+                        [
+                            'title' => 'Performance, Caching & Production Deployment',
+                            'subtitle' => 'Incremental Static Regeneration (ISR), Edge Middleware, Docker Multi-Stage Build & Monitoring',
+                        ],
+                    ],
+                    'thumbnail' => 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60',
+                    'price' => 3999.00,
+                    'discount_price' => 2499.00,
+                    'duration' => '8 Weeks',
+                    'type' => 'recorded',
+                    'course_includes' => [
+                        '8 Weeks of structured Next.js & TypeScript lectures',
+                        'Production-ready SaaS starter code repository',
+                        'Prisma schema templates & database migration scripts',
+                        'Direct mentor code reviews & debugging support',
+                        'Official Certificate of Completion',
+                        'Full lifetime access on mobile & web',
+                    ],
+                    'is_featured' => true,
+                    'status' => 'published',
+                ]
+            );
+
+            $nm1 = CourseModule::updateOrCreate(
+                ['course_id' => $course7->id, 'title' => 'Module 1: App Router & Server Components'],
+                [
+                    'description' => 'Architecting React Server Components and nested route layouts.',
+                    'sort_order' => 1,
+                ]
+            );
+
+            $nl1 = CourseLesson::updateOrCreate(
+                ['module_id' => $nm1->id, 'title' => 'Deep Dive: Server vs Client Components & Streaming SSR'],
+                [
+                    'description' => 'Understand the mental model of Server Components, boundary passing, and streaming with Suspense.',
+                    'sort_order' => 1,
+                    'status' => 'published',
+                ]
+            );
+            LessonVideo::updateOrCreate(
+                ['lesson_id' => $nl1->id],
+                [
+                    'title' => 'Mastering Next.js 15 Server Components',
+                    'video_url' => 'https://www.youtube.com/watch?v=wm5gMKuwSYk',
+                    'duration_seconds' => 1340,
+                    'video_provider' => 'youtube',
+                    'status' => 'ready',
+                ]
+            );
+            LessonResource::updateOrCreate(
+                ['lesson_id' => $nl1->id, 'title' => 'Next.js 15 Architecture Guide & Cheat Sheet (PDF)'],
+                [
+                    'resource_type' => 'pdf',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'mime_type' => 'application/pdf',
+                    'file_size' => 1950000,
+                    'sort_order' => 1,
+                ]
+            );
+
+            $nl2 = CourseLesson::updateOrCreate(
+                ['module_id' => $nm1->id, 'title' => 'Server Actions, Zod Validation & Optimistic UI'],
+                [
+                    'description' => 'Building mutation workflows directly with Server Actions and optimistic feedback.',
+                    'sort_order' => 2,
+                    'status' => 'published',
+                ]
+            );
+            LessonVideo::updateOrCreate(
+                ['lesson_id' => $nl2->id],
+                [
+                    'title' => 'Server Actions & Type-Safe Mutations',
+                    'video_url' => 'https://www.youtube.com/watch?v=d5x0JCb2eLQ',
+                    'duration_seconds' => 1420,
+                    'video_provider' => 'youtube',
+                    'status' => 'ready',
+                ]
+            );
+        }
+
+        // -------------------------------------------------------------
+        // COURSE 8: Spring Boot 3 & Enterprise Microservices
+        // -------------------------------------------------------------
+        if ($webDev && $instructor3) {
+            $course8 = Course::updateOrCreate(
+                ['slug' => 'spring-boot-3-enterprise-microservices'],
+                [
+                    'category_id' => $webDev->id,
+                    'instructor_id' => $instructor3->id,
+                    'title' => 'Spring Boot 3 & Enterprise Microservices Architecture',
+                    'subtitle' => 'Architect scalable distributed systems with Spring Cloud, Apache Kafka event streaming, Docker, and PostgreSQL.',
+                    'description' => "An industry-proven curriculum for mastering enterprise Java and Spring Boot 3 microservices.\n\nFrom designing clean hexagonal/clean architectures to implementing asynchronous event-driven streaming with Apache Kafka, service discovery with Eureka, resilient API Gateways, and distributed tracing with OpenTelemetry.\n\nPrepares developers for senior enterprise backend roles and complex distributed cloud environments.",
+                    'curriculum' => [
+                        [
+                            'title' => 'Spring Boot 3 Fundamentals & Clean Architecture',
+                            'subtitle' => 'Dependency Injection, Spring Data JPA, Entity Relationships, DTO Mappers & Global Error Handling',
+                        ],
+                        [
+                            'title' => 'Microservices Ecosystem & Service Discovery',
+                            'subtitle' => 'Spring Cloud Netflix Eureka, Spring Cloud Gateway, Resilience4j Circuit Breakers & Config Server',
+                        ],
+                        [
+                            'title' => 'Event-Driven Systems with Apache Kafka',
+                            'subtitle' => 'Producers, Consumers, Consumer Groups, Schema Registry & Distributed Transactions (Saga Pattern)',
+                        ],
+                        [
+                            'title' => 'Containerization, Security & Distributed Tracing',
+                            'subtitle' => 'OAuth2 & Keycloak, Docker Compose, Kubernetes Deployments, Micrometer & Prometheus Metrics',
+                        ],
+                    ],
+                    'thumbnail' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=60',
+                    'price' => 4499.00,
+                    'discount_price' => 2799.00,
+                    'duration' => '10 Weeks',
+                    'type' => 'recorded',
+                    'course_includes' => [
+                        '10 Weeks of intensive Java & Spring Boot lectures',
+                        'Production multi-module Maven/Gradle repository',
+                        'Docker Compose manifests for Kafka, Postgres, and Keycloak',
+                        'Direct mentor code reviews and architecture consulting',
+                        'Official Certificate of Completion',
+                        'Full lifetime access on mobile & web',
+                    ],
+                    'is_featured' => false,
+                    'status' => 'published',
+                ]
+            );
+
+            $sm1 = CourseModule::updateOrCreate(
+                ['course_id' => $course8->id, 'title' => 'Module 1: Spring Boot Core & Data JPA'],
+                [
+                    'description' => 'Domain models, repositories, transactions, and REST controllers.',
+                    'sort_order' => 1,
+                ]
+            );
+
+            $sl1 = CourseLesson::updateOrCreate(
+                ['module_id' => $sm1->id, 'title' => 'REST APIs, DTO Projections & Global Exception Handling'],
+                [
+                    'description' => 'Building bulletproof RESTful APIs with input validation and RFC 7807 problem details.',
+                    'sort_order' => 1,
+                    'status' => 'published',
+                ]
+            );
+            LessonVideo::updateOrCreate(
+                ['lesson_id' => $sl1->id],
+                [
+                    'title' => 'Building Production Spring Boot REST APIs',
+                    'video_url' => 'https://www.youtube.com/watch?v=9SGDpanrc8U',
+                    'duration_seconds' => 1650,
+                    'video_provider' => 'youtube',
+                    'status' => 'ready',
+                ]
+            );
+            LessonResource::updateOrCreate(
+                ['lesson_id' => $sl1->id, 'title' => 'Enterprise Microservices Patterns Guide (PDF)'],
+                [
+                    'resource_type' => 'pdf',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'mime_type' => 'application/pdf',
+                    'file_size' => 2200000,
+                    'sort_order' => 1,
+                ]
+            );
+        }
+
+        // -------------------------------------------------------------
+        // COURSE 9: Generative AI, LangChain & LLM Application Development
+        // -------------------------------------------------------------
+        if ($pythonAi && $instructor5) {
+            $course9 = Course::updateOrCreate(
+                ['slug' => 'generative-ai-langchain-llm-application-development'],
+                [
+                    'category_id' => $pythonAi->id,
+                    'instructor_id' => $instructor5->id,
+                    'title' => 'Generative AI, LangChain & LLM Application Development',
+                    'subtitle' => 'Build real-world production AI agents, Retrieval-Augmented Generation (RAG) pipelines, and fine-tune open-source models.',
+                    'description' => "Step into the future of engineering by building enterprise-ready Generative AI systems.\n\nThis hands-on program covers prompt engineering, vector embeddings, vector databases (Chroma, Pinecone, pgvector), multi-step reasoning agents with LangChain & LangGraph, and deploying custom fine-tuned LLaMA models.\n\nIncludes live weekend workshops with interactive coding sessions and code reviews.",
+                    'curriculum' => [
+                        [
+                            'title' => 'Embeddings & Vector Databases Architecture',
+                            'subtitle' => 'Text Embeddings, Chunking Strategies, Similarity Metrics, Pinecone & pgvector Setup',
+                        ],
+                        [
+                            'title' => 'Production Retrieval-Augmented Generation (RAG)',
+                            'subtitle' => 'Document Ingestion, Semantic Search, Hybrid Search, Reranking & Context Compression',
+                        ],
+                        [
+                            'title' => 'Autonomous Agents with LangChain & LangGraph',
+                            'subtitle' => 'Tool Calling, Memory Systems, Multi-Agent Collaboration, Structured Output Validation',
+                        ],
+                        [
+                            'title' => 'Evaluation, Guardrails & Production Deployment',
+                            'subtitle' => 'Ragas Evaluation, Hallucination Prevention, FastAPI Streaming Endpoints, Docker Deployment',
+                        ],
+                    ],
+                    'thumbnail' => 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=800&auto=format&fit=crop&q=60',
+                    'price' => 4999.00,
+                    'discount_price' => 2999.00,
+                    'duration' => '8 Weeks',
+                    'type' => 'live',
+                    'course_includes' => [
+                        '8 Weeks of live interactive weekend masterclasses',
+                        'Production RAG pipeline starter codebases',
+                        'Vector database benchmark datasets & notebooks',
+                        'Direct mentor feedback & private Discord access',
+                        'Official Certificate of Completion',
+                        'Full lifetime access to live recordings',
+                    ],
+                    'is_featured' => true,
+                    'status' => 'published',
+                ]
+            );
+
+            $aim1 = CourseModule::updateOrCreate(
+                ['course_id' => $course9->id, 'title' => 'Module 1: Embeddings, Vector Stores & RAG Architecture'],
+                [
+                    'description' => 'Fundamentals of vector embeddings, indexing, and semantic retrieval.',
+                    'sort_order' => 1,
+                ]
+            );
+
+            $ail1 = CourseLesson::updateOrCreate(
+                ['module_id' => $aim1->id, 'title' => 'Semantic Search & Production RAG Pipelines with LangChain'],
+                [
+                    'description' => 'Build a production document QA engine utilizing vector embeddings and hybrid search.',
+                    'sort_order' => 1,
+                    'status' => 'published',
+                ]
+            );
+            LessonVideo::updateOrCreate(
+                ['lesson_id' => $ail1->id],
+                [
+                    'title' => 'Building Production RAG with LangChain',
+                    'video_url' => 'https://www.youtube.com/watch?v=aywZrzNaKjs',
+                    'duration_seconds' => 1560,
+                    'video_provider' => 'youtube',
+                    'status' => 'ready',
+                ]
+            );
+            LessonResource::updateOrCreate(
+                ['lesson_id' => $ail1->id, 'title' => 'LangChain & Vector Database Cheatsheet (PDF)'],
+                [
+                    'resource_type' => 'pdf',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'mime_type' => 'application/pdf',
+                    'file_size' => 1850000,
+                    'sort_order' => 1,
+                ]
+            );
+
+            LiveClass::updateOrCreate(
+                [
+                    'course_id' => $course9->id,
+                    'title' => 'Live Workshop: Building Autonomous AI Agents with LangGraph',
+                ],
+                [
+                    'instructor_id' => $instructor5->id,
+                    'lesson_id' => $ail1->id,
+                    'description' => 'Live hands-on implementation of multi-agent workflows with tool calling and cyclic state graphs.',
+                    'meeting_link' => 'https://meet.google.com/genai-langchain-live',
+                    'start_time' => Carbon::now()->addDays(3)->setTime(18, 0, 0),
+                    'end_time' => Carbon::now()->addDays(3)->setTime(20, 0, 0),
+                    'duration_minutes' => 120,
+                    'status' => 'scheduled',
+                ]
+            );
+        }
+
+        // -------------------------------------------------------------
+        // COURSE 10: Go (Golang) High-Performance Backend & Distributed Systems
+        // -------------------------------------------------------------
+        if ($cloudDevops && $instructor3) {
+            $course10 = Course::updateOrCreate(
+                ['slug' => 'golang-high-performance-backend-distributed-systems'],
+                [
+                    'category_id' => $cloudDevops->id,
+                    'instructor_id' => $instructor3->id,
+                    'title' => 'Go (Golang) High-Performance Backend & Distributed Systems',
+                    'subtitle' => 'Engineer blazingly fast concurrent backend microservices, gRPC protocols, and high-throughput streaming systems.',
+                    'description' => "Master the language powering Docker, Kubernetes, Terraform, and high-throughput microservices.\n\nLearn idiomatic Go, goroutines, channel synchronization, worker pool concurrency patterns, gRPC with Protocol Buffers, SQL database connection pooling, and profiling high-load applications with pprof.\n\nBuild a real-world distributed rate limiter and event aggregation streaming engine from scratch.",
+                    'curriculum' => [
+                        [
+                            'title' => 'Idiomatic Go & Concurrency Primitives',
+                            'subtitle' => 'Memory Model, Pointers, Interfaces, Goroutines, Channels, Select & Mutex Synchronization',
+                        ],
+                        [
+                            'title' => 'High-Performance APIs with gRPC & Protocol Buffers',
+                            'subtitle' => 'Protobuf Schema Definition, Unary & Streaming RPCs, Interceptors, Context Cancellation',
+                        ],
+                        [
+                            'title' => 'Database Engineering & Concurrency Patterns',
+                            'subtitle' => 'Connection Pooling, Transactions with pgx, Worker Pools, Pipelines & Rate Limiting Algorithms',
+                        ],
+                        [
+                            'title' => 'Performance Profiling, Benchmarking & Deployment',
+                            'subtitle' => 'pprof Memory & CPU Profiling, Race Detector, Scratch Docker Containers & Kubernetes Config',
+                        ],
+                    ],
+                    'thumbnail' => 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&auto=format&fit=crop&q=60',
+                    'price' => 3999.00,
+                    'discount_price' => 2299.00,
+                    'duration' => '8 Weeks',
+                    'type' => 'recorded',
+                    'course_includes' => [
+                        '8 Weeks of hands-on Golang backend lectures',
+                        'Production gRPC microservice boilerplate code',
+                        'pprof performance benchmark suites and test beds',
+                        'Direct mentor code reviews & debugging support',
+                        'Official Certificate of Completion',
+                        'Full lifetime access on mobile & web',
+                    ],
+                    'is_featured' => false,
+                    'status' => 'published',
+                ]
+            );
+
+            $gm1 = CourseModule::updateOrCreate(
+                ['course_id' => $course10->id, 'title' => 'Module 1: Concurrency Patterns & Memory Management'],
+                [
+                    'description' => 'Goroutines, buffered channels, sync primitives, and race conditions.',
+                    'sort_order' => 1,
+                ]
+            );
+
+            $gl1 = CourseLesson::updateOrCreate(
+                ['module_id' => $gm1->id, 'title' => 'Worker Pools, Channel Pipelines & Context Management'],
+                [
+                    'description' => 'Architecting resilient concurrent worker pools with graceful shutdown and timeout propagation.',
+                    'sort_order' => 1,
+                    'status' => 'published',
+                ]
+            );
+            LessonVideo::updateOrCreate(
+                ['lesson_id' => $gl1->id],
+                [
+                    'title' => 'Go Concurrency Mastery: Worker Pools & Pipelines',
+                    'video_url' => 'https://www.youtube.com/watch?v=yyUHQIec83I',
+                    'duration_seconds' => 1480,
+                    'video_provider' => 'youtube',
+                    'status' => 'ready',
+                ]
+            );
+            LessonResource::updateOrCreate(
+                ['lesson_id' => $gl1->id, 'title' => 'Golang Concurrency & Memory Guide (PDF)'],
+                [
+                    'resource_type' => 'pdf',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'mime_type' => 'application/pdf',
+                    'file_size' => 1650000,
+                    'sort_order' => 1,
+                ]
+            );
+        }
+
+        // -------------------------------------------------------------
         // ENROLLMENTS & PAYMENTS SEEDING (15 Students Distributed)
         // -------------------------------------------------------------
         $allStudents = User::where('role', 'student')->get()->keyBy('email');
         $availableCourses = Course::where('status', 'published')->get()->keyBy('slug');
 
         $enrollmentMatrix = [
-            'rahul@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro'],
-            'aarav.mehta@example.com' => ['master-full-stack-laravel-12-inertia-react', 'cross-platform-mobile-flutter-dart'],
-            'sneha.reddy@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp'],
-            'rohan.joshi@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro'],
+            'rahul@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro', 'nextjs-15-fullstack-typescript-masterclass'],
+            'aarav.mehta@example.com' => ['master-full-stack-laravel-12-inertia-react', 'cross-platform-mobile-flutter-dart', 'nextjs-15-fullstack-typescript-masterclass'],
+            'sneha.reddy@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp', 'generative-ai-langchain-llm-application-development'],
+            'rohan.joshi@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro', 'spring-boot-3-enterprise-microservices'],
             'kavya.nair@example.com' => ['ui-ux-design-systems-prototyping-figma', 'cross-platform-mobile-flutter-dart'],
-            'ishaan.kapoor@example.com' => ['docker-kubernetes-aws-devops-bootcamp', 'cross-platform-mobile-flutter-dart'],
-            'pooja.iyer@example.com' => ['master-full-stack-laravel-12-inertia-react', 'docker-kubernetes-aws-devops-bootcamp'],
-            'aditya.c@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro'],
-            'rhea.bhatia@example.com' => ['ui-ux-design-systems-prototyping-figma', 'cross-platform-mobile-flutter-dart'],
-            'siddharth.m@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp'],
+            'ishaan.kapoor@example.com' => ['docker-kubernetes-aws-devops-bootcamp', 'cross-platform-mobile-flutter-dart', 'golang-high-performance-backend-distributed-systems'],
+            'pooja.iyer@example.com' => ['master-full-stack-laravel-12-inertia-react', 'docker-kubernetes-aws-devops-bootcamp', 'spring-boot-3-enterprise-microservices'],
+            'aditya.c@example.com' => ['master-full-stack-laravel-12-inertia-react', 'complete-modern-web-development-zero-to-pro', 'generative-ai-langchain-llm-application-development'],
+            'rhea.bhatia@example.com' => ['ui-ux-design-systems-prototyping-figma', 'cross-platform-mobile-flutter-dart', 'nextjs-15-fullstack-typescript-masterclass'],
+            'siddharth.m@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp', 'golang-high-performance-backend-distributed-systems'],
             'tanvi.d@example.com' => ['complete-modern-web-development-zero-to-pro', 'ui-ux-design-systems-prototyping-figma'],
-            'varun.n@example.com' => ['complete-modern-web-development-zero-to-pro', 'docker-kubernetes-aws-devops-bootcamp'],
-            'meera.s@example.com' => ['ui-ux-design-systems-prototyping-figma'],
-            'karan.saxena@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp'],
-            'divya.pillai@example.com' => ['master-full-stack-laravel-12-inertia-react', 'docker-kubernetes-aws-devops-bootcamp'],
+            'varun.n@example.com' => ['complete-modern-web-development-zero-to-pro', 'docker-kubernetes-aws-devops-bootcamp', 'golang-high-performance-backend-distributed-systems'],
+            'meera.s@example.com' => ['ui-ux-design-systems-prototyping-figma', 'generative-ai-langchain-llm-application-development'],
+            'karan.saxena@example.com' => ['master-full-stack-laravel-12-inertia-react', 'python-django-rest-framework-bootcamp', 'spring-boot-3-enterprise-microservices'],
+            'divya.pillai@example.com' => ['master-full-stack-laravel-12-inertia-react', 'docker-kubernetes-aws-devops-bootcamp', 'generative-ai-langchain-llm-application-development'],
         ];
 
         foreach ($enrollmentMatrix as $email => $courseSlugs) {

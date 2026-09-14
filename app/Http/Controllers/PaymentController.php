@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StudentEnrolledEvent;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -13,9 +14,7 @@ use Throwable;
 
 class PaymentController extends Controller
 {
-    /**
-     * Create a Razorpay order for enrolling in a paid course, or directly enroll if free.
-     */
+    //  Create a Razorpay order for enrolling in a paid course, or directly enroll if free.
     public function createOrder(Request $request, Course $course, RazorpayService $razorpay): JsonResponse
     {
         $user = $request->user();
@@ -52,10 +51,12 @@ class PaymentController extends Controller
 
         // If the course is free (₹0), enroll immediately without payment
         if ($payableAmount <= 0) {
-            Enrollment::firstOrCreate(
+            $enrollment = Enrollment::firstOrCreate(
                 ['user_id' => $user->id, 'course_id' => $course->id],
                 ['status' => 'active', 'enrolled_at' => now()]
             );
+
+            StudentEnrolledEvent::dispatchSafely($enrollment);
 
             return response()->json([
                 'free' => true,
@@ -182,10 +183,12 @@ class PaymentController extends Controller
         }
 
         // Activate course enrollment
-        Enrollment::firstOrCreate(
+        $enrollment = Enrollment::firstOrCreate(
             ['user_id' => $user->id, 'course_id' => $course->id],
             ['status' => 'active', 'enrolled_at' => now()]
         );
+
+        StudentEnrolledEvent::dispatchSafely($enrollment);
 
         $successMsg = "Payment successful! You have been enrolled in {$course->title}.";
 

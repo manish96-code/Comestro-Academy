@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StudentEnrolledEvent;
 use App\Jobs\UploadProfilePicture;
 use App\Models\Category;
 use App\Models\Course;
@@ -255,12 +256,14 @@ class StudentController extends Controller
             return redirect()->back()->with('error', 'You are already enrolled in this course.');
         }
 
-        Enrollment::create([
+        $enrollment = Enrollment::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
             'status' => 'active',
             'enrolled_at' => now(),
         ]);
+
+        StudentEnrolledEvent::dispatchSafely($enrollment);
 
         return redirect()->back()->with('success', "Congratulations! You have successfully enrolled in {$course->title}.");
     }

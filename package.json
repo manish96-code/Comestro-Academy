@@ -28,6 +28,8 @@
     },
     "dependencies": {
         "@heroicons/react": "^2.2.0",
+        "laravel-echo": "^2.5.0",
+        "pusher-js": "^8.6.0",
         "react-hot-toast": "^2.6.0",
         "three": "^0.186.0"
     }
