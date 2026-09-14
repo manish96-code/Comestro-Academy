@@ -14,7 +14,8 @@ import {
     X,
     GraduationCap,
     ChevronDown,
-    Award
+    Award,
+    Receipt
 } from 'lucide-react';
 
 export default function StudentLayout({ header, children }) {
@@ -82,6 +83,12 @@ export default function StudentLayout({ header, children }) {
                     href: route('student.profile'),
                     active: route().current('student.profile*'),
                     icon: User,
+                },
+                {
+                    name: 'Invoices',
+                    href: route('student.invoices.index'),
+                    active: route().current('student.invoices*'),
+                    icon: Receipt,
                 },
             ],
         },

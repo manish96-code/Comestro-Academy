@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Student\InvoiceController;
 use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentController;
 use App\Models\Course;
@@ -125,6 +126,10 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::match(['post', 'patch'], '/profile', [StudentController::class, 'updateProfile'])->name('profile.update');
     Route::delete('/profile/pic', [StudentController::class, 'destroyProfilePic'])->name('profile.pic.destroy');
     Route::put('/profile/password', [StudentController::class, 'updatePassword'])->name('profile.password');
+
+    // Invoices / Receipts
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoices/{enrollment}', [InvoiceController::class, 'show'])->name('invoices.show');
 });
 
 // Unified Notification Management Routes (Admin & Student)

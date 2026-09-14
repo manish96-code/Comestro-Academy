@@ -10,7 +10,8 @@ import {
     GraduationCap,
     ArrowRight,
     Play,
-    Terminal
+    Terminal,
+    FileText
 } from 'lucide-react';
 
 export default function EnrolledCourses({ enrollments }) {
@@ -185,13 +186,25 @@ export default function EnrolledCourses({ enrollments }) {
                                         {/* Footer Actions */}
                                         <div className="p-4 pt-0 bg-white">
                                             <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between gap-2">
-                                                <Link
-                                                    href={route('courses.show', course.slug || course.id)}
-                                                    className="px-2.5 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 transition flex items-center gap-1"
-                                                >
-                                                    <BookOpen className="h-3.5 w-3.5 text-gray-400" />
-                                                    <span>Syllabus</span>
-                                                </Link>
+                                                <div className="flex items-center gap-1">
+                                                    <Link
+                                                        href={route('courses.show', course.slug || course.id)}
+                                                        className="px-2 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 transition flex items-center gap-1 rounded-md hover:bg-gray-200/60"
+                                                        title="Course Syllabus"
+                                                    >
+                                                        <BookOpen className="h-3.5 w-3.5 text-gray-400" />
+                                                        <span className="hidden sm:inline">Syllabus</span>
+                                                    </Link>
+
+                                                    <Link
+                                                        href={route('student.invoices.show', enrollment.id)}
+                                                        className="px-2 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1 rounded-md hover:bg-indigo-50"
+                                                        title="View Tax Invoice & Receipt"
+                                                    >
+                                                        <FileText className="h-3.5 w-3.5 text-indigo-500" />
+                                                        <span>Invoice</span>
+                                                    </Link>
+                                                </div>
 
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
