@@ -1,12 +1,13 @@
 <?php
 
+use App\Jobs\UploadLessonNotes;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\CourseModule;
 use App\Models\User;
-use App\Services\ImageKitService;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     $this->category = Category::create([
@@ -66,14 +67,10 @@ test('admin can create a lesson for a course', function () {
     ]);
 });
 
-test('admin can create lesson with notes file upload via ImageKit', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+test('admin can create lesson with notes file upload via queued job', function () {
+    Queue::fake();
 
-    $imageKitMock = mock(ImageKitService::class);
-    $imageKitMock->shouldReceive('upload')
-        ->once()
-        ->andReturn(['url' => 'https://ik.imagekit.io/test/notes/cheat_sheet.pdf', 'fileId' => 'test-id', 'name' => 'cheat_sheet.pdf']);
-    $this->app->instance(ImageKitService::class, $imageKitMock);
+    $admin = User::factory()->create(['role' => 'admin']);
 
     $fakePdf = UploadedFile::fake()->create('cheat_sheet.pdf', 500, 'application/pdf');
 
@@ -89,12 +86,13 @@ test('admin can create lesson with notes file upload via ImageKit', function () 
     $module = CourseModule::where('course_id', $this->course->id)->where('title', 'Module 1: Setup')->first();
     $lesson = CourseLesson::where('module_id', $module->id)->first();
 
-    $this->assertDatabaseHas('lesson_resources', [
-        'lesson_id' => $lesson->id,
-        'title' => 'Laravel Setup Cheatsheet',
-        'file_url' => 'https://ik.imagekit.io/test/notes/cheat_sheet.pdf',
-        'resource_type' => 'pdf',
-    ]);
+    expect($lesson)->not->toBeNull();
+
+    Queue::assertPushed(UploadLessonNotes::class, function (UploadLessonNotes $job) use ($lesson) {
+        return $job->lesson->id === $lesson->id
+            && $job->title === 'Laravel Setup Cheatsheet'
+            && $job->metadata['resource_type'] === 'pdf';
+    });
 });
 
 test('admin can update a lesson', function () {

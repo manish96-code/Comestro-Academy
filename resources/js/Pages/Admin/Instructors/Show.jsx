@@ -3,7 +3,8 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
+import { useState, useRef } from 'react';
 import {
     UserCheck,
     Calendar,
@@ -15,11 +16,14 @@ import {
     Shield,
     Mail,
     Phone,
-    Key
+    Key,
+    Upload,
+    Trash2,
+    Camera
 } from 'lucide-react';
 
 export default function InstructorShow({ instructor }) {
-    const { data, setData, patch, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: instructor.name || '',
         email: instructor.email || '',
         phone: instructor.phone || '',
@@ -30,11 +34,42 @@ export default function InstructorShow({ instructor }) {
         expertise: instructor.expertise || '',
         experience_years: instructor.experience_years || 0,
         bio: instructor.bio || '',
+        profile_pic: null,
     });
+
+    const [previewUrl, setPreviewUrl] = useState(instructor.profile_pic || null);
+    const fileInputRef = useRef(null);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('profile_pic', file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
+    const handleRemovePhoto = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        setData('profile_pic', null);
+
+        if (instructor.profile_pic) {
+            router.delete(route('admin.instructors.profile-pic.destroy', instructor.id), {
+                preserveScroll: true,
+                onSuccess: () => setPreviewUrl(null),
+            });
+        } else {
+            setPreviewUrl(null);
+        }
+    };
 
     const submit = (e) => {
         e.preventDefault();
-        patch(route('admin.instructors.update', instructor.id));
+        post(route('admin.instructors.update', instructor.id), {
+            preserveScroll: true,
+            forceFormData: true,
+        });
     };
 
     const getStatusBadge = (status) => {
@@ -93,8 +128,21 @@ export default function InstructorShow({ instructor }) {
                     {/* Top Instructor Banner Card */}
                     <div className="rounded-xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div className="flex items-center space-x-4">
-                            <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0">
-                                {instructor.name ? instructor.name.charAt(0).toUpperCase() : 'I'}
+                            <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 overflow-hidden relative group">
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt={instructor.name} className="h-full w-full object-cover" />
+                                ) : instructor.name ? (
+                                    instructor.name.charAt(0).toUpperCase()
+                                ) : (
+                                    'I'
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl"
+                                >
+                                    <Camera className="h-4 w-4 text-white" />
+                                </button>
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 flex-wrap">
@@ -139,6 +187,62 @@ export default function InstructorShow({ instructor }) {
                         </div>
 
                         <form onSubmit={submit} className="space-y-6">
+                            {/* Profile Picture Upload */}
+                            <div>
+                                <InputLabel value="Profile Picture" />
+                                <div className="mt-2 flex items-center gap-4">
+                                    <div className="relative">
+                                        <div className="h-16 w-16 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 shadow-xs overflow-hidden">
+                                            {previewUrl ? (
+                                                <img
+                                                    src={previewUrl}
+                                                    alt={instructor.name}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : instructor.name ? (
+                                                instructor.name.charAt(0).toUpperCase()
+                                            ) : (
+                                                'I'
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/jpg,image/webp"
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs transition"
+                                            >
+                                                <Upload className="h-3.5 w-3.5 text-indigo-600" />
+                                                <span>{previewUrl ? 'Change Photo' : 'Upload Photo'}</span>
+                                            </button>
+                                            {previewUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemovePhoto}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                                >
+                                                    <Trash2 className="h-3 w-3" />
+                                                    <span>Remove</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-[11px] text-slate-400">
+                                            JPG, PNG or WEBP (Max 2MB)
+                                        </p>
+                                        <InputError message={errors.profile_pic} />
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Section 1: Personal & Account */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 pb-1 border-b border-slate-100">

@@ -78,7 +78,8 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::get('/instructors/create', [AdminController::class, 'createInstructor'])->name('instructors.create');
     Route::post('/instructors', [AdminController::class, 'storeInstructor'])->name('instructors.store');
     Route::get('/instructors/{instructor}', [AdminController::class, 'showInstructor'])->name('instructors.show');
-    Route::patch('/instructors/{instructor}', [AdminController::class, 'updateInstructor'])->name('instructors.update');
+    Route::match(['patch', 'post'], '/instructors/{instructor}', [AdminController::class, 'updateInstructor'])->name('instructors.update');
+    Route::delete('/instructors/{instructor}/profile-pic', [AdminController::class, 'destroyInstructorProfilePic'])->name('instructors.profile-pic.destroy');
 
     Route::get('/students', [AdminController::class, 'students'])->name('students.index');
     Route::get('/students/{student}', [AdminController::class, 'showStudent'])->name('students.show');

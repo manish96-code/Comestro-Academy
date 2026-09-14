@@ -467,13 +467,6 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                 Discover industry-standard courses taught by official framework contributors
                             </p>
                         </div>
-                        <Link
-                            href={route('student.courses.enrolled')}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 rounded-lg transition shrink-0"
-                        >
-                            <BookOpen className="h-3.5 w-3.5" />
-                            <span>My Enrolled Courses</span>
-                        </Link>
                     </div>
                 }
             >

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-
 use App\Events\CourseContentAddedEvent;
+use App\Http\Controllers\Controller;
+use App\Jobs\UploadLessonNotes;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
@@ -328,23 +328,22 @@ class CourseController extends Controller
         }
 
         if ($request->hasFile('notes_file')) {
-            try {
-                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
-                $extension = strtolower($request->file('notes_file')->getClientOriginalExtension());
-                $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
+            $file = $request->file('notes_file');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
 
-                $lesson->resources()->create([
-                    'title' => $validated['notes_title'] ?: 'Lecture Notes & Material',
-                    'file_url' => $upload['url'],
-                    'storage_key' => $upload['fileId'] ?? null,
+            UploadLessonNotes::dispatch(
+                $lesson,
+                base64_encode($file->get()),
+                $file->getClientOriginalName(),
+                $validated['notes_title'] ?: 'Lecture Notes & Material',
+                [
                     'resource_type' => $resourceType,
-                    'mime_type' => $request->file('notes_file')->getClientMimeType(),
-                    'file_size' => $request->file('notes_file')->getSize(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
                     'sort_order' => 1,
-                ]);
-            } catch (Throwable $e) {
-                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
-            }
+                ]
+            );
         }
 
         // Notify all active enrolled students about the new module/lesson
@@ -408,23 +407,22 @@ class CourseController extends Controller
 
         // Handle notes resource
         if ($request->hasFile('notes_file')) {
-            try {
-                $upload = $imageKit->upload($request->file('notes_file'), '/courses/notes');
-                $extension = strtolower($request->file('notes_file')->getClientOriginalExtension());
-                $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
+            $file = $request->file('notes_file');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $resourceType = in_array($extension, ['pdf', 'doc', 'docx']) ? 'pdf' : (in_array($extension, ['png', 'jpg', 'jpeg', 'webp']) ? 'image' : (in_array($extension, ['zip', 'rar', 'tar', 'gz']) ? 'archive' : 'code'));
 
-                $lesson->resources()->create([
-                    'title' => $validated['notes_title'] ?: 'Lecture Notes & Material',
-                    'file_url' => $upload['url'],
-                    'storage_key' => $upload['fileId'] ?? null,
+            UploadLessonNotes::dispatch(
+                $lesson,
+                base64_encode($file->get()),
+                $file->getClientOriginalName(),
+                $validated['notes_title'] ?: 'Lecture Notes & Material',
+                [
                     'resource_type' => $resourceType,
-                    'mime_type' => $request->file('notes_file')->getClientMimeType(),
-                    'file_size' => $request->file('notes_file')->getSize(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
                     'sort_order' => ($lesson->resources()->max('sort_order') ?? 0) + 1,
-                ]);
-            } catch (Throwable $e) {
-                return back()->withErrors(['notes_file' => 'Failed to upload notes: '.$e->getMessage()])->withInput();
-            }
+                ]
+            );
         } elseif (! empty($validated['notes_title'])) {
             $firstResource = $lesson->resources()->first();
             if ($firstResource) {

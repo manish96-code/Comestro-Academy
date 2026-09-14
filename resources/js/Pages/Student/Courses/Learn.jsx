@@ -296,21 +296,6 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                 {course.title}
                             </h1>
                         </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                            <Link
-                                href={route('courses.show', course.slug || course.id)}
-                                className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg shadow-2xs transition"
-                            >
-                                Course Details
-                            </Link>
-                            <Link
-                                href={route('student.courses.enrolled')}
-                                className="px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200/60 rounded-lg shadow-2xs transition"
-                            >
-                                All Enrolled Courses
-                            </Link>
-                        </div>
                     </div>
 
                     {/* Course progress bar */}

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
+use App\Jobs\UploadProfilePicture;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Instructor;
@@ -203,6 +203,7 @@ class AdminController extends Controller
                 'name' => $instructor->name,
                 'email' => $instructor->email,
                 'phone' => $instructor->phone,
+                'profile_pic' => $instructor->profile_pic,
                 'role' => $instructor->role,
                 'status' => $instructor->status,
                 'created_at' => $instructor->created_at,
@@ -225,6 +226,7 @@ class AdminController extends Controller
             'phone' => ['nullable', 'string', 'regex:/^[6-9]\d{9}$/'],
             'status' => ['required', 'in:active,inactive,suspended'],
             'password' => ['nullable', 'string', Password::min(8)],
+            'profile_pic' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'designation' => ['nullable', 'string', 'max:100'],
             'qualification' => ['nullable', 'string', 'max:100'],
             'expertise' => ['nullable', 'string', 'max:255'],
@@ -243,6 +245,16 @@ class AdminController extends Controller
             $userData['password'] = Hash::make($validated['password']);
         }
 
+        if ($request->hasFile('profile_pic')) {
+            $file = $request->file('profile_pic');
+
+            UploadProfilePicture::dispatch(
+                $instructor,
+                base64_encode($file->get()),
+                $file->getClientOriginalName()
+            );
+        }
+
         $instructor->update($userData);
 
         $instructor->instructorProfile()->updateOrCreate(
@@ -257,6 +269,16 @@ class AdminController extends Controller
         );
 
         return redirect()->back()->with('success', 'Instructor details updated successfully.');
+    }
+
+    // Remove instructor profile picture.
+    public function destroyInstructorProfilePic(User $instructor): RedirectResponse
+    {
+        $instructor->update([
+            'profile_pic' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Instructor profile picture removed successfully.');
     }
 
     // Enroll a student into a course directly from their student profile.

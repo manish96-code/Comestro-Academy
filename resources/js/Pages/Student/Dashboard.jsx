@@ -40,23 +40,6 @@ export default function StudentDashboard({ student, enrolledCoursesCount = 0, re
                             Pick up where you left off and keep building your coding skills
                         </p>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('courses.index')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition shrink-0"
-                        >
-                            <Compass className="h-3.5 w-3.5" />
-                            <span>Browse Catalog</span>
-                        </Link>
-                        <Link
-                            href={route('student.courses.enrolled')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg shadow-2xs transition shrink-0"
-                        >
-                            <BookOpen className="h-3.5 w-3.5 text-gray-500" />
-                            <span>My Courses ({enrolledCoursesCount})</span>
-                        </Link>
-                    </div>
                 </div>
             }
         >

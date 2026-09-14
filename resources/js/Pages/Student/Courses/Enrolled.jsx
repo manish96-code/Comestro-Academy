@@ -26,13 +26,7 @@ export default function EnrolledCourses({ enrollments }) {
                             Track your learning progress, resume lectures, and access study materials
                         </p>
                     </div>
-                    <Link
-                        href={route('courses.index')}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition shrink-0"
-                    >
-                        <Compass className="h-3.5 w-3.5" />
-                        <span>Explore More Courses</span>
-                    </Link>
+
                 </div>
             }
         >
@@ -49,10 +43,10 @@ export default function EnrolledCourses({ enrollments }) {
                                 const instructorUser = course.instructor?.user;
                                 const enrolledDate = enrollment.enrolled_at
                                     ? new Date(enrollment.enrolled_at).toLocaleDateString('en-US', {
-                                          year: 'numeric',
-                                          month: 'short',
-                                          day: 'numeric',
-                                      })
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })
                                     : 'Recently';
 
                                 return (
@@ -143,17 +137,15 @@ export default function EnrolledCourses({ enrollments }) {
                                                                 )}
                                                                 <span>Progress</span>
                                                             </span>
-                                                            <span className={`font-bold font-mono text-xs ${
-                                                                course.progress.is_completed ? 'text-emerald-600' : 'text-indigo-600'
-                                                            }`}>
+                                                            <span className={`font-bold font-mono text-xs ${course.progress.is_completed ? 'text-emerald-600' : 'text-indigo-600'
+                                                                }`}>
                                                                 {course.progress.progress_percentage}%
                                                             </span>
                                                         </div>
                                                         <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                                                             <div
-                                                                className={`h-2 rounded-full transition-all duration-500 ${
-                                                                    course.progress.is_completed ? 'bg-emerald-500' : 'bg-indigo-600'
-                                                                }`}
+                                                                className={`h-2 rounded-full transition-all duration-500 ${course.progress.is_completed ? 'bg-emerald-500' : 'bg-indigo-600'
+                                                                    }`}
                                                                 style={{ width: `${course.progress.progress_percentage}%` }}
                                                             />
                                                         </div>
@@ -203,19 +195,18 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
-                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg shadow-2xs transition inline-flex items-center gap-1.5 text-white ${
-                                                        course.progress?.is_completed
+                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg shadow-2xs transition inline-flex items-center gap-1.5 text-white ${course.progress?.is_completed
                                                             ? 'bg-emerald-600 hover:bg-emerald-700'
                                                             : 'bg-indigo-600 hover:bg-indigo-700'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <Play className="h-3 w-3 fill-current" />
                                                     <span>
                                                         {course.progress?.is_completed
                                                             ? 'Review Course'
                                                             : (course.progress?.completed_lessons || 0) > 0
-                                                            ? 'Continue Learning'
-                                                            : 'Start Learning'}
+                                                                ? 'Continue Learning'
+                                                                : 'Start Learning'}
                                                     </span>
                                                     <ArrowRight className="h-3 w-3" />
                                                 </Link>
@@ -257,13 +248,12 @@ export default function EnrolledCourses({ enrollments }) {
                                     key={index}
                                     href={link.url || '#'}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
-                                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
-                                        link.active
+                                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${link.active
                                             ? 'bg-indigo-600 text-white shadow-2xs'
                                             : !link.url
-                                            ? 'text-gray-300 cursor-not-allowed'
-                                            : 'text-gray-700 bg-white border border-gray-200 hover:bg-gray-50'
-                                    }`}
+                                                ? 'text-gray-300 cursor-not-allowed'
+                                                : 'text-gray-700 bg-white border border-gray-200 hover:bg-gray-50'
+                                        }`}
                                 />
                             ))}
                         </div>
