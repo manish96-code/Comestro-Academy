@@ -140,7 +140,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             const { data } = await axios.post(route('courses.payment.create-order', course.id));
 
             if (data.free) {
-                toast.success(data.message || 'Enrolled successfully!');
                 router.visit(data.redirect_url || route('student.courses.enrolled'));
                 return;
             }
@@ -190,12 +189,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             preserveScroll: true,
                             onStart: () => setEnrolling(true),
                             onFinish: () => setEnrolling(false),
-                            onSuccess: () => {
-                                toast.success('Payment verified! Welcome to the cohort.');
-                            },
-                            onError: (errs) => {
-                                toast.error(errs.message || 'Payment verification failed.');
-                            },
                         }
                     );
                 },

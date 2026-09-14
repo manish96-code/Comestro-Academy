@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CourseController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\StudentController;
+use App\Http\Controllers\Student\PaymentController;
+use App\Http\Controllers\Student\StudentController;
 use App\Models\Course;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;

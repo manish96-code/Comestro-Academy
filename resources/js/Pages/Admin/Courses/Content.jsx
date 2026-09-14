@@ -4,7 +4,6 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
-import { toast } from 'react-hot-toast';
 import {
     ArrowLeft,
     Plus,
@@ -124,26 +123,14 @@ export default function CourseContent({ course }) {
                 data: payload,
                 forceFormData: true,
                 preserveScroll: true,
-                onSuccess: () => {
-                    toast.success('Lecture details and study notes updated successfully!');
-                    closeModal();
-                },
-                onError: (errs) => {
-                    toast.error(Object.values(errs)[0] || 'Failed to update lecture.');
-                },
+                onSuccess: () => closeModal(),
             });
         } else {
             post(route('admin.courses.lessons.store', course.id), {
                 data: payload,
                 forceFormData: true,
                 preserveScroll: true,
-                onSuccess: () => {
-                    toast.success('New video lecture and notes added successfully!');
-                    closeModal();
-                },
-                onError: (errs) => {
-                    toast.error(Object.values(errs)[0] || 'Failed to add lecture.');
-                },
+                onSuccess: () => closeModal(),
             });
         }
     };
@@ -155,12 +142,6 @@ export default function CourseContent({ course }) {
 
         router.delete(route('admin.courses.lessons.destroy', [course.id, lessonId]), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Lecture deleted successfully.');
-            },
-            onError: () => {
-                toast.error('Failed to delete lecture.');
-            },
         });
     };
 

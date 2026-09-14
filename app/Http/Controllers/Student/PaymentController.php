@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Student;
+
+use App\Http\Controllers\Controller;
 
 use App\Events\StudentEnrolledEvent;
 use App\Models\Course;
@@ -58,9 +60,12 @@ class PaymentController extends Controller
 
             StudentEnrolledEvent::dispatchSafely($enrollment);
 
+            $successMsg = "Congratulations! You have successfully enrolled in {$course->title}.";
+            session()->flash('success', $successMsg);
+
             return response()->json([
                 'free' => true,
-                'message' => "Congratulations! You have successfully enrolled in {$course->title}.",
+                'message' => $successMsg,
                 'redirect_url' => route('student.courses.enrolled'),
             ]);
         }
@@ -191,6 +196,7 @@ class PaymentController extends Controller
         StudentEnrolledEvent::dispatchSafely($enrollment);
 
         $successMsg = "Payment successful! You have been enrolled in {$course->title}.";
+        session()->flash('success', $successMsg);
 
         if ($request->wantsJson()) {
             return response()->json([
