@@ -1,5 +1,7 @@
 import axios from 'axios';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import StudentLayout from '@/Layouts/StudentLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect, useMemo } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
@@ -27,7 +29,8 @@ import {
     Smartphone,
     Award,
     Sparkles,
-    CheckCircle2
+    CheckCircle2,
+    Compass
 } from 'lucide-react';
 
 const getCourseImage = (c) => {
@@ -55,20 +58,25 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         }
         return 'dark';
     });
-    const isDark = theme === 'dark';
+    const isDark = !user && theme === 'dark';
 
     useEffect(() => {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-            document.documentElement.style.colorScheme = 'dark';
+        if (!user) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+            }
+            try {
+                localStorage.setItem('theme', theme);
+            } catch (e) {}
         } else {
             document.documentElement.classList.remove('dark');
             document.documentElement.style.colorScheme = 'light';
         }
-        try {
-            localStorage.setItem('theme', theme);
-        } catch (e) {}
-    }, [theme]);
+    }, [theme, user]);
 
     const toggleTheme = () => {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -219,6 +227,12 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const instructor = course.instructor;
     const instructorUser = instructor?.user;
     const isEnrolled = course.is_enrolled;
+    const instructorName = instructorUser?.name || 'Comestro Faculty Lead';
+    const isSadique = (instructorName || '').toLowerCase().includes('sadique');
+    const instructorPhoto = instructorUser?.profile_pic || (isSadique ? '/images/instructor.jpg' : null);
+    const instructorInitials = instructorName
+        ? instructorName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+        : 'FA';
 
     const discountPercent =
         course.price && course.discount_price && Number(course.price) > Number(course.discount_price)
@@ -276,225 +290,430 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         return [moduleOrSubtitle.trim()];
     };
 
-    const instructorInitials = instructorUser?.name
-        ? instructorUser.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-        : 'AG';
+    const techDetails = useMemo(() => {
+        const title = (course.title || '').toLowerCase();
 
-    // Capstone projects built in this course
-    const capstoneProjects = [
-        {
-            title: 'DeFi Wallet & Crypto Asset Manager',
-            desc: 'Production iOS & Android wallet with Riverpod 2.0, biometric FaceID auth, real-time WebSockets, candlestick charting, and offline SQLite synchronization.',
-            stack: 'Flutter 3 · Riverpod 2.0 · SQLite · WebSockets · Biometrics'
-        },
-        {
-            title: 'Hyperlocal Courier & Live Order Delivery',
-            desc: 'Real-time Google Maps integration with route polylines, driver telemetry polling, background push notifications, and payment gateway checkout.',
-            stack: 'Flutter · Google Maps SDK · Background Tasks · Dio HTTP'
-        },
-        {
-            title: 'High-Fidelity Audio Streaming Player',
-            desc: 'Cross-platform podcast & music engine with background playback service, lockscreen media controls, Hive local cache, and responsive custom painters.',
-            stack: 'Flutter 3 · JustAudio · Hive Cache · Cupertino & Material 3'
+        if (title.includes('laravel') || title.includes('php')) {
+            return {
+                command: 'php artisan serve',
+                badge: 'Laravel 12 & Inertia',
+                snippet: "Route::get('/courses', [CourseController::class, 'index']);",
+                fps: '2.4ms latency'
+            };
         }
-    ];
-
-    const faqs = [
-        {
-            q: 'What prerequisites are required before joining this cohort?',
-            a: 'Basic programming experience in any modern language (JavaScript, Java, C++, Python, or Swift). We cover Dart 3 syntax and reactive programming foundations from the ground up.'
-        },
-        {
-            q: 'Do I need a MacBook to build iOS applications in this course?',
-            a: 'You can write and test all course code on Windows, Linux, or macOS. For compiling final signed iOS binaries, we teach automated cloud CI/CD pipelines (GitHub Actions & Codemagic) that build iOS releases without needing a physical Mac.'
-        },
-        {
-            q: 'Are live lectures recorded if I miss a scheduled class?',
-            a: 'Yes. Every session is recorded in 1080p and uploaded to your student portal within 3 hours alongside slide decks, starter boilerplates, and step-by-step repository commits.'
-        },
-        {
-            q: 'How does the 7-day money-back guarantee work?',
-            a: 'If within 7 days of joining you feel this course is not the right fit for your career, send us a one-line request for an immediate, full refund with zero questions asked.'
+        if (title.includes('flutter') || title.includes('mobile') || title.includes('dart')) {
+            return {
+                command: 'flutter run -d ios',
+                badge: 'Flutter 3 & Riverpod',
+                snippet: 'final authState = ref.watch(authNotifierProvider);',
+                fps: '60 FPS'
+            };
         }
-    ];
+        if (title.includes('react') || title.includes('next') || title.includes('typescript')) {
+            return {
+                command: 'npm run dev',
+                badge: 'Next.js 15 & React 19',
+                snippet: 'export default async function Page() { const data = await fetch(); }',
+                fps: 'Fast Refresh'
+            };
+        }
+        if (title.includes('docker') || title.includes('devops') || title.includes('kubernetes') || title.includes('cloud') || title.includes('aws')) {
+            return {
+                command: 'docker compose up -d --build',
+                badge: 'Kubernetes & AWS',
+                snippet: 'kubectl apply -f k8s/production-cluster.yaml',
+                fps: 'Zero Downtime'
+            };
+        }
+        if (title.includes('python') || title.includes('django') || title.includes('ai') || title.includes('fastapi')) {
+            return {
+                command: 'python manage.py runserver',
+                badge: 'Python & Django REST',
+                snippet: 'class CourseViewSet(viewsets.ModelViewSet): queryset = Course.objects.all()',
+                fps: 'Async I/O'
+            };
+        }
+        if (title.includes('design') || title.includes('ui/ux') || title.includes('figma')) {
+            return {
+                command: 'figma --open design-tokens',
+                badge: 'Design Systems & UI',
+                snippet: 'export const tokens = { primary: "#2563eb", surface: "#0c101c" };',
+                fps: 'Vector 120Hz'
+            };
+        }
+        if (title.includes('go') || title.includes('golang')) {
+            return {
+                command: 'go run cmd/api/main.go',
+                badge: 'Golang & gRPC',
+                snippet: 'func (s *Server) GetCourse(ctx context.Context, req *pb.Request) (*pb.Response, error)',
+                fps: 'Sub-millisecond'
+            };
+        }
+        return {
+            command: 'npm run dev',
+            badge: course.category?.name || 'Production Stack',
+            snippet: 'export default function App() { return <CourseCohort />; }',
+            fps: 'Production Ready'
+        };
+    }, [course]);
 
-    return (
-        <div className={`min-h-screen transition-colors duration-200 font-sans antialiased flex flex-col pb-16 lg:pb-0 ${
-            isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#fafbfc] text-slate-900'
+    // Capstone projects tailored dynamically to the course technology
+    const capstoneProjects = useMemo(() => {
+        const title = (course.title || '').toLowerCase();
+        if (title.includes('laravel')) {
+            return [
+                {
+                    title: 'Multi-Tenant SaaS Subscription Engine',
+                    desc: 'Production Laravel 12 multi-guard tenancy platform with team workspaces, Stripe billing webhooks, custom domain routing, and Redis caching.',
+                    stack: 'Laravel 12 · Inertia React · Stripe Billing · Redis'
+                },
+                {
+                    title: 'Real-Time Interactive Marketplace & WebSockets',
+                    desc: 'Real-time bidding & catalog platform with Laravel Reverb, private broadcast channels, background queue workers, and optimistic UI updates.',
+                    stack: 'Laravel Reverb · WebSockets · React 19 · MySQL'
+                },
+                {
+                    title: 'Enterprise REST Gateway with Automated Pest Suite',
+                    desc: 'Fully-tested microservice API with OAuth2 tokens, rate limiting shields, Pest unit/feature suites, and GitHub Actions Docker pipeline.',
+                    stack: 'REST Resources · Pest PHP · Docker · CI/CD'
+                }
+            ];
+        }
+        if (title.includes('flutter') || title.includes('mobile')) {
+            return [
+                {
+                    title: 'DeFi Wallet & Crypto Asset Manager',
+                    desc: 'Production iOS & Android wallet with Riverpod 2.0, biometric FaceID auth, real-time WebSockets, candlestick charting, and offline SQLite synchronization.',
+                    stack: 'Flutter 3 · Riverpod 2.0 · SQLite · WebSockets'
+                },
+                {
+                    title: 'Hyperlocal Courier & Live Order Delivery',
+                    desc: 'Real-time Google Maps integration with route polylines, driver telemetry polling, background push notifications, and payment gateway checkout.',
+                    stack: 'Flutter · Google Maps SDK · Background Tasks · Dio'
+                },
+                {
+                    title: 'High-Fidelity Audio Streaming Player',
+                    desc: 'Cross-platform podcast & music engine with background playback service, lockscreen media controls, Hive local cache, and responsive custom UI.',
+                    stack: 'Flutter 3 · JustAudio · Hive Cache · Cupertino'
+                }
+            ];
+        }
+        if (title.includes('docker') || title.includes('devops') || title.includes('cloud') || title.includes('aws')) {
+            return [
+                {
+                    title: 'Multi-Region Kubernetes Cluster & Helm Automations',
+                    desc: 'Production-ready EKS/GKE cluster with automated ingress, cert-manager TLS certificates, autoscaling nodes, and Helm charts.',
+                    stack: 'Kubernetes · Helm · Terraform · AWS EKS'
+                },
+                {
+                    title: 'End-to-End GitOps CI/CD Pipeline',
+                    desc: 'Automated container build, vulnerability scanning with Trivy, staging canary deployments, and ArgoCD progressive rollouts.',
+                    stack: 'GitHub Actions · ArgoCD · Docker · Trivy'
+                },
+                {
+                    title: 'Full-Stack Observability & Incident Telemetry',
+                    desc: 'Centralized log aggregation, metric scraping with Prometheus, distributed tracing with OpenTelemetry, and Grafana alert boards.',
+                    stack: 'Prometheus · Grafana · Loki · OpenTelemetry'
+                }
+            ];
+        }
+        if (title.includes('design') || title.includes('ui/ux') || title.includes('figma')) {
+            return [
+                {
+                    title: 'Enterprise Design System & Token Architecture',
+                    desc: 'Scalable multi-brand design tokens, atomic UI components, responsive typography scales, and seamless Figma-to-Code sync.',
+                    stack: 'Figma Variables · Design Tokens · Component Kits'
+                },
+                {
+                    title: 'Neobank Mobile Banking & Fintech Flow',
+                    desc: 'Full-journey user experience from biometric onboarding and KYC verification to complex multi-currency transfers and card controls.',
+                    stack: 'Interactive Prototyping · Micro-interactions · UX Research'
+                },
+                {
+                    title: 'SaaS Analytics & Operations Dashboard',
+                    desc: 'High-density enterprise interface with dark mode variants, interactive data visualization components, and WCAG AAA accessibility.',
+                    stack: 'Design Systems · WCAG Accessibility · Usability Testing'
+                }
+            ];
+        }
+        if (title.includes('python') || title.includes('django') || title.includes('ai')) {
+            return [
+                {
+                    title: 'Scalable Microservices Backend & Async Worker Engine',
+                    desc: 'High-throughput REST API with Django REST Framework, Celery asynchronous task queues, Redis brokers, and PostgreSQL query optimizations.',
+                    stack: 'Django REST Framework · Celery · Redis · PostgreSQL'
+                },
+                {
+                    title: 'Retrieval-Augmented Generation (RAG) Document AI',
+                    desc: 'Semantic search engine with vector embeddings, pgvector database integration, LangChain prompt orchestration, and streaming responses.',
+                    stack: 'LangChain · pgvector · OpenAI API · FastAPI'
+                },
+                {
+                    title: 'Production Machine Learning Inference API',
+                    desc: 'Containerized model serving service with FastAPI, automated batch prediction workers, Docker deployment, and performance monitoring.',
+                    stack: 'FastAPI · Docker · PyTorch/Scikit-Learn · Celery'
+                }
+            ];
+        }
+        return [
+            {
+                title: `${course.title}: Core Production Architecture`,
+                desc: 'Comprehensive architectural implementation focusing on clean domain separation, robust database design, and high-performance services.',
+                stack: `${course.category?.name || 'Engineering'} · Scalable Architecture`
+            },
+            {
+                title: 'Real-World Capstone Deliverable',
+                desc: 'Production-ready project complete with authentication, role permissions, automated error handling, and responsive user interfaces.',
+                stack: `${course.type === 'live' ? 'Live Interactive' : 'Hands-on'} · End-to-End Delivery`
+            },
+            {
+                title: 'Deployment & Production Testing Suite',
+                desc: 'Automated test coverage with unit & integration assertions, containerized deployment recipes, and production configuration.',
+                stack: 'Testing Framework · CI/CD · Cloud Deployment'
+            }
+        ];
+    }, [course]);
+
+    const faqs = useMemo(() => {
+        const title = (course.title || '').toLowerCase();
+        const isMobile = title.includes('flutter') || title.includes('mobile');
+        const isCloud = title.includes('docker') || title.includes('kubernetes') || title.includes('devops') || title.includes('aws');
+        const isDesign = title.includes('ui/ux') || title.includes('figma') || title.includes('design');
+
+        return [
+            {
+                q: `What prerequisites are required before joining this ${course.title} track?`,
+                a: 'Basic familiarity with computer science fundamentals or modern programming concepts. We start from clean architectural foundations and progressively guide you through advanced production patterns.'
+            },
+            {
+                q: isMobile
+                    ? 'Do I need a MacBook to build iOS applications in this course?'
+                    : isCloud
+                    ? 'Do I need a paid cloud account (AWS/GCP) to follow the labs?'
+                    : isDesign
+                    ? 'Do I need a paid Figma subscription for this course?'
+                    : 'What hardware or operating system environment is needed?',
+                a: isMobile
+                    ? 'You can write and test all course code on Windows, Linux, or macOS. For compiling signed iOS binaries, we teach automated cloud CI/CD pipelines (GitHub Actions) without needing a physical Mac.'
+                    : isCloud
+                    ? 'All labs are engineered to run within the AWS Free Tier and local Docker environments so you will not incur unexpected cloud expenses.'
+                    : isDesign
+                    ? 'All exercises and UI libraries work seamlessly with free Figma starter accounts. We provide complete downloadable component kits and design tokens.'
+                    : 'A standard laptop running Windows, macOS, or Linux with at least 8GB RAM is completely sufficient. All tools and packages used are free and open-source.'
+            },
+            {
+                q: 'Are live lectures and modules recorded for lifetime review?',
+                a: 'Yes. Every lecture, module, and architecture debug session is recorded and uploaded to your student portal alongside downloadable slide decks, starter boilerplates, and Git commits.'
+            },
+            {
+                q: 'How does the 7-day money-back guarantee work?',
+                a: 'If within 7 days of enrolling you feel this track is not the right fit for your career, send us a one-line request for an immediate, full refund with zero questions asked.'
+            }
+        ];
+    }, [course]);
+
+    const publicHeader = (
+        <header className={`sticky top-0 left-0 right-0 z-50 transition-all ${
+            isDark
+                ? 'border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md'
+                : 'border-b border-slate-200/80 bg-white/95 backdrop-blur-md'
         }`}>
-            <Head title={`${course.title} | Comestro Academy`} />
-            <Toaster position="top-right" />
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5">
+                {/* Brand */}
+                <div className="flex items-center gap-8">
+                    <Link href="/" className="flex items-center">
+                        <ApplicationLogo dark={isDark} />
+                    </Link>
 
-            {/* 1. Header / Navigation Bar Matching Homepage */}
-            <header className={`sticky top-0 left-0 right-0 z-50 transition-all ${
-                isDark
-                    ? 'border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md'
-                    : 'border-b border-slate-200/80 bg-white/95 backdrop-blur-md'
-            }`}>
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5">
-                    {/* Brand */}
-                    <div className="flex items-center gap-8">
-                        <Link href="/" className="flex items-center">
-                            <ApplicationLogo dark={isDark} />
-                        </Link>
-
-                        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
-                            <Link
-                                href={route('courses.index')}
-                                className={isDark ? 'text-white' : 'text-blue-600 font-semibold'}
-                            >
-                                All Courses
-                            </Link>
-                            <a
-                                href="#curriculum"
-                                className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
-                            >
-                                Curriculum
-                            </a>
-                            <a
-                                href="#capstones"
-                                className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
-                            >
-                                Capstones
-                            </a>
-                            <a
-                                href="#instructor"
-                                className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
-                            >
-                                Mentor
-                            </a>
-                            <a
-                                href="#faq"
-                                className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
-                            >
-                                FAQ
-                            </a>
-                        </nav>
-                    </div>
-
-                    {/* Right Controls */}
-                    <div className="flex items-center gap-3">
-                        {/* Clean Theme Toggle */}
-                        <button
-                            type="button"
-                            onClick={toggleTheme}
-                            className={`rounded-lg border p-1.5 transition ${
-                                isDark
-                                    ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
-                                    : 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200'
-                            }`}
-                            title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
-                            aria-label="Toggle Theme"
-                        >
-                            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                        </button>
-
-                        <div className="hidden sm:flex items-center gap-2">
-                            {user ? (
-                                <Link
-                                    href={route('dashboard')}
-                                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-1.5 text-xs font-medium transition ${
-                                        isDark
-                                            ? 'border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800'
-                                            : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-50 shadow-2xs'
-                                    }`}
-                                >
-                                    <LayoutDashboard className="h-3.5 w-3.5 text-blue-500" />
-                                    <span>Dashboard →</span>
-                                </Link>
-                            ) : (
-                                <>
-                                    <Link
-                                        href={route('login')}
-                                        className={`px-3 py-1.5 text-xs font-medium transition ${
-                                            isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-950'
-                                        }`}
-                                    >
-                                        Log in
-                                    </Link>
-                                    <Link
-                                        href={route('register')}
-                                        className="rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3.5 py-1.5 text-xs font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition"
-                                    >
-                                        Get Started
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Mobile Menu Button */}
-                        <button
-                            type="button"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 lg:hidden text-slate-600 dark:text-slate-400"
-                            aria-label="Toggle Navigation"
-                        >
-                            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Mobile Dropdown */}
-                {mobileMenuOpen && (
-                    <div className={`border-b px-4 py-4 lg:hidden shadow-lg space-y-2.5 ${
-                        isDark ? 'border-slate-800 bg-[#0c101c]' : 'border-slate-200 bg-white'
-                    }`}>
-                        <Link
-                            href="/"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block text-sm py-1 text-slate-700 dark:text-slate-300"
-                        >
-                            Home
-                        </Link>
+                    <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
                         <Link
                             href={route('courses.index')}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block text-sm font-medium py-1 text-blue-600 dark:text-sky-400"
+                            className={isDark ? 'text-white' : 'text-blue-600 font-semibold'}
                         >
                             All Courses
                         </Link>
                         <a
                             href="#curriculum"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                            className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
                         >
                             Curriculum
                         </a>
                         <a
                             href="#capstones"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                            className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
                         >
                             Capstones
                         </a>
-                        <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
-                            {user ? (
+                        <a
+                            href="#instructor"
+                            className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
+                        >
+                            Mentor
+                        </a>
+                        <a
+                            href="#faq"
+                            className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
+                        >
+                            FAQ
+                        </a>
+                    </nav>
+                </div>
+
+                {/* Right Controls */}
+                <div className="flex items-center gap-3">
+                    {/* Clean Theme Toggle */}
+                    <button
+                        type="button"
+                        onClick={toggleTheme}
+                        className={`rounded-lg border p-1.5 transition cursor-pointer ${
+                            isDark
+                                ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                                : 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                        title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+                        aria-label="Toggle Theme"
+                    >
+                        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4 text-slate-700" />}
+                    </button>
+
+                    <div className="hidden sm:flex items-center gap-2">
+                        {user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-1.5 text-xs font-medium transition ${
+                                    isDark
+                                        ? 'border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800'
+                                        : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-50 shadow-2xs'
+                                }`}
+                            >
+                                <LayoutDashboard className="h-3.5 w-3.5 text-blue-500" />
+                                <span>Dashboard →</span>
+                            </Link>
+                        ) : (
+                            <>
                                 <Link
-                                    href={route('dashboard')}
+                                    href={route('login')}
+                                    className={`px-3 py-1.5 text-xs font-medium transition ${
+                                        isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-950'
+                                    }`}
+                                >
+                                    Log in
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3.5 py-1.5 text-xs font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition"
+                                >
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        type="button"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 lg:hidden text-slate-600 dark:text-slate-400"
+                        aria-label="Toggle Navigation"
+                    >
+                        {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile Dropdown */}
+            {mobileMenuOpen && (
+                <div className={`border-b px-4 py-4 lg:hidden shadow-lg space-y-2.5 ${
+                    isDark ? 'border-slate-800 bg-[#0c101c]' : 'border-slate-200 bg-white'
+                }`}>
+                    <Link
+                        href="/"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                    >
+                        Home
+                    </Link>
+                    <Link
+                        href={route('courses.index')}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-sm font-medium py-1 text-blue-600 dark:text-sky-400"
+                    >
+                        All Courses
+                    </Link>
+                    <a
+                        href="#curriculum"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                    >
+                        Curriculum
+                    </a>
+                    <a
+                        href="#capstones"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                    >
+                        Capstones
+                    </a>
+                    <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
+                        {user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className="rounded-lg bg-blue-600 text-white text-center py-2 text-xs font-medium"
+                            >
+                                Dashboard →
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={route('login')}
+                                    className="rounded-lg border border-slate-300 dark:border-slate-700 text-center py-2 text-xs font-medium text-slate-700 dark:text-slate-300"
+                                >
+                                    Log in
+                                </Link>
+                                <Link
+                                    href={route('register')}
                                     className="rounded-lg bg-blue-600 text-white text-center py-2 text-xs font-medium"
                                 >
-                                    Dashboard →
+                                    Get Started
                                 </Link>
-                            ) : (
-                                <>
-                                    <Link
-                                        href={route('login')}
-                                        className="rounded-lg border border-slate-300 dark:border-slate-700 text-center py-2 text-xs font-medium text-slate-700 dark:text-slate-300"
-                                    >
-                                        Log in
-                                    </Link>
-                                    <Link
-                                        href={route('register')}
-                                        className="rounded-lg bg-blue-600 text-white text-center py-2 text-xs font-medium"
-                                    >
-                                        Get Started
-                                    </Link>
-                                </>
-                            )}
-                        </div>
+                            </>
+                        )}
                     </div>
-                )}
-            </header>
+                </div>
+            )}
+        </header>
+    );
+
+    const publicFooter = (
+        <footer className={`border-t py-10 text-xs text-slate-500 ${
+            isDark ? 'border-slate-800 bg-[#090d16]' : 'border-slate-200 bg-white'
+        }`}>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <ApplicationLogo dark={isDark} imgClassName="h-7 w-auto" />
+                    <span className="text-slate-400 hidden sm:inline">•</span>
+                    <p>© 2026 Comestro Academy. All rights reserved.</p>
+                </div>
+                <div className="flex items-center gap-6">
+                    <Link href={route('courses.index')} className="hover:text-slate-900 dark:hover:text-white transition">
+                        Courses
+                    </Link>
+                    <a href="#curriculum" className="hover:text-slate-900 dark:hover:text-white transition">
+                        Curriculum
+                    </a>
+                    <a href="#capstones" className="hover:text-slate-900 dark:hover:text-white transition">
+                        Capstones
+                    </a>
+                    <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white transition">
+                        Log in
+                    </Link>
+                </div>
+            </div>
+        </footer>
+    );
+
+    const courseDetailContent = (
+        <>
 
             {/* 2. Interactive Hero Section: Narrative Left + Live Workstation Right */}
             <section className="relative pt-10 sm:pt-14 pb-14 sm:pb-20 border-b border-slate-800/80 bg-[#090d16] text-white overflow-hidden">
@@ -550,7 +769,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 <span className="text-slate-700">•</span>
                                 <span>{course.enrollments_count ? course.enrollments_count + 450 : '840+'} Engineers</span>
                                 <span className="text-slate-700">•</span>
-                                <span>Faculty: <strong className="text-slate-200 font-medium">{instructorUser?.name || 'Sadique Hussain'} (Laravel Framework Contributor)</strong></span>
+                                <span>
+                                    Faculty: <strong className="text-slate-200 font-medium">{instructorName}</strong>
+                                    {instructor?.designation && <span className="text-slate-400 font-normal"> ({instructor.designation})</span>}
+                                </span>
                                 {course.duration && (
                                     <>
                                         <span className="text-slate-700">•</span>
@@ -633,10 +855,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     </div>
                                     <div className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
                                         <Terminal className="h-3 w-3 text-blue-400" />
-                                        <span>flutter run -d ios</span>
+                                        <span>{techDetails.command}</span>
                                     </div>
                                     <div className="text-[10px] text-slate-500 font-mono">
-                                        60 FPS
+                                        {techDetails.fps}
                                     </div>
                                 </div>
 
@@ -667,10 +889,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 {/* Code Snippet Bar */}
                                 <div className="p-3.5 bg-[#080c14] border-t border-slate-800/80 font-mono text-[11px] text-slate-400 flex items-center justify-between">
                                     <span className="text-sky-400 truncate">
-                                        final authState = ref.watch(authNotifierProvider);
+                                        {techDetails.snippet}
                                     </span>
                                     <span className="text-slate-500 shrink-0 ml-2">
-                                        Riverpod 2.0
+                                        {techDetails.badge}
                                     </span>
                                 </div>
                             </div>
@@ -684,72 +906,49 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="max-w-2xl mb-10">
                         <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
-                            Core Pillars
+                            Core Highlights
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            Engineered for Real Production Apps
+                            Engineered for Real-World Production
                         </h2>
                         <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                            No toy counter apps. Master the exact patterns, reactive state engines, and networking stacks used by high-scale mobile teams.
+                            {course.subtitle || 'Master the exact patterns, architecture, and production practices used by leading software engineering teams.'}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <div className={`p-5 rounded-xl border ${
-                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
-                        } space-y-2.5`}>
-                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                <Code2 className="h-4.5 w-4.5" />
-                            </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                Clean Architecture
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                Decouple domain entities, data sources, and UI presentation with strict repository interfaces.
-                            </p>
-                        </div>
-
-                        <div className={`p-5 rounded-xl border ${
-                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
-                        } space-y-2.5`}>
-                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                <Layers className="h-4.5 w-4.5" />
-                            </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                Riverpod 2.0 State
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                Immutable states, AsyncNotifiers, cached family providers, and clean compile-safe dependency injection.
-                            </p>
-                        </div>
-
-                        <div className={`p-5 rounded-xl border ${
-                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
-                        } space-y-2.5`}>
-                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                <Globe className="h-4.5 w-4.5" />
-                            </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                Offline SQLite Sync
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                Dio HTTP client interceptors, JWT automatic rotation, local Hive storage, and background sync engines.
-                            </p>
-                        </div>
-
-                        <div className={`p-5 rounded-xl border ${
-                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
-                        } space-y-2.5`}>
-                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                <Smartphone className="h-4.5 w-4.5" />
-                            </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                App Store & Play Store
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                iOS code signing, TestFlight distribution, Play Console app bundles, deep links, and automated CI/CD.
-                            </p>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {(course.course_includes && course.course_includes.length > 0
+                            ? course.course_includes
+                            : [
+                                'Production-ready architecture & design patterns',
+                                'Interactive cohort workshops & real-time debug sessions',
+                                'Downloadable starter boilerplates & slide decks',
+                                '1-on-1 mentor code reviews & feedback',
+                                'Official Certificate of Completion',
+                                'Full lifetime access to classroom recordings'
+                            ]
+                        ).map((item, idx) => {
+                            const iconMap = [Code2, Layers, Globe, Award, Sparkles, CheckCircle2];
+                            const IconComp = iconMap[idx % iconMap.length];
+                            return (
+                                <div
+                                    key={idx}
+                                    className={`p-5 rounded-xl border ${
+                                        isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                                    } space-y-2.5`}
+                                >
+                                    <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                        <IconComp className="h-4.5 w-4.5" />
+                                    </div>
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                        {item}
+                                    </h3>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        Comprehensive training module designed to deliver hands-on, portfolio-ready capabilities.
+                                    </p>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -766,7 +965,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 Engineering Roadmap
                             </h2>
                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                                {curriculumModules.length} Modules · Progressive depth from syntax to distributed mobile architecture
+                                {curriculumModules.length} Modules · Progressive depth from core fundamentals to production deployment
                             </p>
                         </div>
 
@@ -923,77 +1122,100 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
                         }`}>
                             <div className="flex flex-col sm:flex-row items-start gap-6">
-                                {/* Real Instructor Photo */}
-                                <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-xl shrink-0 bg-slate-900">
-                                    <img
-                                        src="/images/instructor.jpg"
-                                        alt="Sadique Hussain"
-                                        className="w-full h-full object-cover object-top"
-                                    />
+                                {/* Instructor Photo */}
+                                <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-xl shrink-0 bg-slate-900 flex items-center justify-center">
+                                    {instructorPhoto ? (
+                                        <img
+                                            src={instructorPhoto}
+                                            alt={instructorName}
+                                            className="w-full h-full object-cover object-top"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-700 text-white font-bold font-mono text-2xl sm:text-3xl">
+                                            {instructorInitials}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-4 flex-1">
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2 mb-1">
                                             <span className="text-[11px] font-mono text-blue-500 font-semibold tracking-wider uppercase">
-                                                Official Open Source Contributor
+                                                {isSadique ? 'Official Open Source Contributor' : (instructor?.qualification || 'Senior Faculty Mentor')}
                                             </span>
                                             <span className="text-slate-600 hidden sm:inline">•</span>
                                             <span className="text-xs text-slate-400 font-medium">
-                                                Laravel Framework (530M+ Downloads)
+                                                {isSadique ? 'Laravel Framework (530M+ Downloads)' : (instructor?.expertise || 'Production Engineering Expert')}
                                             </span>
                                         </div>
                                         <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                                            {instructorUser?.name || 'Sadique Hussain'}
+                                            {instructorName}
                                         </h3>
                                         <p className="text-xs sm:text-sm font-medium text-blue-600 dark:text-sky-400 mt-0.5">
-                                            {instructor?.designation || 'Lead Software Engineer & Official Laravel Framework Contributor'} · 8+ Years Industry Experience
+                                            {instructor?.designation || 'Lead Engineering Faculty & Technical Architect'}
+                                            {instructor?.experience_years ? ` · ${instructor.experience_years}+ Years Industry Experience` : ' · Industry Veteran'}
                                         </p>
                                     </div>
 
                                     {/* Credibility Stats Strip */}
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-slate-100 dark:border-slate-800/80">
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">530M+</div>
-                                            <div className="text-[11px] text-slate-500">Framework Downloads</div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                                {instructor?.experience_years ? `${instructor.experience_years}+ Yrs` : '7+ Yrs'}
+                                            </div>
+                                            <div className="text-[11px] text-slate-500">Industry Experience</div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">220+</div>
-                                            <div className="text-[11px] text-slate-500">Open Source Repos</div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                                {instructor?.courses_count ? `${instructor.courses_count} Tracks` : '4+ Tracks'}
+                                            </div>
+                                            <div className="text-[11px] text-slate-500">Specialized Courses</div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">8+ Yrs</div>
-                                            <div className="text-[11px] text-slate-500">Production Experience</div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                                {instructor?.students_count ? `${instructor.students_count.toLocaleString()}+` : '1,250+'}
+                                            </div>
+                                            <div className="text-[11px] text-slate-500">Students Mentored</div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">4.99 ★</div>
-                                            <div className="text-[11px] text-slate-500">Instructor Rating</div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                                4.99 ★
+                                            </div>
+                                            <div className="text-[11px] text-slate-500">Faculty Rating</div>
                                         </div>
                                     </div>
 
-                                    {/* About Me */}
+                                    {/* About Instructor */}
                                     <div className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                                        <p>
-                                            Hi, I'm Sadique Hussain. I am a software developer, web architect, and official open-source contributor to the Laravel Framework — the backend ecosystem powering high-concurrency web applications with over 530 million downloads worldwide.
-                                        </p>
-                                        <p>
-                                            I specialize in building mission-critical architectures with Laravel, PHP, Python, React, and cloud microservices. Through Comestro Academy, I bridge the gap between academic theory and high-scale production systems, mentoring developers on clean domain patterns, queue deadlock resolution, state machines, and real-world system design.
-                                        </p>
+                                        {instructor?.bio ? (
+                                            <>
+                                                <p>{instructor.bio}</p>
+                                                {instructor.expertise && (
+                                                    <p>
+                                                        Specializes in <strong className="text-slate-800 dark:text-slate-200">{instructor.expertise}</strong> with a focus on real-world production engineering, modular codebases, and industry-standard workflows.
+                                                    </p>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <p>
+                                                Experienced technology lead and educator dedicated to bridging the gap between computer science theory and production-scale engineering through hands-on mentorship.
+                                            </p>
+                                        )}
                                     </div>
 
                                     {/* Mentorship Highlights */}
                                     <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-4 gap-y-1">
                                         <span className="flex items-center gap-1.5">
                                             <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Weekly 1-on-1 Pull Request code reviews</span>
+                                            <span>Weekly 1-on-1 code reviews & feedback</span>
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Live interactive architecture debug sessions</span>
+                                            <span>Hands-on real-world production codebases</span>
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Direct access via private faculty channel</span>
+                                            <span>Direct mentorship via student community</span>
                                         </span>
                                     </div>
                                 </div>
@@ -1205,32 +1427,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 )}
             </div>
 
-            {/* 11. Minimalist Footer Matching Homepage */}
-            <footer className={`border-t py-10 text-xs text-slate-500 ${
-                isDark ? 'border-slate-800 bg-[#090d16]' : 'border-slate-200 bg-white'
-            }`}>
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <ApplicationLogo dark={isDark} imgClassName="h-7 w-auto" />
-                        <span className="text-slate-400 hidden sm:inline">•</span>
-                        <p>© 2026 Comestro Academy. All rights reserved.</p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <Link href={route('courses.index')} className="hover:text-slate-900 dark:hover:text-white transition">
-                            Courses
-                        </Link>
-                        <a href="#curriculum" className="hover:text-slate-900 dark:hover:text-white transition">
-                            Curriculum
-                        </a>
-                        <a href="#capstones" className="hover:text-slate-900 dark:hover:text-white transition">
-                            Capstones
-                        </a>
-                        <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white transition">
-                            Log in
-                        </Link>
-                    </div>
-                </div>
-            </footer>
+
 
             {/* Video Preview Modal */}
             {previewModalOpen && (
@@ -1268,10 +1465,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-bold text-white">
-                                        Module 1: Flutter 3 & Reactive State Architecture
+                                        {curriculumModules[0]?.title || `Module 1: Foundations of ${course.title}`}
                                     </h4>
                                     <p className="text-xs text-slate-300 mt-1 max-w-sm">
-                                        Introductory deep-dive into cross-platform engineering foundations.
+                                        {curriculumModules[0]?.subtitle || course.subtitle || 'Introductory deep-dive into production engineering foundations.'}
                                     </p>
                                 </div>
                             </div>
@@ -1296,6 +1493,64 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     </div>
                 </div>
             )}
+        </>
+    );
+
+    // 1. Logged-in Student: Render within StudentLayout
+    if (user && user.role === 'student') {
+        return (
+            <StudentLayout
+                header={
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <Link href={route('courses.index')} className="hover:text-indigo-600 transition flex items-center gap-1 font-medium">
+                            <Compass className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Browse Courses</span>
+                        </Link>
+                        <span className="hidden sm:inline">/</span>
+                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-gray-800 font-semibold">{course.title}</span>
+                    </div>
+                }
+            >
+                <Head title={`${course.title} - Comestro Academy`} />
+                <div className="pb-16 lg:pb-0">
+                    {courseDetailContent}
+                </div>
+            </StudentLayout>
+        );
+    }
+
+    // 2. Logged-in Admin / Instructor: Render within AdminLayout
+    if (user && (user.role === 'admin' || user.role === 'instructor')) {
+        return (
+            <AdminLayout
+                header={
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <Link href={route('admin.courses.index')} className="hover:text-indigo-600 transition font-medium">
+                            Courses
+                        </Link>
+                        <span>/</span>
+                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-gray-800 font-semibold">{course.title}</span>
+                    </div>
+                }
+            >
+                <Head title={`${course.title} - Admin Preview | Comestro Academy`} />
+                <div className="pb-16 lg:pb-0">
+                    {courseDetailContent}
+                </div>
+            </AdminLayout>
+        );
+    }
+
+    // 3. Public View (Unauthenticated Visitors)
+    return (
+        <div className={`min-h-screen transition-colors duration-200 font-sans antialiased flex flex-col pb-16 lg:pb-0 ${
+            isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#fafbfc] text-slate-900'
+        }`}>
+            <Head title={`${course.title} | Comestro Academy`} />
+            <Toaster position="top-right" />
+            {publicHeader}
+            {courseDetailContent}
+            {publicFooter}
         </div>
     );
 }

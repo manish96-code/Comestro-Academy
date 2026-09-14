@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Student;
 
-use App\Http\Controllers\Controller;
-
 use App\Events\StudentEnrolledEvent;
+use App\Http\Controllers\Controller;
 use App\Jobs\UploadProfilePicture;
 use App\Models\Category;
 use App\Models\Course;
@@ -128,6 +127,14 @@ class StudentController extends Controller
         }
 
         $course->is_enrolled = $isEnrolled;
+
+        if ($course->instructor) {
+            $course->instructor->courses_count = $course->instructor->courses()->where('status', 'published')->count();
+            $course->instructor->students_count = Enrollment::whereIn(
+                'course_id',
+                $course->instructor->courses()->select('id')
+            )->where('status', 'active')->count();
+        }
 
         // Fetch related courses
         $relatedCourses = Course::where('status', 'published')

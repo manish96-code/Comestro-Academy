@@ -1,5 +1,6 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import StudentLayout from '@/Layouts/StudentLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
@@ -40,18 +41,23 @@ export default function CoursesIndex({ courses, categories, filters }) {
         return 'dark';
     });
 
-    const isDark = theme === 'dark';
+    const isDark = !user && theme === 'dark';
 
     useEffect(() => {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-            document.documentElement.style.colorScheme = 'dark';
+        if (!user) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+            }
+            localStorage.setItem('theme', theme);
         } else {
             document.documentElement.classList.remove('dark');
             document.documentElement.style.colorScheme = 'light';
         }
-        localStorage.setItem('theme', theme);
-    }, [theme]);
+    }, [theme, user]);
 
     const toggleTheme = () => {
         setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -447,8 +453,8 @@ export default function CoursesIndex({ courses, categories, filters }) {
         </div>
     );
 
-    // If visiting specifically under the student portal route (/student/courses) and student is logged in
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/student') && user && user.role === 'student') {
+    // If student is logged in, wrap in StudentLayout
+    if (user && user.role === 'student') {
         return (
             <StudentLayout
                 header={
@@ -473,12 +479,47 @@ export default function CoursesIndex({ courses, categories, filters }) {
             >
                 <Head title="Explore Courses - Student Portal" />
 
-                <div className="py-6 bg-gray-50">
+                <div className="py-6 bg-gray-50 min-h-[calc(100vh-140px)]">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         {catalogContent}
                     </div>
                 </div>
             </StudentLayout>
+        );
+    }
+
+    // If admin or instructor is logged in, wrap in AdminLayout
+    if (user && (user.role === 'admin' || user.role === 'instructor')) {
+        return (
+            <AdminLayout
+                header={
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                                Explore Courses
+                            </h1>
+                            <p className="text-xs text-gray-500">
+                                Active course catalog and curriculum preview
+                            </p>
+                        </div>
+                        <Link
+                            href={route('admin.courses.index')}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0"
+                        >
+                            <LayoutDashboard className="h-3.5 w-3.5" />
+                            <span>Manage Courses</span>
+                        </Link>
+                    </div>
+                }
+            >
+                <Head title="Explore Courses - Admin Portal" />
+
+                <div className="py-6 bg-gray-50 min-h-[calc(100vh-140px)]">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        {catalogContent}
+                    </div>
+                </div>
+            </AdminLayout>
         );
     }
 
