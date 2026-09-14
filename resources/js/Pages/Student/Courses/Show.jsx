@@ -20,7 +20,14 @@ import {
     Moon,
     Menu,
     X,
-    LayoutDashboard
+    LayoutDashboard,
+    Terminal,
+    Code2,
+    Layers,
+    Smartphone,
+    Award,
+    Sparkles,
+    CheckCircle2
 } from 'lucide-react';
 
 const getCourseImage = (c) => {
@@ -40,7 +47,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
 
-    // Synchronize theme with homepage
+    // Theme synchronization (Default to dark)
     const [theme, setTheme] = useState(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('theme');
@@ -67,34 +74,11 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
 
-    const getInitialTab = () => {
-        if (typeof window !== 'undefined') {
-            const urlParams = new URLSearchParams(window.location.search);
-            const tabParam = urlParams.get('tab');
-            if (['about', 'curriculum', 'instructor', 'faq'].includes(tabParam)) {
-                return tabParam;
-            }
-            if (window.location.hash === '#curriculum') return 'curriculum';
-            if (window.location.hash === '#instructor') return 'instructor';
-            if (window.location.hash === '#faq') return 'faq';
-        }
-        return 'about';
-    };
-
-    const [activeTab, setActiveTab] = useState(getInitialTab);
     const [enrolling, setEnrolling] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const [openModules, setOpenModules] = useState({ 0: true, 1: true });
-
-    const changeTab = (tab) => {
-        setActiveTab(tab);
-        if (typeof window !== 'undefined') {
-            const url = new URL(window.location.href);
-            url.searchParams.set('tab', tab);
-            window.history.replaceState({}, '', url.toString());
-        }
-    };
+    const [openFaq, setOpenFaq] = useState({ 0: true });
 
     useEffect(() => {
         if (flash?.success) {
@@ -118,6 +102,13 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             newMap[idx] = expand;
         });
         setOpenModules(newMap);
+    };
+
+    const toggleFaq = (idx) => {
+        setOpenFaq((prev) => ({
+            ...prev,
+            [idx]: !prev[idx],
+        }));
     };
 
     // Load Razorpay SDK
@@ -156,7 +147,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
             const isLoaded = await loadRazorpayScript();
             if (!isLoaded) {
-                toast.error('Failed to load payment gateway. Please check your connection.');
+                toast.error('Failed to load payment gateway. Please check your internet connection.');
                 setEnrolling(false);
                 return;
             }
@@ -200,7 +191,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             onStart: () => setEnrolling(true),
                             onFinish: () => setEnrolling(false),
                             onSuccess: () => {
-                                toast.success('Payment verified! Welcome to the course.');
+                                toast.success('Payment verified! Welcome to the cohort.');
                             },
                             onError: (errs) => {
                                 toast.error(errs.message || 'Payment verification failed.');
@@ -294,27 +285,54 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
     const instructorInitials = instructorUser?.name
         ? instructorUser.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-        : 'CA';
+        : 'AG';
 
-    const courseIncludesList = Array.isArray(course.course_includes) && course.course_includes.length > 0
-        ? course.course_includes.filter(Boolean)
-        : [
-            `${course.duration || '8 Weeks'} structured engineering curriculum`,
-            'Production-grade capstone projects with full source code',
-            'Architecture design patterns & code review feedback',
-            'Official verified certificate of completion',
-            'Direct access to faculty discussion channels',
-            'Full lifetime access to lecture materials & updates'
-        ];
+    // Capstone projects built in this course
+    const capstoneProjects = [
+        {
+            title: 'DeFi Wallet & Crypto Asset Manager',
+            desc: 'Production iOS & Android wallet with Riverpod 2.0, biometric FaceID auth, real-time WebSockets, candlestick charting, and offline SQLite synchronization.',
+            stack: 'Flutter 3 · Riverpod 2.0 · SQLite · WebSockets · Biometrics'
+        },
+        {
+            title: 'Hyperlocal Courier & Live Order Delivery',
+            desc: 'Real-time Google Maps integration with route polylines, driver telemetry polling, background push notifications, and payment gateway checkout.',
+            stack: 'Flutter · Google Maps SDK · Background Tasks · Dio HTTP'
+        },
+        {
+            title: 'High-Fidelity Audio Streaming Player',
+            desc: 'Cross-platform podcast & music engine with background playback service, lockscreen media controls, Hive local cache, and responsive custom painters.',
+            stack: 'Flutter 3 · JustAudio · Hive Cache · Cupertino & Material 3'
+        }
+    ];
+
+    const faqs = [
+        {
+            q: 'What prerequisites are required before joining this cohort?',
+            a: 'Basic programming experience in any modern language (JavaScript, Java, C++, Python, or Swift). We cover Dart 3 syntax and reactive programming foundations from the ground up.'
+        },
+        {
+            q: 'Do I need a MacBook to build iOS applications in this course?',
+            a: 'You can write and test all course code on Windows, Linux, or macOS. For compiling final signed iOS binaries, we teach automated cloud CI/CD pipelines (GitHub Actions & Codemagic) that build iOS releases without needing a physical Mac.'
+        },
+        {
+            q: 'Are live lectures recorded if I miss a scheduled class?',
+            a: 'Yes. Every session is recorded in 1080p and uploaded to your student portal within 3 hours alongside slide decks, starter boilerplates, and step-by-step repository commits.'
+        },
+        {
+            q: 'How does the 7-day money-back guarantee work?',
+            a: 'If within 7 days of joining you feel this course is not the right fit for your career, send us a one-line request for an immediate, full refund with zero questions asked.'
+        }
+    ];
 
     return (
-        <div className={`min-h-screen transition-colors duration-200 font-sans antialiased flex flex-col pb-20 lg:pb-0 ${
+        <div className={`min-h-screen transition-colors duration-200 font-sans antialiased flex flex-col pb-16 lg:pb-0 ${
             isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#fafbfc] text-slate-900'
         }`}>
             <Head title={`${course.title} | Comestro Academy`} />
             <Toaster position="top-right" />
 
-            {/* 1. Header / Navigation Bar */}
+            {/* 1. Header / Navigation Bar Matching Homepage */}
             <header className={`sticky top-0 left-0 right-0 z-50 transition-all ${
                 isDark
                     ? 'border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md'
@@ -332,32 +350,38 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 href={route('courses.index')}
                                 className={isDark ? 'text-white' : 'text-blue-600 font-semibold'}
                             >
-                                Courses
+                                All Courses
                             </Link>
-                            <Link
-                                href="/#courses"
+                            <a
+                                href="#curriculum"
                                 className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
                             >
-                                Tracks
-                            </Link>
-                            <Link
-                                href="/#projects"
+                                Curriculum
+                            </a>
+                            <a
+                                href="#capstones"
                                 className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
                             >
                                 Capstones
-                            </Link>
-                            <Link
-                                href="/#mentors"
+                            </a>
+                            <a
+                                href="#instructor"
                                 className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
                             >
-                                Mentors
-                            </Link>
+                                Mentor
+                            </a>
+                            <a
+                                href="#faq"
+                                className={isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}
+                            >
+                                FAQ
+                            </a>
                         </nav>
                     </div>
 
                     {/* Right Controls */}
                     <div className="flex items-center gap-3">
-                        {/* Theme Toggle */}
+                        {/* Clean Theme Toggle */}
                         <button
                             type="button"
                             onClick={toggleTheme}
@@ -376,10 +400,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             {user ? (
                                 <Link
                                     href={route('dashboard')}
-                                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-1.5 text-xs font-medium transition ${
                                         isDark
                                             ? 'border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800'
-                                            : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-50'
+                                            : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-50 shadow-2xs'
                                     }`}
                                 >
                                     <LayoutDashboard className="h-3.5 w-3.5 text-blue-500" />
@@ -436,6 +460,20 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         >
                             All Courses
                         </Link>
+                        <a
+                            href="#curriculum"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                        >
+                            Curriculum
+                        </a>
+                        <a
+                            href="#capstones"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block text-sm py-1 text-slate-700 dark:text-slate-300"
+                        >
+                            Capstones
+                        </a>
                         <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
                             {user ? (
                                 <Link
@@ -465,596 +503,636 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 )}
             </header>
 
-            {/* 2. Hero Section - Clean, Confident, Calmer (No Badge Clutter) */}
-            <div className="relative bg-[#090d16] text-white overflow-hidden py-10 sm:py-12 border-b border-slate-800/80">
-                <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    {/* Breadcrumbs & Category Line */}
-                    <div className="flex items-center gap-2 text-xs text-slate-400 mb-4 overflow-x-auto pb-1 scrollbar-none">
-                        <Link href="/" className="hover:text-white transition shrink-0">Home</Link>
-                        <ChevronRight className="h-3 w-3 text-slate-600 shrink-0" />
-                        <Link href={route('courses.index')} className="hover:text-white transition shrink-0">Courses</Link>
-                        {course.category && (
-                            <>
-                                <ChevronRight className="h-3 w-3 text-slate-600 shrink-0" />
-                                <Link
-                                    href={`${route('courses.index')}?category_id=${course.category.id}`}
-                                    className="hover:text-white transition shrink-0 text-blue-400"
-                                >
-                                    {course.category.name}
-                                </Link>
-                            </>
-                        )}
-                    </div>
+            {/* 2. Interactive Hero Section: Narrative Left + Live Workstation Right */}
+            <section className="relative pt-10 sm:pt-14 pb-14 sm:pb-20 border-b border-slate-800/80 bg-[#090d16] text-white overflow-hidden">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                        {/* Left Column: Course Identity, Value Prop, Pricing & CTA */}
+                        <div className="lg:col-span-7 space-y-5">
+                            {/* Breadcrumbs */}
+                            <div className="flex items-center gap-2 text-xs text-slate-400">
+                                <Link href="/" className="hover:text-white transition">Home</Link>
+                                <ChevronRight className="h-3 w-3 text-slate-600" />
+                                <Link href={route('courses.index')} className="hover:text-white transition">Courses</Link>
+                                {course.category && (
+                                    <>
+                                        <ChevronRight className="h-3 w-3 text-slate-600" />
+                                        <span className="text-blue-400">{course.category.name}</span>
+                                    </>
+                                )}
+                            </div>
 
-                    <div className="max-w-3xl space-y-3.5">
-                        {/* Eyebrow Label (Clean quiet text, NOT a bubbly badge) */}
-                        <div className="flex items-center gap-2.5 text-xs font-medium text-slate-400">
-                            <span className="text-blue-400 font-semibold uppercase tracking-wider">
-                                {course.category?.name || 'Mobile Engineering'}
-                            </span>
-                            <span className="text-slate-600">•</span>
-                            <span>{course.type === 'live' ? 'Live Interactive Cohort' : 'Self-Paced Recorded'}</span>
-                            {isEnrolled && (
-                                <>
-                                    <span className="text-slate-600">•</span>
-                                    <span className="text-emerald-400 font-semibold">Enrolled</span>
-                                </>
-                            )}
-                        </div>
+                            {/* Clean Category Kicker (No Badge Clutter) */}
+                            <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-blue-400">
+                                <span>{course.category?.name || 'Mobile App Development'}</span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-slate-300 font-normal normal-case tracking-normal">
+                                    {course.type === 'live' ? 'Live Interactive Cohort' : 'Self-Paced Recorded'}
+                                </span>
+                                {isEnrolled && (
+                                    <>
+                                        <span className="text-slate-600">•</span>
+                                        <span className="text-emerald-400 font-semibold normal-case tracking-normal">Enrolled</span>
+                                    </>
+                                )}
+                            </div>
 
-                        {/* Title - Refined Roboto typography with natural balance */}
-                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
-                            {course.title}
-                        </h1>
+                            {/* Headline */}
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+                                {course.title}
+                            </h1>
 
-                        {/* Subtitle */}
-                        {(course.subtitle || course.description) && (
+                            {/* Subtitle */}
                             <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl font-normal">
                                 {course.subtitle || course.description}
                             </p>
-                        )}
 
-                        {/* Meta strip - Subtle quiet text row */}
-                        <div className="flex flex-wrap items-center gap-y-2 gap-x-4 pt-1 text-xs text-slate-400">
-                            <div className="flex items-center gap-1.5 text-amber-400">
-                                <Star className="h-3.5 w-3.5 fill-current" />
-                                <span className="font-semibold text-slate-200">4.9</span>
-                                <span className="text-slate-500 font-normal">({course.enrollments_count ? course.enrollments_count + 120 : '180+'} reviews)</span>
-                            </div>
-                            <span className="text-slate-700 hidden sm:inline">•</span>
-                            <span>{course.enrollments_count ? course.enrollments_count + 450 : '840+'} engineers enrolled</span>
-                            <span className="text-slate-700 hidden sm:inline">•</span>
-                            <span>Instructor: <strong className="text-slate-200 font-medium">{instructorUser?.name || 'Comestro Faculty'}</strong></span>
-                            {course.duration && (
-                                <>
-                                    <span className="text-slate-700 hidden sm:inline">•</span>
-                                    <span>{course.duration}</span>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. Main Content & Clean Sidebar */}
-            <main className="flex-1 py-8 sm:py-10">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        {/* Left Column: 8 Cols (Tabs, Overview, Syllabus, Mentor) */}
-                        <div className="lg:col-span-8 space-y-6">
-                            {/* Tab Bar - Clean, quiet, without pill badge counter */}
-                            <div className={`border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                                <div className="flex gap-7 overflow-x-auto pb-px scrollbar-none">
-                                    <button
-                                        type="button"
-                                        onClick={() => changeTab('about')}
-                                        className={`pb-3 text-sm font-medium transition-colors relative shrink-0 ${
-                                            activeTab === 'about'
-                                                ? isDark
-                                                    ? 'text-white border-b-2 border-blue-500 font-semibold'
-                                                    : 'text-blue-600 border-b-2 border-blue-600 font-semibold'
-                                                : isDark
-                                                ? 'text-slate-400 hover:text-slate-200'
-                                                : 'text-slate-500 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        About
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => changeTab('curriculum')}
-                                        className={`pb-3 text-sm font-medium transition-colors relative shrink-0 ${
-                                            activeTab === 'curriculum'
-                                                ? isDark
-                                                    ? 'text-white border-b-2 border-blue-500 font-semibold'
-                                                    : 'text-blue-600 border-b-2 border-blue-600 font-semibold'
-                                                : isDark
-                                                ? 'text-slate-400 hover:text-slate-200'
-                                                : 'text-slate-500 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        Curriculum
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => changeTab('instructor')}
-                                        className={`pb-3 text-sm font-medium transition-colors relative shrink-0 ${
-                                            activeTab === 'instructor'
-                                                ? isDark
-                                                    ? 'text-white border-b-2 border-blue-500 font-semibold'
-                                                    : 'text-blue-600 border-b-2 border-blue-600 font-semibold'
-                                                : isDark
-                                                ? 'text-slate-400 hover:text-slate-200'
-                                                : 'text-slate-500 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        Mentor
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => changeTab('faq')}
-                                        className={`pb-3 text-sm font-medium transition-colors relative shrink-0 ${
-                                            activeTab === 'faq'
-                                                ? isDark
-                                                    ? 'text-white border-b-2 border-blue-500 font-semibold'
-                                                    : 'text-blue-600 border-b-2 border-blue-600 font-semibold'
-                                                : isDark
-                                                ? 'text-slate-400 hover:text-slate-200'
-                                                : 'text-slate-500 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        FAQ
-                                    </button>
+                            {/* Linear Metadata */}
+                            <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-xs text-slate-400 pt-1">
+                                <div className="flex items-center gap-1 text-amber-400">
+                                    <Star className="h-3.5 w-3.5 fill-current" />
+                                    <span className="font-semibold text-slate-100">4.9</span>
+                                    <span className="text-slate-500 font-normal">({course.enrollments_count ? course.enrollments_count + 120 : '180+'} reviews)</span>
                                 </div>
+                                <span className="text-slate-700">•</span>
+                                <span>{course.enrollments_count ? course.enrollments_count + 450 : '840+'} Engineers</span>
+                                <span className="text-slate-700">•</span>
+                                <span>Faculty: <strong className="text-slate-200 font-medium">{instructorUser?.name || 'Ananya Gupta'}</strong></span>
+                                {course.duration && (
+                                    <>
+                                        <span className="text-slate-700">•</span>
+                                        <span>{course.duration}</span>
+                                    </>
+                                )}
                             </div>
 
-                            {/* TAB 1: About */}
-                            {activeTab === 'about' && (
-                                <div className={`rounded-xl border p-6 sm:p-7 space-y-6 ${
-                                    isDark ? 'bg-[#0c101c] border-slate-800/80 text-slate-200' : 'bg-white border-slate-200/90 text-slate-800'
-                                }`}>
-                                    <div className="space-y-3">
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                                            About This Course
-                                        </h2>
-                                        <div className="text-sm leading-relaxed space-y-3.5 text-slate-600 dark:text-slate-300 font-normal">
-                                            {course.description ? (
-                                                course.description.split('\n\n').map((para, idx) => (
-                                                    <p key={idx}>{para}</p>
-                                                ))
-                                            ) : (
-                                                <p>
-                                                    Build high-performance, production-ready applications with hands-on architectural guidance. Learn how professional engineering teams design scalable systems from foundational concepts to store deployment.
-                                                </p>
-                                            )}
-                                        </div>
+                            {/* Inline Checkout & Action Block */}
+                            <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                                <div>
+                                    <div className="text-[11px] text-slate-400 uppercase tracking-wider font-medium">
+                                        Cohort Tuition
                                     </div>
-
-                                    {/* What you'll learn - Clean checklist without artificial boxes */}
-                                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
-                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                            Key Engineering Outcomes
-                                        </h3>
-                                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-600 dark:text-slate-300">
-                                            <li className="flex items-start gap-2">
-                                                <Check className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                                                <span>Clean domain architecture with separated data & UI layers</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <Check className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                                                <span>Reactive state management & immutable data flows</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <Check className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                                                <span>Offline caching, SQLite/local storage & background sync</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <Check className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                                                <span>Production release pipelines, code signing & store audits</span>
-                                            </li>
-                                        </ul>
+                                    <div className="flex items-baseline gap-2 mt-0.5">
+                                        <span className="text-3xl font-bold text-white tracking-tight">
+                                            {formattedPrice}
+                                        </span>
+                                        {formattedOriginalPrice && (
+                                            <span className="text-sm text-slate-500 line-through">
+                                                {formattedOriginalPrice}
+                                            </span>
+                                        )}
+                                        {discountPercent && (
+                                            <span className="text-xs font-semibold text-emerald-400">
+                                                {discountPercent}% off
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
-                            )}
 
-                            {/* TAB 2: Curriculum */}
-                            {activeTab === 'curriculum' && (
-                                <div className={`rounded-xl border p-6 sm:p-7 space-y-5 ${
-                                    isDark ? 'bg-[#0c101c] border-slate-800/80 text-slate-200' : 'bg-white border-slate-200/90 text-slate-800'
-                                }`}>
-                                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
-                                        <div>
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                                                Syllabus Breakdown
-                                            </h2>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                {curriculumModules.length} Modules · Step-by-step roadmap
-                                            </p>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => expandAllModules(true)}
-                                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
-                                            >
-                                                Expand all
-                                            </button>
-                                            <span className="text-slate-600 text-xs">•</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => expandAllModules(false)}
-                                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
-                                            >
-                                                Collapse all
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Accordion Modules - Clean text numbering, no colored block badges */}
-                                    <div className="space-y-2.5">
-                                        {curriculumModules.map((module, mIdx) => {
-                                            const isOpen = Boolean(openModules[mIdx]);
-                                            const rawTitle = typeof module === 'string' ? module : module.title || `Module ${mIdx + 1}`;
-                                            const cleanTitle = rawTitle.replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim();
-                                            const topics = parseTopics(module);
-
-                                            return (
-                                                <div
-                                                    key={mIdx}
-                                                    className={`rounded-lg border transition-all overflow-hidden ${
-                                                        isDark
-                                                            ? 'border-slate-800 bg-[#090d16]/50'
-                                                            : 'border-slate-200 bg-slate-50/50'
-                                                    }`}
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => toggleModule(mIdx)}
-                                                        className="w-full flex items-center justify-between p-3.5 text-left transition hover:bg-slate-100/50 dark:hover:bg-slate-800/30"
-                                                    >
-                                                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                                                            <span className="text-xs font-medium text-slate-400 shrink-0">
-                                                                {mIdx + 1}.
-                                                            </span>
-                                                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                                                                {cleanTitle}
-                                                            </h3>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-3 shrink-0">
-                                                            <span className="text-xs text-slate-400 hidden sm:inline">
-                                                                {topics.length > 0 ? `${topics.length} lessons` : 'Hands-on'}
-                                                            </span>
-                                                            <ChevronDown
-                                                                className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
-                                                                    isOpen ? 'rotate-180 text-blue-500' : ''
-                                                                }`}
-                                                            />
-                                                        </div>
-                                                    </button>
-
-                                                    {isOpen && (
-                                                        <div className="p-3 pt-1 border-t border-slate-100 dark:border-slate-800/60 space-y-1.5">
-                                                            {topics.length > 0 ? (
-                                                                topics.map((topic, tIdx) => (
-                                                                    <div
-                                                                        key={tIdx}
-                                                                        className="flex items-center justify-between py-1.5 px-2.5 rounded text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                                                                    >
-                                                                        <div className="flex items-center gap-2 truncate">
-                                                                            <Play className="h-3 w-3 text-slate-400 shrink-0" />
-                                                                            <span className="truncate">{topic}</span>
-                                                                        </div>
-                                                                        <span className="text-slate-400 text-[11px] shrink-0">
-                                                                            {tIdx === 0 ? 'Preview' : '15-25m'}
-                                                                        </span>
-                                                                    </div>
-                                                                ))
-                                                            ) : (
-                                                                <p className="text-xs text-slate-500 italic py-1 px-2.5">
-                                                                    Comprehensive lecture sessions, code walkthroughs, and repository commits.
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* TAB 3: Instructor - Calm, editorial, no pill badge clutter */}
-                            {activeTab === 'instructor' && (
-                                <div className={`rounded-xl border p-6 sm:p-7 space-y-5 ${
-                                    isDark ? 'bg-[#0c101c] border-slate-800/80 text-slate-200' : 'bg-white border-slate-200/90 text-slate-800'
-                                }`}>
-                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                                        Faculty Leadership
-                                    </h2>
-
-                                    <div className="flex flex-col sm:flex-row items-start gap-5">
-                                        <div className="h-16 w-16 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl shrink-0">
-                                            {instructorInitials}
-                                        </div>
-
-                                        <div className="space-y-2 flex-1">
-                                            <div>
-                                                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                                                    {instructorUser?.name || 'Ananya Gupta'}
-                                                </h3>
-                                                <p className="text-xs text-blue-600 dark:text-sky-400 font-medium">
-                                                    {instructor?.designation || 'Staff Mobile Architect & Ex-Tech Lead'} · {instructor?.experience_years ? `${instructor.experience_years}+ years experience` : '8+ years experience'}
-                                                </p>
-                                            </div>
-
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                Specialization: {(instructor?.expertise ? instructor.expertise.split(',') : ['Flutter', 'Dart', 'Riverpod', 'iOS', 'Android']).map((s) => s.trim()).join(' · ')}
-                                            </p>
-
-                                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1 font-normal">
-                                                {instructor?.bio || 'Experienced engineering lead with extensive background architecting consumer-scale mobile applications. Focuses on pragmatic architecture, performance optimization, and helping developers master production-grade code.'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* TAB 4: FAQ */}
-                            {activeTab === 'faq' && (
-                                <div className={`rounded-xl border p-6 sm:p-7 space-y-4 ${
-                                    isDark ? 'bg-[#0c101c] border-slate-800/80 text-slate-200' : 'bg-white border-slate-200/90 text-slate-800'
-                                }`}>
-                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                                        Frequently Asked Questions
-                                    </h2>
-
-                                    <div className="space-y-3 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-                                        <div className="space-y-1 pb-3 border-b border-slate-100 dark:border-slate-800/80">
-                                            <h4 className="font-semibold text-slate-900 dark:text-white text-sm">
-                                                What prerequisites are recommended?
-                                            </h4>
-                                            <p>
-                                                Basic familiarity with any programming language (JavaScript, Python, Java, or C++). All specific framework concepts and patterns are built from the ground up.
-                                            </p>
-                                        </div>
-
-                                        <div className="space-y-1 pb-3 border-b border-slate-100 dark:border-slate-800/80">
-                                            <h4 className="font-semibold text-slate-900 dark:text-white text-sm">
-                                                Are recordings and lecture notes available?
-                                            </h4>
-                                            <p>
-                                                Yes. Every lecture includes full HD recordings, starter code repositories, and cheat sheets available with lifetime access.
-                                            </p>
-                                        </div>
-
-                                        <div className="space-y-1">
-                                            <h4 className="font-semibold text-slate-900 dark:text-white text-sm">
-                                                How does the refund guarantee work?
-                                            </h4>
-                                            <p>
-                                                If within 7 days of enrollment you feel the course is not right for you, contact us for a full refund without questions.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Related Courses Section */}
-                            {relatedCourses && relatedCourses.length > 0 && (
-                                <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-800">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                                            Related Courses
-                                        </h2>
+                                <div className="flex items-center gap-3">
+                                    {isEnrolled ? (
                                         <Link
-                                            href={route('courses.index')}
-                                            className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                                            href={route('student.courses.learn', course.id)}
+                                            className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition"
                                         >
-                                            <span>View all</span>
-                                            <ArrowRight className="h-3 w-3" />
+                                            <Play className="h-4 w-4 fill-current" />
+                                            <span>Enter Classroom →</span>
                                         </Link>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        {relatedCourses.map((relCourse) => (
-                                            <Link
-                                                key={relCourse.id}
-                                                href={route('courses.show', relCourse.slug || relCourse.id)}
-                                                className={`group rounded-xl border transition-all duration-200 flex flex-col justify-between overflow-hidden ${
-                                                    isDark
-                                                        ? 'border-slate-800/80 bg-[#0c101c] hover:border-slate-700'
-                                                        : 'border-slate-200/90 bg-white hover:border-slate-300 shadow-2xs'
-                                                }`}
-                                            >
-                                                <div className="relative w-full h-28 overflow-hidden bg-slate-950 border-b border-slate-100 dark:border-slate-800/60">
-                                                    <img
-                                                        src={getCourseImage(relCourse)}
-                                                        alt={relCourse.title}
-                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-
-                                                <div className="p-3.5 flex flex-col flex-1 justify-between space-y-2.5">
-                                                    <div>
-                                                        <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-sky-400">
-                                                            {relCourse.category?.name || 'Engineering'}
-                                                        </p>
-                                                        <h3 className="text-xs font-semibold line-clamp-2 text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors mt-0.5">
-                                                            {relCourse.title}
-                                                        </h3>
-                                                    </div>
-
-                                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                                        <span>{relCourse.duration || '8 Weeks'}</span>
-                                                        <span className="font-semibold text-slate-900 dark:text-white">
-                                                            {Number(relCourse.price) === 0
-                                                                ? 'Free'
-                                                                : relCourse.discount_price
-                                                                ? `₹${Number(relCourse.discount_price).toLocaleString('en-IN')}`
-                                                                : `₹${Number(relCourse.price).toLocaleString('en-IN')}`}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Right Column: 4 Cols - Clean, Quiet Sticky Card (No loud badge stickers) */}
-                        <div className="lg:col-span-4">
-                            <div className="lg:sticky lg:top-24 space-y-5">
-                                <div className={`rounded-xl border shadow-lg overflow-hidden transition-all ${
-                                    isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90'
-                                }`}>
-                                    {/* Preview Thumbnail Box - Clean artwork without loud stickers */}
-                                    <div className="relative h-44 sm:h-48 bg-slate-950 flex items-center justify-center overflow-hidden group">
-                                        <img
-                                            src={getCourseImage(course)}
-                                            alt={course.title}
-                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-slate-950/30 transition" />
-
-                                        {/* Play Preview Icon */}
+                                    ) : (
                                         <button
                                             type="button"
-                                            onClick={() => setPreviewModalOpen(true)}
-                                            className="relative z-10 flex flex-col items-center gap-1.5 cursor-pointer focus:outline-hidden"
+                                            onClick={handleEnroll}
+                                            disabled={enrolling}
+                                            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25 transition disabled:opacity-60 cursor-pointer"
                                         >
-                                            <div className="h-11 w-11 rounded-full bg-white/95 text-blue-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition duration-200">
-                                                <Play className="h-4 w-4 fill-current ml-0.5" />
-                                            </div>
-                                            <span className="text-[11px] font-medium text-white tracking-wider uppercase drop-shadow-sm">
-                                                Preview Course
-                                            </span>
+                                            <span>{enrolling ? 'Connecting Gateway...' : 'Enroll in This Cohort'}</span>
+                                            <ArrowRight className="h-4 w-4" />
                                         </button>
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleShare}
+                                        className="p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white transition"
+                                        title="Share course link"
+                                    >
+                                        <Share2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Quiet Guarantee Text */}
+                            <div className="flex items-center gap-2 text-xs text-slate-400 pt-1">
+                                <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+                                <span>7-Day 100% money-back guarantee • Official Certificate • Lifetime access</span>
+                            </div>
+                        </div>
+
+                        {/* Right Column: Interactive Workstation Video Preview Card */}
+                        <div className="lg:col-span-5">
+                            <div className="rounded-2xl border border-slate-800 bg-[#0c101c] shadow-2xl overflow-hidden">
+                                {/* Window Header Bar */}
+                                <div className="flex items-center justify-between px-4 py-2.5 bg-slate-950/80 border-b border-slate-800/80">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+                                        <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+                                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                                    </div>
+                                    <div className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+                                        <Terminal className="h-3 w-3 text-blue-400" />
+                                        <span>flutter run -d ios</span>
+                                    </div>
+                                    <div className="text-[10px] text-slate-500 font-mono">
+                                        60 FPS
+                                    </div>
+                                </div>
+
+                                {/* Preview Media Box */}
+                                <div className="relative h-56 sm:h-64 bg-slate-950 flex items-center justify-center overflow-hidden group">
+                                    <img
+                                        src={getCourseImage(course)}
+                                        alt={course.title}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80"
+                                    />
+                                    <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/15 transition" />
+
+                                    {/* Play Button Trigger */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewModalOpen(true)}
+                                        className="relative z-10 flex flex-col items-center gap-2 cursor-pointer focus:outline-hidden"
+                                    >
+                                        <div className="h-14 w-14 rounded-full bg-white/95 text-blue-600 flex items-center justify-center shadow-xl group-hover:scale-110 transition duration-200">
+                                            <Play className="h-6 w-6 fill-current ml-0.5" />
+                                        </div>
+                                        <span className="text-xs font-semibold text-white tracking-wider uppercase drop-shadow-md">
+                                            Watch Trailer & Preview
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {/* Code Snippet Bar */}
+                                <div className="p-3.5 bg-[#080c14] border-t border-slate-800/80 font-mono text-[11px] text-slate-400 flex items-center justify-between">
+                                    <span className="text-sky-400 truncate">
+                                        final authState = ref.watch(authNotifierProvider);
+                                    </span>
+                                    <span className="text-slate-500 shrink-0 ml-2">
+                                        Riverpod 2.0
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 3. Core Outcomes Section ("What You Will Master") */}
+            <section className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-2xl mb-10">
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                            Core Pillars
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            Engineered for Real Production Apps
+                        </h2>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+                            No toy counter apps. Master the exact patterns, reactive state engines, and networking stacks used by high-scale mobile teams.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div className={`p-5 rounded-xl border ${
+                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        } space-y-2.5`}>
+                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                <Code2 className="h-4.5 w-4.5" />
+                            </div>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                Clean Architecture
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Decouple domain entities, data sources, and UI presentation with strict repository interfaces.
+                            </p>
+                        </div>
+
+                        <div className={`p-5 rounded-xl border ${
+                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        } space-y-2.5`}>
+                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                <Layers className="h-4.5 w-4.5" />
+                            </div>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                Riverpod 2.0 State
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Immutable states, AsyncNotifiers, cached family providers, and clean compile-safe dependency injection.
+                            </p>
+                        </div>
+
+                        <div className={`p-5 rounded-xl border ${
+                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        } space-y-2.5`}>
+                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                <Globe className="h-4.5 w-4.5" />
+                            </div>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                Offline SQLite Sync
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Dio HTTP client interceptors, JWT automatic rotation, local Hive storage, and background sync engines.
+                            </p>
+                        </div>
+
+                        <div className={`p-5 rounded-xl border ${
+                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        } space-y-2.5`}>
+                            <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                <Smartphone className="h-4.5 w-4.5" />
+                            </div>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                App Store & Play Store
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                iOS code signing, TestFlight distribution, Play Console app bundles, deep links, and automated CI/CD.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. Curriculum Roadmap Section */}
+            <section id="curriculum" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                        <div>
+                            <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                                Step-by-Step Curriculum
+                            </div>
+                            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                Engineering Roadmap
+                            </h2>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                {curriculumModules.length} Modules · Progressive depth from syntax to distributed mobile architecture
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => expandAllModules(true)}
+                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
+                            >
+                                Expand all
+                            </button>
+                            <span className="text-slate-600 text-xs">•</span>
+                            <button
+                                type="button"
+                                onClick={() => expandAllModules(false)}
+                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
+                            >
+                                Collapse all
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3 max-w-4xl">
+                        {curriculumModules.map((module, mIdx) => {
+                            const isOpen = Boolean(openModules[mIdx]);
+                            const rawTitle = typeof module === 'string' ? module : module.title || `Module ${mIdx + 1}`;
+                            const cleanTitle = rawTitle.replace(/^Module\s*\d+\s*[:\-–—]?\s*/i, '').trim();
+                            const topics = parseTopics(module);
+
+                            return (
+                                <div
+                                    key={mIdx}
+                                    className={`rounded-xl border transition-all overflow-hidden ${
+                                        isDark
+                                            ? 'border-slate-800 bg-[#0c101c]'
+                                            : 'border-slate-200 bg-white shadow-2xs'
+                                    }`}
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleModule(mIdx)}
+                                        className="w-full flex items-center justify-between p-4 sm:p-5 text-left transition hover:bg-slate-100/50 dark:hover:bg-slate-800/30"
+                                    >
+                                        <div className="flex items-center gap-3.5 min-w-0 pr-3">
+                                            <span className="text-xs font-mono font-medium text-slate-400 shrink-0">
+                                                0{mIdx + 1}.
+                                            </span>
+                                            <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate">
+                                                {cleanTitle}
+                                            </h3>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 shrink-0">
+                                            <span className="text-xs text-slate-400 hidden sm:inline">
+                                                {topics.length > 0 ? `${topics.length} Lessons` : 'Live Workshop'}
+                                            </span>
+                                            <ChevronDown
+                                                className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                                                    isOpen ? 'rotate-180 text-blue-500' : ''
+                                                }`}
+                                            />
+                                        </div>
+                                    </button>
+
+                                    {isOpen && (
+                                        <div className="p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 space-y-2 mt-1">
+                                            {topics.length > 0 ? (
+                                                topics.map((topic, tIdx) => (
+                                                    <div
+                                                        key={tIdx}
+                                                        className="flex items-center justify-between py-2 px-3 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                                                    >
+                                                        <div className="flex items-center gap-2.5 truncate">
+                                                            <Play className="h-3 w-3 text-slate-400 shrink-0" />
+                                                            <span className="truncate">{topic}</span>
+                                                        </div>
+                                                        <span className="text-slate-400 text-[11px] shrink-0">
+                                                            {tIdx === 0 ? 'Free Preview' : '20-30 mins'}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="text-xs text-slate-500 italic py-2 px-3">
+                                                    Interactive live coding, repository architecture, and code review assignments.
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* 5. Production Capstones ("3 Apps You Will Build") */}
+            <section id="capstones" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-2xl mb-10">
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                            Portfolio Capstones
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            3 Production Apps You Will Build & Deploy
+                        </h2>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            Real codebase deliverables you can proudly showcase to engineering managers and hiring teams.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {capstoneProjects.map((p, pIdx) => (
+                            <div
+                                key={pIdx}
+                                className={`rounded-xl border p-6 flex flex-col justify-between space-y-4 ${
+                                    isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                                }`}
+                            >
+                                <div className="space-y-2.5">
+                                    <div className="text-[11px] font-mono text-blue-500 font-semibold uppercase tracking-wider">
+                                        Capstone 0{pIdx + 1}
+                                    </div>
+                                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                        {p.title}
+                                    </h3>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        {p.desc}
+                                    </p>
+                                </div>
+
+                                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                                    <span className="text-[11px] font-mono text-slate-500">
+                                        {p.stack}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 6. Senior Faculty & Mentorship Section */}
+            <section id="instructor" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-4xl">
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                            Faculty Leadership
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
+                            Learn Directly from Industry Practitioners
+                        </h2>
+
+                        <div className={`rounded-2xl border p-6 sm:p-8 ${
+                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        }`}>
+                            <div className="flex flex-col sm:flex-row items-start gap-6">
+                                <div className="h-20 w-20 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-lg shrink-0">
+                                    {instructorInitials}
+                                </div>
+
+                                <div className="space-y-3 flex-1">
+                                    <div>
+                                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                                            {instructorUser?.name || 'Ananya Gupta'}
+                                        </h3>
+                                        <p className="text-xs font-medium text-blue-600 dark:text-sky-400 mt-0.5">
+                                            {instructor?.designation || 'Staff Mobile Architect & Ex-Tech Lead'} · {instructor?.experience_years ? `${instructor.experience_years}+ Years Experience` : '8+ Years Experience'}
+                                        </p>
                                     </div>
 
-                                    {/* Content & Action CTAs */}
-                                    <div className="p-5 sm:p-6 space-y-5">
-                                        {/* Price block - Clean numbers, no neon flashing badge */}
-                                        <div className="space-y-0.5">
-                                            <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                                                Tuition
-                                            </div>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-                                                    {formattedPrice}
-                                                </span>
-                                                {formattedOriginalPrice && (
-                                                    <span className="text-sm text-slate-400 line-through">
-                                                        {formattedOriginalPrice}
-                                                    </span>
-                                                )}
-                                                {discountPercent && (
-                                                    <span className="text-xs font-semibold text-emerald-500">
-                                                        {discountPercent}% off
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
+                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                                        {instructor?.bio || 'Seasoned mobile engineering lead who has architected high-concurrency consumer applications serving millions of daily active users. Specializes in pragmatic Flutter 3 architectures, performance profiling, reactive state engines, and automated CI/CD distribution.'}
+                                    </p>
 
-                                        {/* Action Button */}
-                                        <div className="space-y-2.5">
-                                            {isEnrolled ? (
-                                                <Link
-                                                    href={route('student.courses.learn', course.id)}
-                                                    className="w-full py-3 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-2 shadow-sm transition text-xs"
-                                                >
-                                                    <Play className="h-3.5 w-3.5 fill-current" />
-                                                    <span>Go to Classroom</span>
-                                                </Link>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={handleEnroll}
-                                                    disabled={enrolling}
-                                                    className="w-full py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-semibold flex items-center justify-center gap-2 shadow-sm transition text-xs disabled:opacity-60 cursor-pointer"
-                                                >
-                                                    {enrolling ? (
-                                                        <>
-                                                            <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                            <span>Connecting Gateway...</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <span>Enroll in Course</span>
-                                                            <ArrowRight className="h-3.5 w-3.5" />
-                                                        </>
-                                                    )}
-                                                </button>
-                                            )}
-
-                                            {user && (user.role === 'admin' || user.role === 'instructor') && (
-                                                <Link
-                                                    href={route('admin.courses.show', course.id)}
-                                                    className={`w-full py-2 px-3 text-center text-xs font-medium rounded-lg border transition block ${
-                                                        isDark
-                                                            ? 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white'
-                                                            : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-                                                    }`}
-                                                >
-                                                    Edit in Admin Panel
-                                                </Link>
-                                            )}
-                                        </div>
-
-                                        {/* Trust text - Simple quiet line */}
-                                        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 text-center">
-                                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                                            <span>7-day money-back guarantee</span>
-                                        </div>
-
-                                        {/* What's included */}
-                                        <div className="space-y-2.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                                            <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
-                                                Course Includes:
-                                            </h4>
-                                            <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
-                                                {courseIncludesList.map((feature, fIdx) => (
-                                                    <div key={fIdx} className="flex items-start gap-2">
-                                                        <Check className="h-3.5 w-3.5 text-blue-500 shrink-0 mt-0.5" />
-                                                        <span className="leading-tight">{feature}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Share Course */}
-                                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center">
-                                            <button
-                                                type="button"
-                                                onClick={handleShare}
-                                                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition"
-                                            >
-                                                <Share2 className="h-3 w-3" />
-                                                <span>Share course</span>
-                                            </button>
-                                        </div>
+                                    <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-4 gap-y-1">
+                                        <span>Mentorship Model: Weekly 1-on-1 PR reviews</span>
+                                        <span>•</span>
+                                        <span>Live Debugging Sessions</span>
+                                        <span>•</span>
+                                        <span>Dedicated Faculty Discord</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </section>
 
-            {/* 4. Floating Mobile Bottom Bar */}
-            <div className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t px-4 py-2.5 flex items-center justify-between shadow-lg backdrop-blur-md ${
+            {/* 7. FAQ Section */}
+            <section id="faq" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-3xl">
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                            Got Questions?
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
+                            Frequently Asked Questions
+                        </h2>
+
+                        <div className="space-y-3">
+                            {faqs.map((f, fIdx) => {
+                                const isOpen = Boolean(openFaq[fIdx]);
+                                return (
+                                    <div
+                                        key={fIdx}
+                                        className={`rounded-xl border transition overflow-hidden ${
+                                            isDark ? 'border-slate-800 bg-[#0c101c]' : 'border-slate-200 bg-white shadow-2xs'
+                                        }`}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleFaq(fIdx)}
+                                            className="w-full flex items-center justify-between p-4 sm:p-5 text-left transition"
+                                        >
+                                            <span className="text-sm font-semibold text-slate-900 dark:text-white pr-4">
+                                                {f.q}
+                                            </span>
+                                            <ChevronDown
+                                                className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${
+                                                    isOpen ? 'rotate-180 text-blue-500' : ''
+                                                }`}
+                                            />
+                                        </button>
+
+                                        {isOpen && (
+                                            <div className="p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                                                {f.a}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 8. Full Conversion CTA Section */}
+            <section className="py-16 sm:py-20 border-b border-slate-200 dark:border-slate-800 text-center">
+                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-5">
+                    <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400">
+                        Enrollment Open
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        Ready to Build Production Mobile Apps?
+                    </h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+                        Join cohorts designed for real software engineering careers with hands-on capstones, verified certificates, and senior mentorship.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                        {isEnrolled ? (
+                            <Link
+                                href={route('student.courses.learn', course.id)}
+                                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/25 transition"
+                            >
+                                <Play className="h-4 w-4 fill-current" />
+                                <span>Go to Classroom →</span>
+                            </Link>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleEnroll}
+                                disabled={enrolling}
+                                className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25 transition disabled:opacity-60 cursor-pointer"
+                            >
+                                <span>{enrolling ? 'Connecting Gateway...' : `Enroll Now for ${formattedPrice}`}</span>
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 pt-1">
+                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                        <span>7-Day 100% money-back guarantee • No questions asked</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* 9. Related Courses Section (Matching media_1789350423399.png standard) */}
+            {relatedCourses && relatedCourses.length > 0 && (
+                <section className="py-14 sm:py-16">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
+                                    Complementary Tracks
+                                </div>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    Related Engineering Courses
+                                </h2>
+                            </div>
+                            <Link
+                                href={route('courses.index')}
+                                className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                            >
+                                <span>View all tracks</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                            {relatedCourses.map((relCourse) => (
+                                <Link
+                                    key={relCourse.id}
+                                    href={route('courses.show', relCourse.slug || relCourse.id)}
+                                    className={`group rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden ${
+                                        isDark
+                                            ? 'border-slate-800/80 bg-[#0c101c] hover:border-slate-700 hover:bg-[#0f1526]'
+                                            : 'border-slate-200/90 bg-white hover:border-slate-300 shadow-2xs'
+                                    }`}
+                                >
+                                    <div className="relative w-full h-36 overflow-hidden bg-slate-950 border-b border-slate-100 dark:border-slate-800/60">
+                                        <img
+                                            src={getCourseImage(relCourse)}
+                                            alt={relCourse.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
+                                            loading="lazy"
+                                        />
+                                    </div>
+
+                                    <div className="p-5 flex flex-col flex-1 justify-between space-y-3.5">
+                                        <div className="space-y-1.5">
+                                            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-sky-400">
+                                                {relCourse.category?.name || 'Engineering'}
+                                            </p>
+                                            <h3 className="text-sm font-bold line-clamp-2 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors leading-snug">
+                                                {relCourse.title}
+                                            </h3>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                            <span>{relCourse.duration || '8 Weeks'}</span>
+                                            <div className="flex items-center gap-1 font-semibold text-slate-900 dark:text-white">
+                                                <span>
+                                                    {Number(relCourse.price) === 0
+                                                        ? 'Free'
+                                                        : relCourse.discount_price
+                                                        ? `₹${Number(relCourse.discount_price).toLocaleString('en-IN')}`
+                                                        : `₹${Number(relCourse.price).toLocaleString('en-IN')}`}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* 10. Floating Mobile Bottom Bar */}
+            <div className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t px-4 py-3 flex items-center justify-between shadow-2xl backdrop-blur-md ${
                 isDark ? 'border-slate-800 bg-[#090d16]/95' : 'border-slate-200 bg-white/95'
             }`}>
                 <div>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider">Fee</span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider">Tuition</span>
                     <div className="flex items-baseline gap-1.5">
-                        <span className="text-base font-bold text-slate-900 dark:text-white">
+                        <span className="text-lg font-bold text-slate-900 dark:text-white">
                             {formattedPrice}
                         </span>
                         {formattedOriginalPrice && (
@@ -1068,9 +1146,9 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 {isEnrolled ? (
                     <Link
                         href={route('student.courses.learn', course.id)}
-                        className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs"
+                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md"
                     >
-                        <Play className="h-3 w-3 fill-current" />
+                        <Play className="h-3.5 w-3.5 fill-current" />
                         <span>Classroom</span>
                     </Link>
                 ) : (
@@ -1078,34 +1156,34 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         type="button"
                         onClick={handleEnroll}
                         disabled={enrolling}
-                        className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-60"
+                        className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-60"
                     >
                         <span>{enrolling ? 'Connecting...' : 'Enroll Now'}</span>
-                        <ArrowRight className="h-3 w-3" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                 )}
             </div>
 
-            {/* 5. Minimalist Footer */}
-            <footer className={`border-t py-8 text-xs text-slate-500 mt-10 ${
+            {/* 11. Minimalist Footer Matching Homepage */}
+            <footer className={`border-t py-10 text-xs text-slate-500 ${
                 isDark ? 'border-slate-800 bg-[#090d16]' : 'border-slate-200 bg-white'
             }`}>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2.5">
-                        <ApplicationLogo dark={isDark} imgClassName="h-6 w-auto" />
+                    <div className="flex items-center gap-3">
+                        <ApplicationLogo dark={isDark} imgClassName="h-7 w-auto" />
                         <span className="text-slate-400 hidden sm:inline">•</span>
                         <p>© 2026 Comestro Academy. All rights reserved.</p>
                     </div>
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-6">
                         <Link href={route('courses.index')} className="hover:text-slate-900 dark:hover:text-white transition">
                             Courses
                         </Link>
-                        <Link href="/#courses" className="hover:text-slate-900 dark:hover:text-white transition">
-                            Tracks
-                        </Link>
-                        <Link href="/#projects" className="hover:text-slate-900 dark:hover:text-white transition">
+                        <a href="#curriculum" className="hover:text-slate-900 dark:hover:text-white transition">
+                            Curriculum
+                        </a>
+                        <a href="#capstones" className="hover:text-slate-900 dark:hover:text-white transition">
                             Capstones
-                        </Link>
+                        </a>
                         <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white transition">
                             Log in
                         </Link>
@@ -1113,52 +1191,52 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             </footer>
 
-            {/* Preview Modal */}
+            {/* Video Preview Modal */}
             {previewModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in duration-150">
-                    <div className={`relative w-full max-w-xl rounded-xl border shadow-xl p-5 space-y-3.5 ${
+                    <div className={`relative w-full max-w-2xl rounded-2xl border shadow-2xl p-6 space-y-4 ${
                         isDark ? 'bg-[#0c101c] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
                     }`}>
-                        <div className="flex items-center justify-between border-b pb-2.5 border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
                             <div>
-                                <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-500">
-                                    Preview
+                                <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-500">
+                                    Curriculum Preview
                                 </span>
-                                <h3 className="text-sm font-bold truncate max-w-sm">
+                                <h3 className="text-base font-bold truncate max-w-md">
                                     {course.title}
                                 </h3>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setPreviewModalOpen(false)}
-                                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-white"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
 
-                        <div className="aspect-video w-full rounded-lg bg-slate-950 overflow-hidden relative flex items-center justify-center">
+                        <div className="aspect-video w-full rounded-xl bg-slate-950 overflow-hidden relative flex items-center justify-center">
                             <img
                                 src={getCourseImage(course)}
                                 alt={course.title}
                                 className="w-full h-full object-cover opacity-60"
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-                                <div className="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg">
-                                    <Play className="h-4 w-4 fill-current ml-0.5" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+                                <div className="h-14 w-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xl">
+                                    <Play className="h-6 w-6 fill-current ml-0.5" />
                                 </div>
                                 <div>
-                                    <h4 className="text-xs font-semibold text-white">
-                                        Module 1: Architectural Foundations
+                                    <h4 className="text-sm font-bold text-white">
+                                        Module 1: Flutter 3 & Reactive State Architecture
                                     </h4>
-                                    <p className="text-[11px] text-slate-300 mt-0.5">
-                                        Introductory deep-dive into curriculum concepts.
+                                    <p className="text-xs text-slate-300 mt-1 max-w-sm">
+                                        Introductory deep-dive into cross-platform engineering foundations.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center justify-between pt-2">
                             <span className="text-xs text-slate-400">
                                 {curriculumModules.length} Modules · {course.duration || '8 Weeks'}
                             </span>
@@ -1168,10 +1246,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     setPreviewModalOpen(false);
                                     handleEnroll();
                                 }}
-                                className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition flex items-center gap-1"
+                                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
                             >
-                                <span>Enroll Now</span>
-                                <ArrowRight className="h-3 w-3" />
+                                <span>Enroll in Cohort</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
                             </button>
                         </div>
                     </div>
