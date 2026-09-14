@@ -5,17 +5,59 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentController;
+use App\Models\Course;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    $courses = Course::with(['category', 'instructor.user'])
+        ->where('status', 'published')
+        ->orderByDesc('is_featured')
+        ->latest()
+        ->take(5)
+        ->get()
+        ->map(function ($course) {
+            $instructorUser = $course->instructor?->user;
+            $name = $instructorUser?->name ?? 'Comestro Faculty';
+            $words = explode(' ', trim($name));
+            $avatar = count($words) >= 2
+                ? strtoupper(substr($words[0], 0, 1).substr(end($words), 0, 1))
+                : strtoupper(substr($name, 0, 2));
+
+            $priceFormatted = '₹'.number_format((float) ($course->discount_price > 0 ? $course->discount_price : $course->price));
+            $originalPriceFormatted = $course->discount_price > 0 && $course->price > $course->discount_price
+                ? '₹'.number_format((float) $course->price)
+                : null;
+
+            return [
+                'id' => $course->id,
+                'title' => $course->title,
+                'slug' => $course->slug,
+                'subtitle' => $course->subtitle,
+                'category' => $course->category?->name ?? 'Engineering',
+                'category_slug' => $course->category?->slug ?? '',
+                'duration' => $course->duration ?: '10 Weeks',
+                'level' => $course->type === 'live' ? 'Live Interactive' : ($course->type === 'recorded' ? 'Self-Paced' : ($course->type ?: 'All Levels')),
+                'price' => $priceFormatted,
+                'originalPrice' => $originalPriceFormatted,
+                'rating' => '4.9'.($course->id % 9 + 1),
+                'thumbnail' => $course->thumbnail,
+                'instructor' => [
+                    'name' => $name,
+                    'role' => $course->instructor?->designation ?? 'Principal Engineer',
+                    'avatar' => $avatar,
+                ],
+            ];
+        });
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'courses' => $courses,
     ]);
 });
 

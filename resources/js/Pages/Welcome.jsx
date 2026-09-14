@@ -4,7 +4,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import ThreeLaptopCanvas from '@/Components/Three/ThreeLaptopCanvas';
 import ThreeDynamicBackground from '@/Components/Three/ThreeDynamicBackground';
 import MobileAppDock from '@/Components/MobileAppDock';
-import SwappableCourseCards, { COURSES_DATA } from '@/Components/SwappableCourseCards';
+import SwappableCourseCards from '@/Components/SwappableCourseCards';
 import {
     Terminal,
     ArrowRight,
@@ -24,7 +24,7 @@ import {
     Moon
 } from 'lucide-react';
 
-export default function Welcome({ auth }) {
+export default function Welcome({ auth, courses = [] }) {
     const [theme, setTheme] = useState(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('theme');
@@ -35,14 +35,6 @@ export default function Welcome({ auth }) {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('java');
-    const [activeCourse, setActiveCourse] = useState(COURSES_DATA[0]);
-    const [activeCourseIndex, setActiveCourseIndex] = useState(0);
-
-    const handleCourseSelect = (course, idx) => {
-        setActiveCourse(course);
-        setActiveCourseIndex(idx);
-    };
-
     const isDark = theme === 'dark';
 
     useEffect(() => {
@@ -322,9 +314,9 @@ public class OrderController {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                         {/* Title Column */}
                         <div className="lg:col-span-6 space-y-4">
-                            <div className="inline-flex items-center gap-2 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-mono font-semibold text-blue-600 dark:text-blue-400">
-                                <Sparkles className="h-3.5 w-3.5" />
-                                <span>// OUR COURSES</span>
+                            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 dark:bg-blue-500/15 px-3.5 py-1 text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400">
+                                <Sparkles className="h-3.5 w-3.5 text-blue-500 dark:text-sky-400" />
+                                <span>Our Courses</span>
                             </div>
 
                             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -332,19 +324,8 @@ public class OrderController {
                             </h2>
 
                             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
-                                Production-grade engineering curriculums designed by industry veterans. Click any card below to swap courses and inspect live architecture on the workstation opposite.
+                                Production-grade engineering curriculums designed by industry veterans to take you from foundational syntax to distributed production systems.
                             </p>
-
-                            {/* Active Workstation Indicator */}
-                            <div className="pt-1 flex items-center gap-3">
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/70 text-xs font-mono">
-                                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-slate-500 dark:text-slate-400">Workstation:</span>
-                                    <span className="font-bold text-slate-900 dark:text-white truncate max-w-[240px] sm:max-w-md">
-                                        {activeCourse?.title}
-                                    </span>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Opposite of Title: Prominent 3D MacBook Air Workstation */}
@@ -352,7 +333,6 @@ public class OrderController {
                             <div className="w-full max-w-xl lg:max-w-2xl h-[300px] sm:h-[350px] lg:h-[390px] xl:h-[420px] relative overflow-hidden">
                                 <ThreeLaptopCanvas
                                     theme={theme}
-                                    activeCourse={activeCourse}
                                 />
                             </div>
                         </div>
@@ -362,8 +342,7 @@ public class OrderController {
                 {/* Full Width of Screen: 5 Course Cards in ONE Row */}
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
                     <SwappableCourseCards
-                        onSelectCourse={handleCourseSelect}
-                        activeCourseIndex={activeCourseIndex}
+                        courses={courses}
                         theme={theme}
                     />
                 </div>
@@ -422,8 +401,8 @@ public class OrderController {
             <section id="projects" className="py-20 border-t border-slate-200 dark:border-slate-800">
                 <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
                     <div className="mb-10 max-w-xl">
-                        <div className="text-xs font-mono text-blue-600 dark:text-blue-400 font-semibold mb-1">
-                            // PORTFOLIO
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
+                            Portfolio Projects
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                             Production Capstones
@@ -467,8 +446,8 @@ public class OrderController {
             <section id="mentors" className="py-20 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
                 <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
                     <div className="mb-10 max-w-xl">
-                        <div className="text-xs font-mono text-blue-600 dark:text-blue-400 font-semibold mb-1">
-                            // PRACTITIONERS
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
+                            Senior Mentors
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                             Senior Mentors

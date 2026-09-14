@@ -19,21 +19,11 @@ import * as THREE from 'three';
  */
 export default function ThreeLaptopCanvas({
     theme = 'dark',
-    activeCourse = null,
     className = '',
 }) {
     const containerRef = useRef(null);
     const isManuallyToggledRef = useRef(false);
-    const drawScreenRef = useRef(null);
     const screenTextureRef = useRef(null);
-
-    // Live-sync screen when activeCourse changes
-    useEffect(() => {
-        if (drawScreenRef.current && screenTextureRef.current) {
-            drawScreenRef.current(activeCourse);
-            screenTextureRef.current.needsUpdate = true;
-        }
-    }, [activeCourse]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -651,10 +641,8 @@ export default function ThreeLaptopCanvas({
             sCtx.fillRect(455, 0, 114, 28);
 
             // Active Code Tab
-            const targetCourse = course || activeCourse;
-            const snippet = targetCourse?.codeSnippet;
-            const tabTitle = snippet?.filename || '⚡ ComestroAcademy.java';
-            const statusText = snippet?.status || '● Build Succeeded · 0 errors · 10,000+ Active Engineers';
+            const tabTitle = '⚡ ComestroEngine.java';
+            const statusText = '● Build Succeeded · 0 errors · 10,000+ Active Engineers';
 
             sCtx.fillStyle = '#1b2234';
             sCtx.fillRect(115, 10, 320, 46);
@@ -664,7 +652,7 @@ export default function ThreeLaptopCanvas({
 
             // Syntax Highlighted Code Lines
             sCtx.font = '21px "JetBrains Mono", monospace';
-            const lines = snippet?.lines || [
+            const lines = [
                 { text: '// Comestro Academy — Online Learning', color: '#64748b' },
                 { text: 'package com.comestro.academy.engine;', color: '#c084fc' },
                 { text: '', color: '#64748b' },
@@ -698,8 +686,7 @@ export default function ThreeLaptopCanvas({
             sCtx.fillText(statusText, 30, 654);
         };
 
-        drawMacScreen(activeCourse);
-        drawScreenRef.current = drawMacScreen;
+        drawMacScreen();
 
         const screenTexture = new THREE.CanvasTexture(screenCanvas);
         screenTexture.anisotropy = 4;
