@@ -41,45 +41,64 @@ export default function GuestLayout({ children, activeTab = 'auth' }) {
                 </div>
 
                 {/* Main Middle Pitch */}
-                <div className="relative z-10 my-auto py-8 space-y-8">
+                <div className="relative z-10 my-auto py-6 space-y-6">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
                         <Sparkles className="h-3.5 w-3.5" />
-                        <span>Industry-Grade Engineering Education</span>
+                        <span>Official Framework Contributor Mentorship</span>
                     </div>
 
                     {/* Headline */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         <h2 className="text-3xl xl:text-4xl font-extrabold text-white tracking-tight leading-tight">
                             Build Real Systems. <br />
-                            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
-                                Level Up Your Tech Career.
+                            <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
+                                Learn from Open Source Maintainers.
                             </span>
                         </h2>
-                        <p className="text-sm text-slate-300 leading-relaxed max-w-md">
-                            Master Java, Spring Boot, React 19, Python, and cloud architecture with direct guidance from seasoned engineering leads.
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md">
+                            Direct 1-on-1 code reviews and system architecture training from engineers who contribute to the core frameworks powering hundreds of millions of downloads.
                         </p>
                     </div>
 
+                    {/* Faculty Card with Real Photo */}
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 backdrop-blur-sm flex items-center gap-4">
+                        <div className="relative h-14 w-14 rounded-xl overflow-hidden border-2 border-blue-500/40 shadow-sm shrink-0 bg-slate-900">
+                            <img
+                                src="/images/instructor.jpg"
+                                alt="Sadique Hussain"
+                                className="w-full h-full object-cover object-top"
+                            />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                                <h4 className="text-sm font-bold text-white truncate">Sadique Hussain</h4>
+                                <span className="text-xs font-semibold text-amber-400 font-mono shrink-0">★ 4.99</span>
+                            </div>
+                            <p className="text-[11px] text-blue-400 font-medium">Official Laravel Framework Contributor</p>
+                            <p className="text-[10px] text-slate-400 font-mono mt-0.5">530M+ Downloads · 220+ Repos</p>
+                        </div>
+                    </div>
+
                     {/* Feature Highlights */}
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                         <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-                            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0 mt-0.5">
+                            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 shrink-0 mt-0.5">
                                 <CheckCircle2 className="h-4 w-4" />
                             </div>
                             <div>
-                                <h4 className="text-xs font-bold text-white">50+ Production Capstone Projects</h4>
-                                <p className="text-[11px] text-slate-400">Microservices, real-time WebSockets, idempotency, and OAuth2 security.</p>
+                                <h4 className="text-xs font-bold text-white">Production Deliverables & Capstones</h4>
+                                <p className="text-[11px] text-slate-400">Microservices, WebSocket concurrency, queue deadlock resolution, and OAuth2.</p>
                             </div>
                         </div>
 
                         <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm">
-                            <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 shrink-0 mt-0.5">
+                            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 shrink-0 mt-0.5">
                                 <Code2 className="h-4 w-4" />
                             </div>
                             <div>
-                                <h4 className="text-xs font-bold text-white">1-on-1 Code Reviews & Mentorship</h4>
-                                <p className="text-[11px] text-slate-400">Personalized PR feedback from senior engineering leads.</p>
+                                <h4 className="text-xs font-bold text-white">1-on-1 Code Reviews</h4>
+                                <p className="text-[11px] text-slate-400">Pull request audits and architectural whiteboarding directly with faculty.</p>
                             </div>
                         </div>
                     </div>
@@ -92,31 +111,32 @@ export default function GuestLayout({ children, activeTab = 'auth' }) {
                                 <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
                                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
                             </div>
-                            <span className="text-[10px] text-slate-500">engineer-journey.ts</span>
+                            <span className="text-[10px] text-slate-500">laravel-concurrency.ts</span>
                         </div>
                         <div className="leading-relaxed">
-                            <span className="text-purple-400">const</span> <span className="text-blue-300">career</span> = <span className="text-purple-400">await</span> Comestro.<span className="text-emerald-400">enroll</span>&#40;&#123;<br />
-                            &nbsp;&nbsp;skills: [<span className="text-amber-300">'Spring Boot'</span>, <span className="text-amber-300">'React 19'</span>, <span className="text-amber-300">'Docker'</span>],<br />
-                            &nbsp;&nbsp;outcome: <span className="text-emerald-400">'Senior Full Stack Engineer'</span><br />
+                            <span className="text-purple-400">const</span> <span className="text-blue-300">cohort</span> = <span className="text-purple-400">await</span> Comestro.<span className="text-emerald-400">enroll</span>&#40;&#123;<br />
+                            &nbsp;&nbsp;mentor: <span className="text-amber-300">'Sadique Hussain (Laravel Contributor)'</span>,<br />
+                            &nbsp;&nbsp;focus: <span className="text-amber-300">'High-Throughput Queue Systems'</span>,<br />
+                            &nbsp;&nbsp;outcome: <span className="text-emerald-400">'Staff Software Engineer'</span><br />
                             &#125;&#41;;
                         </div>
                     </div>
                 </div>
 
                 {/* Bottom Social Proof */}
-                <div className="relative z-10 pt-6 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                <div className="relative z-10 pt-5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                     <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
-                            <div className="h-7 w-7 rounded-full bg-emerald-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">R</div>
-                            <div className="h-7 w-7 rounded-full bg-indigo-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">M</div>
-                            <div className="h-7 w-7 rounded-full bg-teal-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">S</div>
+                            <div className="h-7 w-7 rounded-full bg-blue-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">S</div>
+                            <div className="h-7 w-7 rounded-full bg-emerald-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">M</div>
+                            <div className="h-7 w-7 rounded-full bg-indigo-600 border-2 border-slate-950 flex items-center justify-center font-bold text-[10px] text-white">V</div>
                         </div>
-                        <span className="text-[11px] font-medium text-slate-300">12,000+ Enrolled Learners</span>
+                        <span className="text-[11px] font-medium text-slate-300">530M+ Framework Downloads</span>
                     </div>
 
                     <div className="flex items-center gap-1 text-amber-400 font-bold text-[11px]">
                         <Star className="h-3.5 w-3.5 fill-amber-400" />
-                        <span>4.9 / 5.0 Rating</span>
+                        <span>4.99 / 5.0 Rating</span>
                     </div>
                 </div>
             </aside>

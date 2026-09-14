@@ -94,11 +94,15 @@ public class OrderController {
 
     const INSTRUCTORS = [
         {
-            name: 'Rahul Sharma',
-            role: 'Senior Backend Engineer',
-            exp: '8+ Years Exp · Ex-Tech Lead',
-            tech: 'Java, Spring Boot, Kafka',
-            rating: '4.95',
+            name: 'Sadique Hussain',
+            role: 'Official Laravel Framework Contributor',
+            exp: '8+ Years Exp · Contributor to Laravel (530M+ Downloads)',
+            tech: 'Laravel, PHP, React, Architecture',
+            rating: '4.99',
+            image: '/images/instructor.jpg',
+            featured: true,
+            highlight: 'Merged PR #58978 in laravel/framework · 220+ Repos',
+            bio: 'Lead software engineer and official open source contributor to the Laravel framework. Mentoring developers on scalable backend architecture, queues, and production systems.',
         },
         {
             name: 'Ananya Verma',
@@ -106,6 +110,10 @@ public class OrderController {
             exp: '7+ Years Exp · UI Architect',
             tech: 'React, TypeScript, Next.js',
             rating: '4.98',
+            image: null,
+            featured: false,
+            highlight: 'Ex-Lead Design Systems · Micro-frontends',
+            bio: 'Frontend engineering lead specializing in micro-frontends, accessible design systems, and sub-second web performance optimization.',
         },
         {
             name: 'Vikramaditya Das',
@@ -113,6 +121,10 @@ public class OrderController {
             exp: '11+ Years Exp · Principal SRE',
             tech: 'Kubernetes, Python, LLMs',
             rating: '4.94',
+            image: null,
+            featured: false,
+            highlight: 'Kubernetes & Distributed Systems at Scale',
+            bio: 'Site reliability and cloud platform architect with a decade of managing mission-critical distributed container clusters.',
         },
     ];
 
@@ -445,30 +457,71 @@ public class OrderController {
             {/* 6. Instructors */}
             <section id="mentors" className="py-20 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
                 <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-                    <div className="mb-10 max-w-xl">
+                    <div className="mb-10 max-w-2xl">
                         <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
-                            Senior Mentors
+                            Engineering Faculty
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                            Senior Mentors
+                            Meet Your Instructors & Mentors
                         </h2>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Learn from practitioners who design enterprise systems daily.
+                            Learn directly from practitioners who design enterprise systems and contribute to the frameworks powering the web.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {INSTRUCTORS.map((inst) => (
                             <div
                                 key={inst.name}
-                                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-sm"
+                                className={`rounded-xl border p-6 text-sm flex flex-col justify-between transition-all ${
+                                    inst.featured
+                                        ? 'border-blue-500/40 bg-white dark:bg-[#0c101c] shadow-lg lg:col-span-1 ring-1 ring-blue-500/20'
+                                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70'
+                                }`}
                             >
-                                <h3 className="font-bold text-slate-900 dark:text-white">{inst.name}</h3>
-                                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-0.5">{inst.role}</p>
-                                <p className="text-xs text-slate-500 mt-2">{inst.exp}</p>
-                                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 font-mono">
+                                <div>
+                                    <div className="flex items-start gap-4 mb-4">
+                                        {inst.image ? (
+                                            <div className="relative h-14 w-14 rounded-xl overflow-hidden border-2 border-blue-500/40 shadow-sm shrink-0 bg-slate-900">
+                                                <img
+                                                    src={inst.image}
+                                                    alt={inst.name}
+                                                    className="w-full h-full object-cover object-top"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="h-14 w-14 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold font-mono text-base flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700">
+                                                {inst.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                            </div>
+                                        )}
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center justify-between gap-1">
+                                                <h3 className="font-bold text-base text-slate-900 dark:text-white truncate">{inst.name}</h3>
+                                                <span className="font-semibold text-xs text-amber-500 shrink-0 font-mono">★ {inst.rating}</span>
+                                            </div>
+                                            <p className="text-xs text-blue-600 dark:text-sky-400 font-medium mt-0.5">{inst.role}</p>
+                                            {inst.featured && (
+                                                <span className="inline-block mt-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                                    Laravel Framework Contributor
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        {inst.bio}
+                                    </p>
+
+                                    {inst.highlight && (
+                                        <div className="mt-3 text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1.5 rounded-md border border-slate-200/60 dark:border-slate-800">
+                                            {inst.highlight}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 font-mono">
                                     <span>{inst.tech}</span>
-                                    <span className="font-semibold text-slate-800 dark:text-slate-200">{inst.rating} ★</span>
+                                    <span>{inst.exp.split('·')[0].trim()}</span>
                                 </div>
                             </div>
                         ))}

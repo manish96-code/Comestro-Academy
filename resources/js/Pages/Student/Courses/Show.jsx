@@ -557,7 +557,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 <span className="text-slate-700">•</span>
                                 <span>{course.enrollments_count ? course.enrollments_count + 450 : '840+'} Engineers</span>
                                 <span className="text-slate-700">•</span>
-                                <span>Faculty: <strong className="text-slate-200 font-medium">{instructorUser?.name || 'Ananya Gupta'}</strong></span>
+                                <span>Faculty: <strong className="text-slate-200 font-medium">{instructorUser?.name || 'Sadique Hussain'} (Laravel Framework Contributor)</strong></span>
                                 {course.duration && (
                                     <>
                                         <span className="text-slate-700">•</span>
@@ -923,37 +923,85 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             Faculty Leadership
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
-                            Learn Directly from Industry Practitioners
+                            Meet Your Instructor
                         </h2>
 
                         <div className={`rounded-2xl border p-6 sm:p-8 ${
                             isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
                         }`}>
                             <div className="flex flex-col sm:flex-row items-start gap-6">
-                                <div className="h-20 w-20 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-lg shrink-0">
-                                    {instructorInitials}
+                                {/* Real Instructor Photo */}
+                                <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-xl shrink-0 bg-slate-900">
+                                    <img
+                                        src="/images/instructor.jpg"
+                                        alt="Sadique Hussain"
+                                        className="w-full h-full object-cover object-top"
+                                    />
                                 </div>
 
-                                <div className="space-y-3 flex-1">
+                                <div className="space-y-4 flex-1">
                                     <div>
-                                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-                                            {instructorUser?.name || 'Ananya Gupta'}
+                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                            <span className="text-[11px] font-mono text-blue-500 font-semibold tracking-wider uppercase">
+                                                Official Open Source Contributor
+                                            </span>
+                                            <span className="text-slate-600 hidden sm:inline">•</span>
+                                            <span className="text-xs text-slate-400 font-medium">
+                                                Laravel Framework (530M+ Downloads)
+                                            </span>
+                                        </div>
+                                        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                                            {instructorUser?.name || 'Sadique Hussain'}
                                         </h3>
-                                        <p className="text-xs font-medium text-blue-600 dark:text-sky-400 mt-0.5">
-                                            {instructor?.designation || 'Staff Mobile Architect & Ex-Tech Lead'} · {instructor?.experience_years ? `${instructor.experience_years}+ Years Experience` : '8+ Years Experience'}
+                                        <p className="text-xs sm:text-sm font-medium text-blue-600 dark:text-sky-400 mt-0.5">
+                                            {instructor?.designation || 'Lead Software Engineer & Official Laravel Framework Contributor'} · 8+ Years Industry Experience
                                         </p>
                                     </div>
 
-                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                                        {instructor?.bio || 'Seasoned mobile engineering lead who has architected high-concurrency consumer applications serving millions of daily active users. Specializes in pragmatic Flutter 3 architectures, performance profiling, reactive state engines, and automated CI/CD distribution.'}
-                                    </p>
+                                    {/* Credibility Stats Strip */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-slate-100 dark:border-slate-800/80">
+                                        <div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">530M+</div>
+                                            <div className="text-[11px] text-slate-500">Framework Downloads</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">220+</div>
+                                            <div className="text-[11px] text-slate-500">Open Source Repos</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">8+ Yrs</div>
+                                            <div className="text-[11px] text-slate-500">Production Experience</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">4.99 ★</div>
+                                            <div className="text-[11px] text-slate-500">Instructor Rating</div>
+                                        </div>
+                                    </div>
 
+                                    {/* About Me */}
+                                    <div className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                                        <p>
+                                            Hi, I'm Sadique Hussain. I am a software developer, web architect, and official open-source contributor to the Laravel Framework — the backend ecosystem powering high-concurrency web applications with over 530 million downloads worldwide.
+                                        </p>
+                                        <p>
+                                            I specialize in building mission-critical architectures with Laravel, PHP, Python, React, and cloud microservices. Through Comestro Academy, I bridge the gap between academic theory and high-scale production systems, mentoring developers on clean domain patterns, queue deadlock resolution, state machines, and real-world system design.
+                                        </p>
+                                    </div>
+
+                                    {/* Mentorship Highlights */}
                                     <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-4 gap-y-1">
-                                        <span>Mentorship Model: Weekly 1-on-1 PR reviews</span>
-                                        <span>•</span>
-                                        <span>Live Debugging Sessions</span>
-                                        <span>•</span>
-                                        <span>Dedicated Faculty Discord</span>
+                                        <span className="flex items-center gap-1.5">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
+                                            <span>Weekly 1-on-1 Pull Request code reviews</span>
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
+                                            <span>Live interactive architecture debug sessions</span>
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
+                                            <span>Direct access via private faculty channel</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
