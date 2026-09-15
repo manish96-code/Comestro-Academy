@@ -192,9 +192,17 @@ export default function AdminLayout({ header, children }) {
                 <div className="p-3 border-t border-slate-200/80 bg-slate-50/50">
                     <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 shadow-2xs">
                         <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                            <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
-                                {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
-                            </div>
+                            {user?.profile_pic ? (
+                                <img
+                                    src={user.profile_pic}
+                                    alt={user.name}
+                                    className="h-8 w-8 rounded-md object-cover border border-slate-200 shrink-0"
+                                />
+                            ) : (
+                                <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
+                                    {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                                </div>
+                            )}
                             <div className="truncate min-w-0">
                                 <div className="text-xs font-semibold text-slate-900 truncate">
                                     {user?.name || 'Admin'}
@@ -259,9 +267,17 @@ export default function AdminLayout({ header, children }) {
                         <div className="p-3.5 border-t border-slate-200 bg-slate-50/50">
                             <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                    <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
-                                    </div>
+                                    {user?.profile_pic ? (
+                                        <img
+                                            src={user.profile_pic}
+                                            alt={user.name}
+                                            className="h-8 w-8 rounded-md object-cover border border-slate-200 shrink-0"
+                                        />
+                                    ) : (
+                                        <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                                        </div>
+                                    )}
                                     <div className="truncate">
                                         <div className="text-xs font-semibold text-slate-900 truncate">
                                             {user?.name}
@@ -326,9 +342,17 @@ export default function AdminLayout({ header, children }) {
                                         type="button"
                                         className="flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100/80 transition cursor-pointer"
                                     >
-                                        <div className="h-7 w-7 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                                            {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
-                                        </div>
+                                        {user?.profile_pic ? (
+                                            <img
+                                                src={user.profile_pic}
+                                                alt={user.name}
+                                                className="h-7 w-7 rounded-md object-cover border border-slate-200 shadow-2xs shrink-0"
+                                            />
+                                        ) : (
+                                            <div className="h-7 w-7 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                                                {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                                            </div>
+                                        )}
                                         <span className="hidden sm:inline-block truncate max-w-[120px]">
                                             {user?.name}
                                         </span>

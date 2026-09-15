@@ -147,9 +147,17 @@ export default function InstructorIndex({ instructors, filters }) {
                                             <tr key={instructor.id} className="hover:bg-slate-50/70 transition">
                                                 <td className="py-3 px-4">
                                                     <div className="flex items-center space-x-3">
-                                                        <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
-                                                            {instructor.name ? instructor.name.charAt(0).toUpperCase() : 'I'}
-                                                        </div>
+                                                        {instructor.profile_pic ? (
+                                                            <img
+                                                                src={instructor.profile_pic}
+                                                                alt={instructor.name}
+                                                                className="h-8 w-8 rounded-lg object-cover shrink-0 border border-slate-200"
+                                                            />
+                                                        ) : (
+                                                            <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
+                                                                {instructor.name ? instructor.name.charAt(0).toUpperCase() : 'I'}
+                                                            </div>
+                                                        )}
                                                         <div>
                                                             <div className="font-semibold text-slate-900 text-xs">{instructor.name}</div>
                                                             <div className="text-[11px] text-slate-400 font-mono">ID: #{instructor.id}</div>

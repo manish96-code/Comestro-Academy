@@ -139,9 +139,17 @@ export default function StudentIndex({ students, filters }) {
                                             <tr key={student.id} className="hover:bg-slate-50/70 transition">
                                                 <td className="py-3 px-4">
                                                     <div className="flex items-center space-x-3">
-                                                        <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
-                                                            {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
-                                                        </div>
+                                                        {student.profile_pic ? (
+                                                            <img
+                                                                src={student.profile_pic}
+                                                                alt={student.name}
+                                                                className="h-8 w-8 rounded-lg object-cover shrink-0 border border-slate-200"
+                                                            />
+                                                        ) : (
+                                                            <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
+                                                                {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
+                                                            </div>
+                                                        )}
                                                         <div>
                                                             <div className="font-semibold text-slate-900 text-xs">{student.name}</div>
                                                             <div className="text-[11px] text-slate-400 font-mono">ID: #{student.id}</div>

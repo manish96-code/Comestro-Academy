@@ -29,7 +29,7 @@ class AdminController extends Controller
 
         $recentUsers = User::latest()
             ->take(6)
-            ->get(['id', 'name', 'email', 'phone', 'role', 'status', 'created_at', 'last_login_at']);
+            ->get(['id', 'name', 'email', 'phone', 'role', 'profile_pic', 'status', 'created_at', 'last_login_at']);
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
@@ -90,6 +90,7 @@ class AdminController extends Controller
                 'name' => $student->name,
                 'email' => $student->email,
                 'phone' => $student->phone,
+                'profile_pic' => $student->profile_pic,
                 'role' => $student->role,
                 'status' => $student->status,
                 'created_at' => $student->created_at,

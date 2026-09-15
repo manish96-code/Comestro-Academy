@@ -193,9 +193,17 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     {/* Top Student Banner Card */}
                     <div className="rounded-xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div className="flex items-center space-x-4">
-                            <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0">
-                                {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
-                            </div>
+                            {student.profile_pic ? (
+                                <img
+                                    src={student.profile_pic}
+                                    alt={student.name}
+                                    className="h-14 w-14 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs"
+                                />
+                            ) : (
+                                <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0">
+                                    {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
+                                </div>
+                            )}
                             <div>
                                 <h2 className="text-base sm:text-lg font-bold text-slate-900">{student.name}</h2>
                                 <p className="text-xs text-slate-500 font-mono">Student ID: #{student.id}</p>

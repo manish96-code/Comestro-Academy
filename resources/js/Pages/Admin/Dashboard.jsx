@@ -213,9 +213,17 @@ export default function AdminDashboard({ stats, recent_users }) {
                                                 <tr key={u.id} className="hover:bg-slate-50/70 transition">
                                                     <td className="py-3 px-4">
                                                         <div className="flex items-center gap-2.5">
-                                                            <div className="h-7 w-7 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
-                                                                {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
-                                                            </div>
+                                                            {u.profile_pic ? (
+                                                                <img
+                                                                    src={u.profile_pic}
+                                                                    alt={u.name}
+                                                                    className="h-7 w-7 rounded-md object-cover border border-slate-200 shrink-0"
+                                                                />
+                                                            ) : (
+                                                                <div className="h-7 w-7 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                                    {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
+                                                                </div>
+                                                            )}
                                                             <div className="min-w-0">
                                                                 <div className="font-semibold text-slate-900 truncate">
                                                                     {u.name}
