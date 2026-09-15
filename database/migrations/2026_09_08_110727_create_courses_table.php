@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->json('curriculum')->nullable();
             $table->json('course_includes')->nullable();
+            $table->json('capstones')->nullable();
             $table->string('thumbnail')->nullable();
             $table->decimal('price', 10, 2)->default(0.00);
             $table->decimal('discount_price', 10, 2)->nullable();

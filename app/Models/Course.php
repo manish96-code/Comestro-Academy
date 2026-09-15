@@ -24,6 +24,7 @@ class Course extends Model
         'description',
         'curriculum',
         'course_includes',
+        'capstones',
         'thumbnail',
         'price',
         'discount_price',
@@ -37,6 +38,7 @@ class Course extends Model
         'is_featured' => 'boolean',
         'curriculum' => 'array',
         'course_includes' => 'array',
+        'capstones' => 'array',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
     ];

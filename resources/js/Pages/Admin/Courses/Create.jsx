@@ -78,6 +78,13 @@ export default function CourseCreate({ course = null, categories = [], instructo
                 'Official Certificate of Completion',
                 'Full lifetime access on mobile & web',
             ] : []),
+        capstones: Array.isArray(course?.capstones) && course.capstones.length > 0
+            ? course.capstones.map((c) => ({
+                title: c.title || '',
+                desc: c.desc || '',
+                stack: c.stack || '',
+            }))
+            : [],
         thumbnail: course?.thumbnail || '',
         thumbnail_image: null,
         price: course?.price ?? '',
@@ -107,6 +114,15 @@ export default function CourseCreate({ course = null, categories = [], instructo
             : [],
         course_includes: Array.isArray(formData.course_includes)
             ? formData.course_includes.map((s) => (s || '').trim()).filter(Boolean)
+            : [],
+        capstones: Array.isArray(formData.capstones)
+            ? formData.capstones
+                .map((c) => ({
+                    title: (c.title || '').trim(),
+                    desc: (c.desc || '').trim(),
+                    stack: (c.stack || '').trim(),
+                }))
+                .filter((c) => c.title || c.desc)
             : [],
     }));
 
@@ -196,6 +212,24 @@ export default function CourseCreate({ course = null, categories = [], instructo
     const removeCourseIncludeItem = (index) => {
         const updated = (data.course_includes || []).filter((_, i) => i !== index);
         setData('course_includes', updated);
+    };
+
+    const addCapstoneItem = () => {
+        setData('capstones', [
+            ...(data.capstones || []),
+            { title: '', desc: '', stack: '' },
+        ]);
+    };
+
+    const updateCapstoneItem = (index, field, value) => {
+        const updated = [...(data.capstones || [])];
+        updated[index] = { ...updated[index], [field]: value };
+        setData('capstones', updated);
+    };
+
+    const removeCapstoneItem = (index) => {
+        const updated = (data.capstones || []).filter((_, i) => i !== index);
+        setData('capstones', updated);
     };
 
     const submit = (e) => {
@@ -765,6 +799,73 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             >
                                                 <Trash2 className="h-3 w-3" />
                                             </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Card: Portfolio Capstones */}
+                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                            Portfolio Capstones
+                                        </h4>
+                                        <p className="text-[11px] text-slate-500">
+                                            Real projects students will build & deploy
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={addCapstoneItem}
+                                        className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800"
+                                    >
+                                        + Add Capstone
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {(data.capstones || []).length === 0 && (
+                                        <p className="text-xs text-slate-400 italic">
+                                            No custom capstones added. The course will display stack-tailored defaults.
+                                        </p>
+                                    )}
+                                    {(data.capstones || []).map((cap, idx) => (
+                                        <div key={idx} className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 space-y-2 relative">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[11px] font-mono font-semibold text-slate-500">
+                                                    Capstone #{idx + 1}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeCapstoneItem(idx)}
+                                                    className="text-slate-400 hover:text-rose-600 p-0.5"
+                                                    title="Remove capstone"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={cap.title}
+                                                onChange={(e) => updateCapstoneItem(idx, 'title', e.target.value)}
+                                                className="w-full text-xs rounded-md border-slate-300 py-1 px-2.5 shadow-2xs bg-white"
+                                                placeholder="Project title (e.g. Multi-Tenant SaaS Platform)"
+                                            />
+                                            <textarea
+                                                rows={2}
+                                                value={cap.desc}
+                                                onChange={(e) => updateCapstoneItem(idx, 'desc', e.target.value)}
+                                                className="w-full text-xs rounded-md border-slate-300 py-1 px-2.5 shadow-2xs bg-white resize-none"
+                                                placeholder="Brief description of what students build..."
+                                            />
+                                            <input
+                                                type="text"
+                                                value={cap.stack}
+                                                onChange={(e) => updateCapstoneItem(idx, 'stack', e.target.value)}
+                                                className="w-full text-xs rounded-md border-slate-300 py-1 px-2.5 shadow-2xs bg-white font-mono text-[11px]"
+                                                placeholder="Tech stack (e.g. Laravel 12 · React · Stripe)"
+                                            />
                                         </div>
                                     ))}
                                 </div>
