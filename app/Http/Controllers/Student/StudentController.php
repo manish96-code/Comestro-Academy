@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\Enrollment;
+use App\Models\Invoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -271,6 +272,8 @@ class StudentController extends Controller
             'status' => 'active',
             'enrolled_at' => now(),
         ]);
+
+        Invoice::createSnapshot($enrollment);
 
         StudentEnrolledEvent::dispatchSafely($enrollment);
 

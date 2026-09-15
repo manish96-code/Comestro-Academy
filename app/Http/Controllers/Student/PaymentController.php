@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Student;
 
-use App\Http\Controllers\Controller;
-
 use App\Events\StudentEnrolledEvent;
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\RazorpayService;
 use Illuminate\Http\JsonResponse;
@@ -57,6 +57,8 @@ class PaymentController extends Controller
                 ['user_id' => $user->id, 'course_id' => $course->id],
                 ['status' => 'active', 'enrolled_at' => now()]
             );
+
+            Invoice::createSnapshot($enrollment);
 
             StudentEnrolledEvent::dispatchSafely($enrollment);
 
@@ -192,6 +194,8 @@ class PaymentController extends Controller
             ['user_id' => $user->id, 'course_id' => $course->id],
             ['status' => 'active', 'enrolled_at' => now()]
         );
+
+        Invoice::createSnapshot($enrollment, $payment);
 
         StudentEnrolledEvent::dispatchSafely($enrollment);
 

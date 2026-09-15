@@ -7,6 +7,7 @@ use App\Jobs\UploadProfilePicture;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Instructor;
+use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -289,7 +290,7 @@ class AdminController extends Controller
             'status' => ['required', 'in:active,completed,cancelled'],
         ]);
 
-        Enrollment::updateOrCreate(
+        $enrollment = Enrollment::updateOrCreate(
             [
                 'user_id' => $student->id,
                 'course_id' => $validated['course_id'],
@@ -299,6 +300,8 @@ class AdminController extends Controller
                 'enrolled_at' => now(),
             ]
         );
+
+        Invoice::createSnapshot($enrollment);
 
         return redirect()->back()->with('success', 'Student successfully enrolled into the course.');
     }

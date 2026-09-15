@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Enrollment;
-use App\Models\Payment;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,36 +18,31 @@ class InvoiceController extends Controller
     {
         $user = $request->user();
 
-        // Retrieve student's enrollments with course details
+        // Retrieve student's enrollments with their persistent invoice snapshot
         $enrollments = $user->enrollments()
-            ->with(['course.category', 'course.instructor.user'])
+            ->with(['invoice', 'course.category'])
             ->latest('enrolled_at')
             ->paginate(10);
 
-        // Preload successful payments to avoid N+1 queries
-        $courseIds = $enrollments->pluck('course_id')->filter()->unique();
-        $payments = Payment::where('user_id', $user->id)
-            ->whereIn('course_id', $courseIds)
-            ->where('status', 'successful')
-            ->latest()
-            ->get()
-            ->keyBy('course_id');
+        $enrollments->through(function ($enrollment) {
+            $invoice = $enrollment->invoice ?? Invoice::createSnapshot($enrollment);
+            $courseDetails = $invoice->course_details ?? [];
 
-        $enrollments->through(function ($enrollment) use ($payments) {
-            $payment = $payments->get($enrollment->course_id);
-            $year = date('Y', strtotime($enrollment->enrolled_at ?? $enrollment->created_at));
-            $enrollment->invoice_number = 'INV-'.$year.'-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT);
-            $enrollment->paid_amount = $payment ? (float) $payment->amount : 0.00;
-            $enrollment->payment_method = $payment ? 'Razorpay Online' : 'Free Enrollment';
-            $enrollment->payment_id = $payment?->razorpay_payment_id;
-            $enrollment->currency = $payment?->currency ?? 'INR';
+            $enrollment->invoice_number = $invoice->invoice_number;
+            $enrollment->paid_amount = (float) $invoice->amount;
+            $enrollment->payment_method = $invoice->payment_method;
+            $enrollment->payment_id = $invoice->transaction_id;
+            $enrollment->currency = $invoice->currency;
+            if (isset($courseDetails['title']) && $enrollment->course) {
+                $enrollment->course->title = $courseDetails['title'];
+            }
 
             return $enrollment;
         });
 
-        // Summary statistics
-        $totalSpent = Payment::where('user_id', $user->id)
-            ->where('status', 'successful')
+        // Summary statistics calculated directly from persistent invoices
+        $totalSpent = Invoice::where('user_id', $user->id)
+            ->where('status', 'PAID')
             ->sum('amount');
 
         $activeEnrollmentsCount = $user->enrollments()->where('status', 'active')->count();
@@ -63,7 +58,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Display the specified invoice for an enrollment.
+     * Display the specified invoice for an enrollment from its frozen database snapshot.
      */
     public function show(Request $request, Enrollment $enrollment): Response
     {
@@ -74,57 +69,48 @@ class InvoiceController extends Controller
             abort(403, 'Unauthorized access to this course invoice.');
         }
 
-        $enrollment->load([
-            'course.category',
-            'course.instructor.user',
-            'user.studentProfile',
-        ]);
+        // Retrieve the immutable snapshot from the invoices table (or create once if missing)
+        $invoiceRecord = Invoice::where('enrollment_id', $enrollment->id)->first()
+            ?? Invoice::createSnapshot($enrollment);
 
-        // Find associated successful payment if exists
-        $payment = Payment::where('user_id', $enrollment->user_id)
-            ->where('course_id', $enrollment->course_id)
-            ->where('status', 'successful')
-            ->latest()
-            ->first();
-
-        $enrolledDate = $enrollment->enrolled_at ?? $enrollment->created_at;
-        $year = date('Y', strtotime($enrolledDate));
-        $invoiceNumber = 'INV-'.$year.'-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT);
-
-        $course = $enrollment->course;
-        $originalPrice = (float) ($course->price ?? 0);
-        $discountPrice = $course->discount_price !== null ? (float) $course->discount_price : null;
-        $paidAmount = $payment ? (float) $payment->amount : (($discountPrice !== null ? $discountPrice : $originalPrice) <= 0 ? 0.00 : 0.00);
+        $studentDetails = $invoiceRecord->student_details ?? [];
+        $courseDetails = $invoiceRecord->course_details ?? [];
+        $issuedDate = $invoiceRecord->paid_at ?? $invoiceRecord->created_at;
 
         $invoice = [
             'id' => $enrollment->id,
-            'invoice_number' => $invoiceNumber,
-            'date' => $enrolledDate->format('d M, Y'),
-            'time' => $enrolledDate->format('h:i A'),
-            'status' => 'PAID',
-            'payment_method' => $payment ? 'Razorpay Secure Payment' : 'Complimentary / Free Enrollment',
-            'transaction_id' => $payment?->razorpay_payment_id ?? 'FREE-ADM-'.str_pad((string) $enrollment->id, 6, '0', STR_PAD_LEFT),
-            'order_id' => $payment?->razorpay_order_id,
-            'amount' => $paidAmount,
-            'currency' => $payment?->currency ?? 'INR',
+            'invoice_number' => $invoiceRecord->invoice_number,
+            'date' => $issuedDate->format('d M, Y'),
+            'time' => $issuedDate->format('h:i A'),
+            'status' => $invoiceRecord->status,
+            'payment_method' => $invoiceRecord->payment_method,
+            'transaction_id' => $invoiceRecord->transaction_id ?? 'FREE-ADM-'.str_pad((string) $enrollment->id, 6, '0', STR_PAD_LEFT),
+            'order_id' => $invoiceRecord->order_id,
+            'amount' => (float) $invoiceRecord->amount,
+            'currency' => $invoiceRecord->currency,
+
+            // Point-in-time frozen student snapshot (from student_details JSON)
             'student' => [
-                'name' => $enrollment->user->name,
-                'email' => $enrollment->user->email,
-                'phone' => $enrollment->user->phone ?? 'Not provided',
-                'city' => $enrollment->user->studentProfile?->city,
-                'state' => $enrollment->user->studentProfile?->state,
+                'name' => $studentDetails['name'] ?? 'Student',
+                'email' => $studentDetails['email'] ?? '',
+                'phone' => $studentDetails['phone'] ?? 'Not provided',
+                'city' => $studentDetails['city'] ?? null,
+                'state' => $studentDetails['state'] ?? null,
             ],
+
+            // Point-in-time frozen course snapshot (from course_details JSON)
             'course' => [
-                'id' => $course->id,
-                'title' => $course->title,
-                'slug' => $course->slug,
-                'duration' => $course->duration ?? 'Self-paced',
-                'type' => $course->type ?? 'recorded',
-                'category' => $course->category?->name ?? 'Software Development',
-                'instructor_name' => $course->instructor?->user?->name ?? 'Comestro Faculty Team',
-                'original_price' => $originalPrice,
-                'discount_price' => $discountPrice,
+                'id' => $courseDetails['id'] ?? $enrollment->course_id,
+                'title' => $courseDetails['title'] ?? 'Course Enrollment',
+                'slug' => $courseDetails['slug'] ?? ($enrollment->course?->slug ?? (string) $enrollment->course_id),
+                'duration' => $courseDetails['duration'] ?? 'Self-paced',
+                'type' => $courseDetails['type'] ?? 'recorded',
+                'category' => $courseDetails['category'] ?? 'Software Development',
+                'instructor_name' => $courseDetails['instructor_name'] ?? 'Comestro Faculty Team',
+                'original_price' => (float) ($courseDetails['original_price'] ?? 0),
+                'discount_price' => isset($courseDetails['discount_price']) && $courseDetails['discount_price'] !== null ? (float) $courseDetails['discount_price'] : null,
             ],
+
             'academy' => [
                 'name' => 'Comestro Academy',
                 'legal_name' => 'Comestro Tech Innovations Pvt. Ltd.',

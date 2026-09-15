@@ -1,8 +1,9 @@
-<?php
+    <?php
 
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 
@@ -135,4 +136,57 @@ test('student cannot view another student invoice', function () {
     $response = $this->actingAs($studentB)->get(route('student.invoices.show', $enrollmentA));
 
     $response->assertForbidden();
+});
+
+test('invoice preserves snapshot student name even if student changes profile name later', function () {
+    $student = User::factory()->create([
+        'name' => 'Rahul Verma',
+        'email' => 'rahul@example.com',
+        'role' => 'student',
+        'status' => 'active',
+    ]);
+
+    $category = Category::create([
+        'name' => 'Mobile App Development',
+        'slug' => 'mobile-app-development',
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Cross-Platform Mobile Apps with Flutter & Dart',
+        'slug' => 'flutter-dart',
+        'price' => 2199,
+        'status' => 'published',
+    ]);
+
+    $enrollment = Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $course->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    Invoice::createSnapshot($enrollment);
+
+    // Later, student changes their name in profile
+    $student->update([
+        'name' => 'Rahul Sharma (Updated Name)',
+        'email' => 'new.rahul@example.com',
+    ]);
+
+    $response = $this->actingAs($student)->get(route('student.invoices.show', $enrollment));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Invoices/Show')
+        ->where('invoice.student.name', 'Rahul Verma')
+        ->where('invoice.student.email', 'rahul@example.com')
+    );
+
+    // Verify in database directly as well
+    $savedInvoice = Invoice::where('enrollment_id', $enrollment->id)->first();
+    expect($savedInvoice->student_details['name'])->toBe('Rahul Verma')
+        ->and($savedInvoice->student_details['email'])->toBe('rahul@example.com')
+        ->and($savedInvoice->course_details['title'])->toBe('Cross-Platform Mobile Apps with Flutter & Dart');
 });
