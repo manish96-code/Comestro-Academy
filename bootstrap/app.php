@@ -8,6 +8,14 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
 
+if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])) {
+    foreach (['/tmp/views', '/tmp/cache', '/tmp/sessions'] as $dir) {
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+    }
+}
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
