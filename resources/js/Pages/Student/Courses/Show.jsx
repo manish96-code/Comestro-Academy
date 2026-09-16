@@ -76,25 +76,37 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
     const [theme, setTheme] = useState(() => {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('site_theme') || 'dark';
+            return localStorage.getItem('theme') || 'light';
         }
-        return 'dark';
+        return 'light';
     });
 
-    useEffect(() => {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        localStorage.setItem('site_theme', theme);
-    }, [theme, user]);
+    const isDark = !user && theme === 'dark';
 
     const toggleTheme = () => {
-        setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+        setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
     };
 
-    const isDark = !user && theme === 'dark';
+    useEffect(() => {
+        if (!user) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+            }
+            localStorage.setItem('theme', theme);
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
+        }
+        return () => {
+            if (user) {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+    }, [theme, user]);
 
     const [enrolling, setEnrolling] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -639,18 +651,18 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const courseDetailContent = (
         <>
 
-            {/* 2. Interactive Hero Section: Narrative Left + Live Workstation Right */}
-            <section className={`relative pt-10 sm:pt-14 pb-14 sm:pb-20 border-b overflow-hidden transition-colors ${
+            {/* 2. Compact Hero Section: Narrative Left + Workstation Right */}
+            <section className={`relative py-6 sm:py-8 border-b overflow-hidden transition-colors ${
                 isDark
-                    ? 'border-slate-800/80 bg-[#090d16] text-white'
-                    : 'border-slate-200/90 bg-gradient-to-b from-slate-50 via-slate-50/60 to-white text-slate-900'
+                    ? 'border-slate-800 bg-[#090d16] text-white'
+                    : 'border-slate-200 bg-white text-slate-900'
             }`}>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
                         {/* Left Column: Course Identity, Value Prop, Pricing & CTA */}
-                        <div className="lg:col-span-7 space-y-5">
+                        <div className="lg:col-span-7 space-y-3.5">
                             {/* Breadcrumbs */}
-                            <div className={`flex items-center gap-2 text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <div className={`flex items-center gap-1.5 text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                 <Link href="/" className={isDark ? 'hover:text-white transition' : 'hover:text-slate-900 transition'}>Home</Link>
                                 <ChevronRight className={`h-3 w-3 ${isDark ? 'text-slate-600' : 'text-slate-400'}`} />
                                 <Link href={route('courses.index')} className={isDark ? 'hover:text-white transition' : 'hover:text-slate-900 transition'}>Courses</Link>
@@ -662,7 +674,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 )}
                             </div>
 
-                            {/* Clean Category Kicker (No Badge Clutter) */}
+                            {/* Clean Category Kicker */}
                             <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider uppercase ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                                 <span>{course.category?.name || 'Mobile App Development'}</span>
                                 <span className={isDark ? 'text-slate-600' : 'text-slate-300'}>•</span>
@@ -678,21 +690,21 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             </div>
 
                             {/* Headline */}
-                            <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight ${
+                            <h1 className={`text-2xl sm:text-3xl font-bold tracking-tight leading-snug ${
                                 isDark ? 'text-white' : 'text-slate-900'
                             }`}>
                                 {course.title}
                             </h1>
 
                             {/* Subtitle */}
-                            <p className={`text-sm sm:text-base leading-relaxed max-w-2xl font-normal ${
+                            <p className={`text-xs sm:text-sm leading-relaxed max-w-xl font-normal ${
                                 isDark ? 'text-slate-300' : 'text-slate-600'
                             }`}>
                                 {course.subtitle || course.description}
                             </p>
 
                             {/* Linear Metadata */}
-                            <div className={`flex flex-wrap items-center gap-y-2 gap-x-3 text-xs pt-1 ${
+                            <div className={`flex flex-wrap items-center gap-y-1.5 gap-x-2.5 text-xs pt-0.5 ${
                                 isDark ? 'text-slate-400' : 'text-slate-500'
                             }`}>
                                 <div className="flex items-center gap-1 text-amber-500">
@@ -716,23 +728,23 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             </div>
 
                             {/* Inline Checkout & Action Block */}
-                            <div className={`pt-4 border-t space-y-4 ${
-                                isDark ? 'border-slate-800/80' : 'border-slate-200'
+                            <div className={`pt-3 border-t space-y-3 ${
+                                isDark ? 'border-slate-800' : 'border-slate-200'
                             }`}>
                                 <div>
-                                    <div className={`text-[11px] uppercase tracking-wider font-medium ${
+                                    <div className={`text-[10px] uppercase tracking-wider font-semibold ${
                                         isDark ? 'text-slate-400' : 'text-slate-500'
                                     }`}>
                                         Cohort Tuition
                                     </div>
                                     <div className="flex items-baseline gap-2 mt-0.5">
-                                        <span className={`text-3xl font-bold tracking-tight ${
+                                        <span className={`text-2xl font-bold tracking-tight ${
                                             isDark ? 'text-white' : 'text-slate-900'
                                         }`}>
                                             {formattedPrice}
                                         </span>
                                         {formattedOriginalPrice && (
-                                            <span className={`text-sm line-through ${
+                                            <span className={`text-xs line-through ${
                                                 isDark ? 'text-slate-500' : 'text-slate-400'
                                             }`}>
                                                 {formattedOriginalPrice}
@@ -750,8 +762,8 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
                                 {/* Enrolled Batch Info (if already enrolled) */}
                                 {isEnrolled && course.enrolled_batch && (
-                                    <div className={`p-3 rounded-xl border flex items-center gap-2.5 max-w-md ${
-                                        isDark ? 'bg-emerald-950/30 border-emerald-800/80 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                                    <div className={`p-2.5 rounded-lg border flex items-center gap-2 max-w-md ${
+                                        isDark ? 'bg-emerald-950/30 border-emerald-800 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
                                     }`}>
                                         <Clock className="h-4 w-4 text-emerald-500 shrink-0" />
                                         <div className="text-xs">
@@ -763,7 +775,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
                                 {/* Live Cohort Batch Selection */}
                                 {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
-                                    <div id="batch-selection-section" className="space-y-1.5 max-w-md">
+                                    <div id="batch-selection-section" className="space-y-1 max-w-sm">
                                         <label
                                             htmlFor="batch-select"
                                             className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
@@ -778,10 +790,10 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                                 id="batch-select"
                                                 value={selectedBatchId || ''}
                                                 onChange={(e) => setSelectedBatchId(Number(e.target.value))}
-                                                className={`w-full text-xs sm:text-sm font-semibold rounded-xl border py-2.5 pl-3 pr-9 transition cursor-pointer appearance-none ${
+                                                className={`w-full text-xs font-semibold rounded-lg border py-2 pl-3 pr-8 transition cursor-pointer appearance-none ${
                                                     isDark
-                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                                                        : 'bg-white border-slate-300 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 shadow-2xs'
+                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-blue-500'
+                                                        : 'bg-white border-slate-300 text-slate-900 focus:border-blue-600'
                                                 }`}
                                             >
                                                 {availableBatches.map((b) => (
@@ -794,20 +806,20 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                                     </option>
                                                 ))}
                                             </select>
-                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400">
                                                 <ChevronDown className="h-4 w-4" />
                                             </div>
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="flex items-center gap-3 pt-1">
+                                <div className="flex items-center gap-2.5 pt-0.5">
                                     {isEnrolled ? (
                                         <Link
                                             href={route('student.courses.learn', course.id)}
-                                            className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-emerald-500/20 transition"
+                                            className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 transition"
                                         >
-                                            <Play className="h-4 w-4 fill-current" />
+                                            <Play className="h-3.5 w-3.5 fill-current" />
                                             <span>Enter Classroom →</span>
                                         </Link>
                                     ) : (
@@ -815,52 +827,48 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                             type="button"
                                             onClick={handleEnroll}
                                             disabled={enrolling}
-                                            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-blue-500/20 transition disabled:opacity-60 cursor-pointer"
+                                            className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
                                         >
                                             <span>{enrolling ? 'Connecting Gateway...' : 'Enroll in This Cohort'}</span>
-                                            <ArrowRight className="h-4 w-4" />
+                                            <ArrowRight className="h-3.5 w-3.5" />
                                         </button>
                                     )}
 
                                     <button
                                         type="button"
                                         onClick={handleShare}
-                                        className={`p-3 rounded-xl border transition ${
+                                        className={`p-2.5 rounded-lg border transition ${
                                             isDark
-                                                ? 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white'
-                                                : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-2xs'
+                                                ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                                                : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                                         }`}
                                         title="Share course link"
                                     >
-                                        <Share2 className="h-4 w-4" />
+                                        <Share2 className="h-3.5 w-3.5" />
                                     </button>
                                 </div>
                             </div>
 
                             {/* Quiet Guarantee Text */}
-                            <div className={`flex items-center gap-2 text-xs pt-1 ${
+                            <div className={`flex items-center gap-1.5 text-[11px] pt-0.5 ${
                                 isDark ? 'text-slate-400' : 'text-slate-500'
                             }`}>
-                                <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-                                <span>7-Day 100% money-back guarantee • Official Certificate • Lifetime access</span>
+                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                                <span>7-Day money-back guarantee • Certificate included • Lifetime access</span>
                             </div>
                         </div>
 
-                        {/* Right Column: Interactive Workstation Video Preview Card */}
+                        {/* Right Column: Workstation Video Preview Card */}
                         <div className="lg:col-span-5">
-                            <div className={`rounded-2xl border overflow-hidden ${
-                                isDark
-                                    ? 'border-slate-800 bg-[#0c101c] shadow-2xl'
-                                    : 'border-slate-300/80 bg-[#0c101c] shadow-xl ring-1 ring-slate-900/5'
-                            }`}>
+                            <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-950">
                                 {/* Window Header Bar */}
-                                <div className="flex items-center justify-between px-4 py-2.5 bg-slate-950/80 border-b border-slate-800/80">
+                                <div className="flex items-center justify-between px-3.5 py-2 bg-slate-950 border-b border-slate-800">
                                     <div className="flex items-center gap-1.5">
-                                        <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-                                        <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                                        <div className="h-2 w-2 rounded-full bg-rose-500/80" />
+                                        <div className="h-2 w-2 rounded-full bg-amber-500/80" />
+                                        <div className="h-2 w-2 rounded-full bg-emerald-500/80" />
                                     </div>
-                                    <div className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+                                    <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
                                         <Terminal className="h-3 w-3 text-blue-400" />
                                         <span>{techDetails.command}</span>
                                     </div>
@@ -870,31 +878,31 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                 </div>
 
                                 {/* Preview Media Box */}
-                                <div className="relative h-56 sm:h-64 bg-slate-950 flex items-center justify-center overflow-hidden group">
+                                <div className="relative h-44 sm:h-52 bg-slate-950 flex items-center justify-center overflow-hidden group">
                                     <img
                                         src={getCourseImage(course)}
                                         alt={course.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80"
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 opacity-80"
                                     />
-                                    <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/15 transition" />
+                                    <div className="absolute inset-0 bg-slate-950/25 group-hover:bg-slate-950/15 transition" />
 
                                     {/* Play Button Trigger */}
                                     <button
                                         type="button"
                                         onClick={() => setPreviewModalOpen(true)}
-                                        className="relative z-10 flex flex-col items-center gap-2 cursor-pointer focus:outline-hidden"
+                                        className="relative z-10 flex flex-col items-center gap-1.5 cursor-pointer focus:outline-hidden"
                                     >
-                                        <div className="h-14 w-14 rounded-full bg-white/95 text-blue-600 flex items-center justify-center shadow-xl group-hover:scale-110 transition duration-200">
-                                            <Play className="h-6 w-6 fill-current ml-0.5" />
+                                        <div className="h-11 w-11 rounded-full bg-white/95 text-blue-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition duration-150">
+                                            <Play className="h-5 w-5 fill-current ml-0.5" />
                                         </div>
-                                        <span className="text-xs font-semibold text-white tracking-wider uppercase drop-shadow-md">
-                                            Watch Trailer & Preview
+                                        <span className="text-[11px] font-semibold text-white tracking-wider uppercase drop-shadow-sm">
+                                            Watch Preview
                                         </span>
                                     </button>
                                 </div>
 
                                 {/* Code Snippet Bar */}
-                                <div className="p-3.5 bg-[#080c14] border-t border-slate-800/80 font-mono text-[11px] text-slate-400 flex items-center justify-between">
+                                <div className="px-3.5 py-2 bg-slate-950 border-t border-slate-800 font-mono text-[10px] text-slate-400 flex items-center justify-between">
                                     <span className="text-sky-400 truncate">
                                         {techDetails.snippet}
                                     </span>
@@ -908,22 +916,28 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             </section>
 
-            {/* 3. Core Outcomes Section ("What You Will Master") */}
-            <section className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-2xl mb-10">
-                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+            {/* Unified Lower Content Canvas (Clean light surface in portal/light mode) */}
+            <div className={`transition-colors ${isDark ? 'bg-[#090d16]' : 'bg-slate-50/70'}`}>
+                {/* 3. Core Outcomes Section */}
+                <section className="py-6 sm:py-8">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-2xl mb-4">
+                        <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
                             Core Highlights
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        <h2 className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            isDark ? 'text-white' : 'text-slate-900'
+                        }`}>
                             Engineered for Real-World Production
                         </h2>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                            {course.subtitle || 'Master the exact patterns, architecture, and production practices used by leading software engineering teams.'}
+                        <p className={`text-xs mt-1 leading-relaxed ${
+                            isDark ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                            {course.subtitle || 'Master the exact patterns, architecture, and production practices used by leading engineering teams.'}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                         {(course.course_includes && course.course_includes.length > 0
                             ? course.course_includes
                             : [
@@ -940,17 +954,21 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             return (
                                 <div
                                     key={idx}
-                                    className={`p-5 rounded-xl border ${
-                                        isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
-                                    } space-y-2.5`}
+                                    className={`p-3.5 rounded-lg border ${
+                                        isDark
+                                            ? 'bg-[#131929] border-slate-800 text-white'
+                                            : 'bg-white border-slate-200 text-slate-900 shadow-2xs'
+                                    } space-y-1.5`}
                                 >
-                                    <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                        <IconComp className="h-4.5 w-4.5" />
+                                    <div className="h-7 w-7 rounded-md bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                                        <IconComp className="h-4 w-4" />
                                     </div>
-                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                    <h3 className="text-xs sm:text-sm font-semibold">
                                         {item}
                                     </h3>
-                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    <p className={`text-[11px] leading-relaxed ${
+                                        isDark ? 'text-slate-400' : 'text-slate-500'
+                                    }`}>
                                         Comprehensive training module designed to deliver hands-on, portfolio-ready capabilities.
                                     </p>
                                 </div>
@@ -961,17 +979,21 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             </section>
 
             {/* 4. Curriculum Roadmap Section */}
-            <section id="curriculum" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+            <section id="curriculum" className="py-6 sm:py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-4">
                         <div>
-                            <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                            <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-0.5">
                                 Step-by-Step Curriculum
                             </div>
-                            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <h2 className={`text-lg sm:text-xl font-bold tracking-tight ${
+                                isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                                 Engineering Roadmap
                             </h2>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            <p className={`text-xs mt-0.5 ${
+                                isDark ? 'text-slate-400' : 'text-slate-500'
+                            }`}>
                                 {curriculumModules.length} Modules · Progressive depth from core fundamentals to production deployment
                             </p>
                         </div>
@@ -980,22 +1002,22 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             <button
                                 type="button"
                                 onClick={() => expandAllModules(true)}
-                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
+                                className="text-xs font-medium text-slate-500 hover:text-blue-500 transition"
                             >
                                 Expand all
                             </button>
-                            <span className="text-slate-600 text-xs">•</span>
+                            <span className="text-slate-400 text-xs">•</span>
                             <button
                                 type="button"
                                 onClick={() => expandAllModules(false)}
-                                className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
+                                className="text-xs font-medium text-slate-500 hover:text-blue-500 transition"
                             >
                                 Collapse all
                             </button>
                         </div>
                     </div>
 
-                    <div className="space-y-3 max-w-4xl">
+                    <div className="space-y-2 max-w-3xl">
                         {curriculumModules.map((module, mIdx) => {
                             const isOpen = Boolean(openModules[mIdx]);
                             const rawTitle = typeof module === 'string' ? module : module.title || `Module ${mIdx + 1}`;
@@ -1005,7 +1027,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             return (
                                 <div
                                     key={mIdx}
-                                    className={`rounded-xl border transition-all overflow-hidden ${
+                                    className={`rounded-lg border transition-all overflow-hidden ${
                                         isDark
                                             ? 'border-slate-800 bg-[#0c101c]'
                                             : 'border-slate-200 bg-white shadow-2xs'
@@ -1014,18 +1036,22 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     <button
                                         type="button"
                                         onClick={() => toggleModule(mIdx)}
-                                        className="w-full flex items-center justify-between p-4 sm:p-5 text-left transition hover:bg-slate-100/50 dark:hover:bg-slate-800/30"
+                                        className={`w-full flex items-center justify-between p-3 sm:p-3.5 text-left transition ${
+                                            isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'
+                                        }`}
                                     >
-                                        <div className="flex items-center gap-3.5 min-w-0 pr-3">
+                                        <div className="flex items-center gap-2.5 min-w-0 pr-3">
                                             <span className="text-xs font-mono font-medium text-slate-400 shrink-0">
                                                 0{mIdx + 1}.
                                             </span>
-                                            <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate">
+                                            <h3 className={`text-xs sm:text-sm font-semibold truncate ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 {cleanTitle}
                                             </h3>
                                         </div>
 
-                                        <div className="flex items-center gap-3 shrink-0">
+                                        <div className="flex items-center gap-2.5 shrink-0">
                                             <span className="text-xs text-slate-400 hidden sm:inline">
                                                 {topics.length > 0 ? `${topics.length} Lessons` : 'Live Workshop'}
                                             </span>
@@ -1038,19 +1064,25 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     </button>
 
                                     {isOpen && (
-                                        <div className="p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 space-y-2 mt-1">
+                                        <div className={`p-3 sm:p-3.5 pt-0 border-t space-y-1 mt-1 ${
+                                            isDark ? 'border-slate-800/60' : 'border-slate-100'
+                                        }`}>
                                             {topics.length > 0 ? (
                                                 topics.map((topic, tIdx) => (
                                                     <div
                                                         key={tIdx}
-                                                        className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                                                        className={`flex items-center gap-2 py-1.5 px-2.5 rounded-md text-xs ${
+                                                            isDark
+                                                                ? 'text-slate-300 hover:bg-slate-800/40'
+                                                                : 'text-slate-700 hover:bg-slate-50'
+                                                        }`}
                                                     >
-                                                        <FileText className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                                        <FileText className="h-3 w-3 text-slate-400 shrink-0" />
                                                         <span className="truncate">{topic}</span>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <p className="text-xs text-slate-500 italic py-2 px-3">
+                                                <p className="text-xs text-slate-500 italic py-1 px-2.5">
                                                     Interactive live coding, repository architecture, and code review assignments.
                                                 </p>
                                             )}
@@ -1065,44 +1097,54 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
             {/* 5. Production Capstones */}
             {capstoneProjects.length > 0 && (
-                <section id="capstones" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+                <section id="capstones" className="py-6 sm:py-8">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-2xl mb-10">
-                            <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                        <div className="max-w-2xl mb-4">
+                            <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-0.5">
                                 Portfolio Capstones
                             </div>
-                            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <h2 className={`text-lg sm:text-xl font-bold tracking-tight ${
+                                isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                                 {capstoneProjects.length} Production {capstoneProjects.length === 1 ? 'App' : 'Apps'} You Will Build & Deploy
                             </h2>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            <p className={`text-xs mt-0.5 ${
+                                isDark ? 'text-slate-400' : 'text-slate-500'
+                            }`}>
                                 Real codebase deliverables you can proudly showcase to engineering managers and hiring teams.
                             </p>
                         </div>
 
-                        <div className={`grid grid-cols-1 ${capstoneProjects.length === 1 ? 'max-w-xl' : capstoneProjects.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-6`}>
+                        <div className={`grid grid-cols-1 ${capstoneProjects.length === 1 ? 'max-w-xl' : capstoneProjects.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-3.5`}>
                             {capstoneProjects.map((p, pIdx) => (
                                 <div
                                     key={pIdx}
-                                    className={`rounded-xl border p-6 flex flex-col justify-between space-y-4 min-w-0 overflow-hidden ${
-                                        isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                                    className={`rounded-lg border p-4 flex flex-col justify-between space-y-3 min-w-0 overflow-hidden ${
+                                        isDark
+                                            ? 'bg-[#131929] border-slate-800 text-white'
+                                            : 'bg-white border-slate-200 text-slate-900 shadow-2xs'
                                     }`}
                                 >
-                                    <div className="space-y-2.5 min-w-0">
-                                        <div className="text-[11px] font-mono text-blue-500 font-semibold uppercase tracking-wider">
+                                    <div className="space-y-1.5 min-w-0">
+                                        <div className="text-[10px] font-mono text-blue-500 font-semibold uppercase tracking-wider">
                                             Capstone 0{pIdx + 1}
                                         </div>
-                                        <h3 className="text-base font-bold text-slate-900 dark:text-white break-words [overflow-wrap:anywhere]">
+                                        <h3 className="text-xs sm:text-sm font-bold break-words [overflow-wrap:anywhere]">
                                             {p.title}
                                         </h3>
                                         {p.desc && (
-                                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed break-words [overflow-wrap:anywhere]">
+                                            <p className={`text-xs leading-relaxed break-words [overflow-wrap:anywhere] ${
+                                                isDark ? 'text-slate-400' : 'text-slate-600'
+                                            }`}>
                                                 {p.desc}
                                             </p>
                                         )}
                                     </div>
 
                                     {p.stack && (
-                                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 min-w-0">
+                                        <div className={`pt-2.5 border-t min-w-0 ${
+                                            isDark ? 'border-slate-800' : 'border-slate-100'
+                                        }`}>
                                             <span className="block text-[11px] font-mono text-slate-500 break-words [overflow-wrap:anywhere]">
                                                 {p.stack}
                                             </span>
@@ -1116,22 +1158,26 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             )}
 
             {/* 6. Senior Faculty & Mentorship Section */}
-            <section id="instructor" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+            <section id="instructor" className="py-6 sm:py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-4xl">
-                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                    <div className="max-w-3xl">
+                        <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-0.5">
                             Faculty Leadership
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
+                        <h2 className={`text-lg sm:text-xl font-bold tracking-tight mb-4 ${
+                            isDark ? 'text-white' : 'text-slate-900'
+                        }`}>
                             Meet Your Instructor
                         </h2>
 
-                        <div className={`rounded-2xl border p-6 sm:p-8 ${
-                            isDark ? 'bg-[#0c101c] border-slate-800/80' : 'bg-white border-slate-200/90 shadow-2xs'
+                        <div className={`rounded-xl border p-4 sm:p-5 ${
+                            isDark ? 'bg-[#0c101c] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
                         }`}>
-                            <div className="flex flex-col sm:flex-row items-start gap-6">
+                            <div className="flex flex-col sm:flex-row items-start gap-4">
                                 {/* Instructor Photo */}
-                                <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-xl shrink-0 bg-slate-900 flex items-center justify-center">
+                                <div className={`relative h-20 w-20 sm:h-24 sm:w-24 rounded-lg overflow-hidden border shrink-0 flex items-center justify-center ${
+                                    isDark ? 'border-slate-700 bg-slate-900' : 'border-slate-200 bg-slate-100'
+                                }`}>
                                     {instructorPhoto ? (
                                         <img
                                             src={instructorPhoto}
@@ -1139,65 +1185,70 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                             className="w-full h-full object-cover object-top"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-700 text-white font-bold font-mono text-2xl sm:text-3xl">
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-700 text-white font-bold font-mono text-xl">
                                             {instructorInitials}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="space-y-4 flex-1">
+                                <div className="space-y-3 flex-1">
                                     <div>
-                                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                                            <span className="text-[11px] font-mono text-blue-500 font-semibold tracking-wider uppercase">
+                                        <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                                            <span className="text-[10px] font-mono text-blue-500 font-semibold tracking-wider uppercase">
                                                 {isSadique ? 'Official Open Source Contributor' : (instructor?.qualification || 'Senior Faculty Mentor')}
                                             </span>
-                                            <span className="text-slate-600 hidden sm:inline">•</span>
-                                            <span className="text-xs text-slate-400 font-medium">
+                                            <span className="text-slate-400 hidden sm:inline">•</span>
+                                            <span className="text-xs text-slate-500 font-medium">
                                                 {isSadique ? 'Laravel Framework (530M+ Downloads)' : (instructor?.expertise || 'Production Engineering Expert')}
                                             </span>
                                         </div>
-                                        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                                        <h3 className={`text-base sm:text-lg font-bold ${
+                                            isDark ? 'text-white' : 'text-slate-900'
+                                        }`}>
                                             {instructorName}
                                         </h3>
-                                        <p className="text-xs sm:text-sm font-medium text-blue-600 dark:text-sky-400 mt-0.5">
+                                        <p className="text-xs font-medium text-blue-600 dark:text-sky-400">
                                             {instructor?.designation || 'Lead Engineering Faculty & Technical Architect'}
-                                            {instructor?.experience_years ? ` · ${instructor.experience_years}+ Years Industry Experience` : ' · Industry Veteran'}
+                                            {instructor?.experience_years ? ` · ${instructor.experience_years}+ Years Experience` : ''}
                                         </p>
                                     </div>
 
                                     {/* Credibility Stats Strip */}
-                                    <div className="grid grid-cols-3 gap-3 py-3 border-y border-slate-100 dark:border-slate-800/80">
+                                    <div className={`grid grid-cols-3 gap-2 py-2 border-y ${
+                                        isDark ? 'border-slate-800' : 'border-slate-200'
+                                    }`}>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                            <div className={`text-sm sm:text-base font-bold font-mono ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 {instructor?.experience_years ? `${instructor.experience_years}+ Yrs` : '7+ Yrs'}
                                             </div>
-                                            <div className="text-[11px] text-slate-500">Industry Experience</div>
+                                            <div className="text-[10px] text-slate-500">Industry Exp</div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                            <div className={`text-sm sm:text-base font-bold font-mono ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 {instructor?.courses_count ? `${instructor.courses_count} Tracks` : '4+ Tracks'}
                                             </div>
-                                            <div className="text-[11px] text-slate-500">Specialized Courses</div>
+                                            <div className="text-[10px] text-slate-500">Courses</div>
                                         </div>
                                         <div>
-                                            <div className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+                                            <div className={`text-sm sm:text-base font-bold font-mono ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 4.99 ★
                                             </div>
-                                            <div className="text-[11px] text-slate-500">Faculty Rating</div>
+                                            <div className="text-[10px] text-slate-500">Faculty Rating</div>
                                         </div>
                                     </div>
 
                                     {/* About Instructor */}
-                                    <div className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                                    <div className={`text-xs leading-relaxed font-normal ${
+                                        isDark ? 'text-slate-300' : 'text-slate-600'
+                                    }`}>
                                         {instructor?.bio ? (
-                                            <>
-                                                <p>{instructor.bio}</p>
-                                                {instructor.expertise && (
-                                                    <p>
-                                                        Specializes in <strong className="text-slate-800 dark:text-slate-200">{instructor.expertise}</strong> with a focus on real-world production engineering, modular codebases, and industry-standard workflows.
-                                                    </p>
-                                                )}
-                                            </>
+                                            <p>{instructor.bio}</p>
                                         ) : (
                                             <p>
                                                 Experienced technology lead and educator dedicated to bridging the gap between computer science theory and production-scale engineering through hands-on mentorship.
@@ -1206,18 +1257,20 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     </div>
 
                                     {/* Mentorship Highlights */}
-                                    <div className="pt-2 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-4 gap-y-1">
-                                        <span className="flex items-center gap-1.5">
-                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Weekly 1-on-1 code reviews & feedback</span>
+                                    <div className={`pt-1 text-[11px] flex flex-wrap items-center gap-x-3 gap-y-1 ${
+                                        isDark ? 'text-slate-400' : 'text-slate-500'
+                                    }`}>
+                                        <span className="flex items-center gap-1">
+                                            <CheckCircle2 className="h-3 w-3 text-blue-500" />
+                                            <span>Weekly code reviews</span>
                                         </span>
-                                        <span className="flex items-center gap-1.5">
-                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Hands-on real-world production codebases</span>
+                                        <span className="flex items-center gap-1">
+                                            <CheckCircle2 className="h-3 w-3 text-blue-500" />
+                                            <span>Real production repos</span>
                                         </span>
-                                        <span className="flex items-center gap-1.5">
-                                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
-                                            <span>Direct mentorship via student community</span>
+                                        <span className="flex items-center gap-1">
+                                            <CheckCircle2 className="h-3 w-3 text-blue-500" />
+                                            <span>Direct mentorship</span>
                                         </span>
                                     </div>
                                 </div>
@@ -1228,32 +1281,38 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             </section>
 
             {/* 7. FAQ Section */}
-            <section id="faq" className="py-14 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+            <section id="faq" className="py-6 sm:py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="max-w-3xl">
-                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1.5">
+                        <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-0.5">
                             Got Questions?
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
+                        <h2 className={`text-lg sm:text-xl font-bold tracking-tight mb-4 ${
+                            isDark ? 'text-white' : 'text-slate-900'
+                        }`}>
                             Frequently Asked Questions
                         </h2>
 
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {faqs.map((f, fIdx) => {
                                 const isOpen = Boolean(openFaq[fIdx]);
                                 return (
                                     <div
                                         key={fIdx}
-                                        className={`rounded-xl border transition overflow-hidden ${
+                                        className={`rounded-lg border transition overflow-hidden ${
                                             isDark ? 'border-slate-800 bg-[#0c101c]' : 'border-slate-200 bg-white shadow-2xs'
                                         }`}
                                     >
                                         <button
                                             type="button"
                                             onClick={() => toggleFaq(fIdx)}
-                                            className="w-full flex items-center justify-between p-4 sm:p-5 text-left transition"
+                                            className={`w-full flex items-center justify-between p-3 sm:p-3.5 text-left transition ${
+                                                isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'
+                                            }`}
                                         >
-                                            <span className="text-sm font-semibold text-slate-900 dark:text-white pr-4">
+                                            <span className={`text-xs sm:text-sm font-semibold pr-4 ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 {f.q}
                                             </span>
                                             <ChevronDown
@@ -1264,7 +1323,11 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         </button>
 
                                         {isOpen && (
-                                            <div className="p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                                            <div className={`px-3.5 pb-3 pt-1 border-t text-xs leading-relaxed ${
+                                                isDark
+                                                    ? 'border-slate-800/60 text-slate-300'
+                                                    : 'border-slate-100 text-slate-600'
+                                            }`}>
                                                 {f.a}
                                             </div>
                                         )}
@@ -1276,112 +1339,126 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 </div>
             </section>
 
-            {/* 8. Full Conversion CTA Section */}
-            <section className="py-16 sm:py-20 border-b border-slate-200 dark:border-slate-800 text-center">
-                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-5">
-                    <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400">
-                        Enrollment Open
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
-                        Ready to Build Production Mobile Apps?
-                    </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-                        Join cohorts designed for real software engineering careers with hands-on capstones, verified certificates, and senior mentorship.
-                    </p>
-
-                    {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
-                        <div className="flex items-center justify-center gap-2 text-xs pt-1">
-                            <span className="text-slate-500 dark:text-slate-400">Selected Live Batch:</span>
-                            <span className="font-bold text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900/60 rounded-md px-2 py-0.5">
-                                {availableBatches.find((b) => b.id === selectedBatchId)?.time_slot || availableBatches[0]?.time_slot}
-                            </span>
+            {/* 8. Conversion CTA Section */}
+            <section className="py-6 sm:py-8">
+                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                    <div className={`rounded-xl border p-6 sm:p-8 text-center space-y-3 ${
+                        isDark ? 'bg-[#0c101c] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                    }`}>
+                        <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400">
+                            Enrollment Open
                         </div>
-                    )}
+                        <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${
+                            isDark ? 'text-white' : 'text-slate-900'
+                        }`}>
+                            Ready to Master Production Engineering?
+                        </h2>
+                        <p className={`text-xs sm:text-sm max-w-lg mx-auto leading-relaxed ${
+                            isDark ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                            Join cohorts designed for real software engineering careers with hands-on capstones, verified certificates, and mentorship.
+                        </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                        {isEnrolled ? (
-                            <Link
-                                href={route('student.courses.learn', course.id)}
-                                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/25 transition"
-                            >
-                                <Play className="h-4 w-4 fill-current" />
-                                <span>Go to Classroom →</span>
-                            </Link>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={handleEnroll}
-                                disabled={enrolling}
-                                className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25 transition disabled:opacity-60 cursor-pointer"
-                            >
-                                <span>{enrolling ? 'Connecting Gateway...' : `Enroll Now for ${formattedPrice}`}</span>
-                                <ArrowRight className="h-4 w-4" />
-                            </button>
+                        {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
+                            <div className="flex items-center justify-center gap-2 text-xs pt-0.5">
+                                <span className="text-slate-500">Selected Live Batch:</span>
+                                <span className="font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-2 py-0.5">
+                                    {availableBatches.find((b) => b.id === selectedBatchId)?.time_slot || availableBatches[0]?.time_slot}
+                                </span>
+                            </div>
                         )}
-                    </div>
 
-                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 pt-1">
-                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                        <span>7-Day 100% money-back guarantee • No questions asked</span>
+                        <div className="flex items-center justify-center gap-2.5 pt-1">
+                            {isEnrolled ? (
+                                <Link
+                                    href={route('student.courses.learn', course.id)}
+                                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition"
+                                >
+                                    <Play className="h-3.5 w-3.5 fill-current" />
+                                    <span>Go to Classroom →</span>
+                                </Link>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleEnroll}
+                                    disabled={enrolling}
+                                    className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
+                                >
+                                    <span>{enrolling ? 'Connecting Gateway...' : `Enroll Now for ${formattedPrice}`}</span>
+                                    <ArrowRight className="h-3.5 w-3.5" />
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 pt-0.5">
+                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                            <span>7-Day 100% money-back guarantee • No questions asked</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* 9. Related Courses Section (Matching media_1789350423399.png standard) */}
+            {/* 9. Related Courses Section */}
             {relatedCourses && relatedCourses.length > 0 && (
-                <section className="py-14 sm:py-16">
+                <section className="py-6 sm:py-8">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-4">
                             <div>
-                                <div className="text-xs font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-1">
+                                <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400 mb-0.5">
                                     Complementary Tracks
                                 </div>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                <h2 className={`text-base sm:text-lg font-bold tracking-tight ${
+                                    isDark ? 'text-white' : 'text-slate-900'
+                                }`}>
                                     Related Engineering Courses
                                 </h2>
                             </div>
                             <Link
                                 href={route('courses.index')}
-                                className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                                className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1"
                             >
                                 <span>View all tracks</span>
-                                <ArrowRight className="h-3.5 w-3.5" />
+                                <ArrowRight className="h-3 w-3" />
                             </Link>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
                             {relatedCourses.map((relCourse) => (
                                 <Link
                                     key={relCourse.id}
                                     href={route('courses.show', relCourse.slug || relCourse.id)}
-                                    className={`group rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden ${
+                                    className={`group rounded-lg border transition duration-150 flex flex-col justify-between overflow-hidden ${
                                         isDark
-                                            ? 'border-slate-800/80 bg-[#0c101c] hover:border-slate-700 hover:bg-[#0f1526]'
-                                            : 'border-slate-200/90 bg-white hover:border-slate-300 shadow-2xs'
+                                            ? 'border-slate-800 bg-[#131929] hover:border-slate-700'
+                                            : 'border-slate-200 bg-white hover:border-slate-300 shadow-2xs'
                                     }`}
                                 >
-                                    <div className="relative w-full h-36 overflow-hidden bg-slate-950 border-b border-slate-100 dark:border-slate-800/60">
+                                    <div className="relative w-full h-32 overflow-hidden bg-slate-950 border-b border-slate-100">
                                         <img
                                             src={getCourseImage(relCourse)}
                                             alt={relCourse.title}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90"
+                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 opacity-90"
                                             loading="lazy"
                                         />
                                     </div>
 
-                                    <div className="p-5 flex flex-col flex-1 justify-between space-y-3.5">
-                                        <div className="space-y-1.5">
-                                            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-sky-400">
+                                    <div className="p-3.5 flex flex-col flex-1 justify-between space-y-2.5">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600">
                                                 {relCourse.category?.name || 'Engineering'}
                                             </p>
-                                            <h3 className="text-sm font-bold line-clamp-2 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors leading-snug">
+                                            <h3 className={`text-xs sm:text-sm font-bold line-clamp-2 transition-colors leading-snug ${
+                                                isDark ? 'text-white group-hover:text-blue-400' : 'text-slate-900 group-hover:text-blue-600'
+                                            }`}>
                                                 {relCourse.title}
                                             </h3>
                                         </div>
 
-                                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                                             <span>{relCourse.duration || '8 Weeks'}</span>
-                                            <div className="flex items-center gap-1 font-semibold text-slate-900 dark:text-white">
+                                            <div className={`flex items-center gap-1 font-semibold ${
+                                                isDark ? 'text-white' : 'text-slate-900'
+                                            }`}>
                                                 <span>
                                                     {Number(relCourse.price) === 0
                                                         ? 'Free'
@@ -1398,6 +1475,8 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     </div>
                 </section>
             )}
+            </div>
+
 
             {/* 10. Floating Mobile Bottom Bar */}
             <div className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t px-4 py-3 flex items-center justify-between shadow-2xl backdrop-blur-md ${
@@ -1569,7 +1648,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         );
     }
 
-    // 3. Public View (Unauthenticated Visitors)
+    // 3. Public View
     return (
         <div className={`min-h-screen transition-colors duration-200 font-sans antialiased flex flex-col pb-16 lg:pb-0 ${
             isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#fafbfc] text-slate-900'

@@ -1,14 +1,16 @@
-    <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
         <script>
             try {
-                if (localStorage.getItem('theme') === 'light') {
+                var path = window.location.pathname;
+                var isPortal = path.startsWith('/student') || path.startsWith('/admin');
+                if (isPortal || localStorage.getItem('theme') === 'light' || !localStorage.getItem('theme')) {
                     document.documentElement.classList.remove('dark');
                     document.documentElement.style.colorScheme = 'light';
-                } else {
+                } else if (localStorage.getItem('theme') === 'dark') {
                     document.documentElement.classList.add('dark');
                     document.documentElement.style.colorScheme = 'dark';
                 }

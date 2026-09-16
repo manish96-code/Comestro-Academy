@@ -15,13 +15,39 @@ import {
     GraduationCap,
     ChevronDown,
     Award,
-    Receipt
+    Receipt,
+    Sparkles,
+    Sun,
+    Moon
 } from 'lucide-react';
 
 export default function StudentLayout({ header, children }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Theme state with localStorage persistence
+    const [theme, setTheme] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('theme') || 'light';
+        }
+        return 'light';
+    });
+
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    };
 
     useEffect(() => {
         if (flash?.success) {
@@ -98,7 +124,7 @@ export default function StudentLayout({ header, children }) {
         <div className="space-y-5">
             {navigationGroups.map((group) => (
                 <div key={group.label} className="space-y-1">
-                    <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">
+                    <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 font-mono">
                         {group.label}
                     </div>
                     <div className="space-y-0.5">
@@ -109,22 +135,31 @@ export default function StudentLayout({ header, children }) {
                                     key={item.name}
                                     href={item.href}
                                     onClick={onItemClick}
-                                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
+                                    className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
                                         item.active
-                                            ? 'bg-indigo-600 text-white shadow-2xs'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                            ? 'bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-100/90 dark:border-indigo-800/60 shadow-2xs'
+                                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
                                     }`}
                                 >
+                                    {item.active && (
+                                        <span className="absolute left-0 inset-y-2 w-1 bg-indigo-600 dark:bg-indigo-500 rounded-r-full" />
+                                    )}
                                     <div className="flex items-center space-x-2.5">
-                                        <Icon className={`h-4 w-4 ${item.active ? 'text-white' : 'text-gray-400'}`} />
+                                        <Icon className={`h-4 w-4 ${item.active ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`} />
                                         <span>{item.name}</span>
                                     </div>
                                     {item.badge && (
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 font-mono ${
                                             item.badge === 'Live'
-                                                ? 'bg-rose-50 text-rose-600 border border-rose-200'
-                                                : 'bg-gray-100 text-gray-500 border border-gray-200'
+                                                ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60'
+                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
                                         }`}>
+                                            {item.badge === 'Live' && (
+                                                <span className="relative flex h-1.5 w-1.5">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                                                </span>
+                                            )}
                                             {item.badge}
                                         </span>
                                     )}
@@ -138,22 +173,33 @@ export default function StudentLayout({ header, children }) {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50/70 flex antialiased text-gray-800">
+        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090d16] text-slate-800 dark:text-slate-100 flex antialiased relative selection:bg-indigo-500 selection:text-white transition-colors duration-200">
+            {/* Subtle ambient decorative lighting at top */}
+            <div className="fixed inset-0 pointer-events-none -z-0 overflow-hidden">
+                <div className="absolute -top-40 right-1/4 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl" />
+                <div className="absolute top-20 left-1/3 w-80 h-80 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-3xl" />
+            </div>
+
             {/* Desktop Left Sidebar */}
-            <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white text-gray-800 border-r border-gray-200 fixed inset-y-0 z-30">
+            <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white/95 dark:bg-[#0c101c]/95 backdrop-blur-md text-slate-800 dark:text-slate-200 border-r border-slate-200/80 dark:border-slate-800 fixed inset-y-0 z-30 transition-colors duration-200">
                 
                 {/* Brand Header */}
-                <div className="h-16 flex items-center px-5 border-b border-gray-200/80 space-x-3 bg-white">
-                    <div className="p-1.5 bg-indigo-600 rounded-lg shadow-2xs text-white">
+                <div className="h-16 flex items-center px-5 border-b border-slate-200/70 dark:border-slate-800 space-x-3 bg-white dark:bg-[#0c101c] transition-colors duration-200">
+                    <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
                         <GraduationCap className="h-5 w-5" />
                     </div>
-                    <div className="min-w-0">
-                        <h1 className="font-bold text-xs leading-tight text-gray-900 tracking-wide truncate">
-                            Comestro Academy
-                        </h1>
-                        <span className="text-[10px] font-semibold tracking-wider uppercase text-indigo-600 font-mono">
-                            Student Portal
-                        </span>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between">
+                            <h1 className="font-bold text-xs leading-tight text-slate-900 dark:text-white tracking-tight truncate">
+                                Comestro Academy
+                            </h1>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-100/80 dark:border-indigo-800/60 font-mono uppercase">
+                                Portal
+                            </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate mt-0.5">
+                            Student Workspace
+                        </p>
                     </div>
                 </div>
 
@@ -162,27 +208,46 @@ export default function StudentLayout({ header, children }) {
                     {renderNavItems()}
                 </div>
 
+                {/* Sidebar Motivational Learning Goal Widget */}
+                <div className="p-3.5 mx-3 mb-2 rounded-xl bg-gradient-to-br from-indigo-50/90 to-violet-50/40 dark:from-indigo-950/30 dark:to-violet-950/20 border border-indigo-100/80 dark:border-indigo-900/40 shadow-2xs space-y-2 transition-colors duration-200">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950 dark:text-indigo-200">
+                            <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                            <span>Learning Track</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800">
+                            Active
+                        </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                        Keep up the pace! Complete weekly milestones to earn your verified certificate.
+                    </p>
+                </div>
+
                 {/* Bottom User Profile Card */}
-                <div className="p-3.5 border-t border-gray-200/80 bg-white">
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-200/80 shadow-2xs hover:bg-gray-100/80 transition">
+                <div className="p-3 border-t border-slate-200/70 dark:border-slate-800 bg-white dark:bg-[#0c101c] transition-colors duration-200">
+                    <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition group">
                         <Link
                             href={route('student.profile')}
-                            className="flex items-center space-x-3 overflow-hidden group flex-1 min-w-0"
+                            className="flex items-center space-x-2.5 overflow-hidden flex-1 min-w-0"
                             title="View Profile"
                         >
-                            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-2xs">
-                                {user?.profile_pic ? (
-                                    <img src={user.profile_pic} alt={user.name} className="h-full w-full object-cover" />
-                                ) : (
-                                    user?.name ? user.name.charAt(0).toUpperCase() : 'S'
-                                )}
+                            <div className="relative shrink-0">
+                                <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs">
+                                    {user?.profile_pic ? (
+                                        <img src={user.profile_pic} alt={user.name} className="h-full w-full object-cover" />
+                                    ) : (
+                                        user?.name ? user.name.charAt(0).toUpperCase() : 'S'
+                                    )}
+                                </div>
+                                <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 border border-white dark:border-slate-900" />
                             </div>
                             <div className="truncate">
-                                <div className="text-xs font-semibold text-gray-900 group-hover:text-indigo-600 transition truncate">
+                                <div className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition truncate">
                                     {user?.name || 'Student'}
                                 </div>
-                                <div className="text-[10px] text-indigo-600 font-medium capitalize truncate">
-                                    Student ID: #{user?.id}
+                                <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono truncate">
+                                    ID: #{user?.id}
                                 </div>
                             </div>
                         </Link>
@@ -190,7 +255,7 @@ export default function StudentLayout({ header, children }) {
                             href={route('logout')}
                             method="post"
                             as="button"
-                            className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition shrink-0 ml-1"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition shrink-0 ml-1 cursor-pointer"
                             title="Log Out"
                         >
                             <LogOut className="h-4 w-4" />
@@ -203,19 +268,21 @@ export default function StudentLayout({ header, children }) {
             {sidebarOpen && (
                 <div className="fixed inset-0 z-40 lg:hidden">
                     <div
-                        className="fixed inset-0 bg-gray-900/60 backdrop-blur-xs"
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
                         onClick={() => setSidebarOpen(false)}
                     ></div>
 
-                    <div className="fixed inset-y-0 left-0 w-64 bg-white text-gray-800 z-50 flex flex-col p-4 shadow-2xl border-r border-gray-200">
-                        <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-[#0c101c] text-slate-800 dark:text-slate-200 z-50 flex flex-col p-4 shadow-2xl border-r border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="flex items-center space-x-2">
-                                <GraduationCap className="h-6 w-6 text-indigo-600" />
-                                <span className="font-bold text-sm text-gray-900">Student Portal</span>
+                                <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                                    <GraduationCap className="h-5 w-5" />
+                                </div>
+                                <span className="font-bold text-sm text-slate-900 dark:text-white">Student Portal</span>
                             </div>
                             <button
                                 onClick={() => setSidebarOpen(false)}
-                                className="p-1 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -225,12 +292,12 @@ export default function StudentLayout({ header, children }) {
                             {renderNavItems(() => setSidebarOpen(false))}
                         </div>
 
-                        <div className="pt-4 border-t border-gray-100">
+                        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                             <Link
                                 href={route('logout')}
                                 method="post"
                                 as="button"
-                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition cursor-pointer"
                             >
                                 <LogOut className="h-4 w-4" />
                                 <span>Log Out</span>
@@ -241,16 +308,16 @@ export default function StudentLayout({ header, children }) {
             )}
 
             {/* Main Content Area */}
-            <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+            <div className="flex-1 lg:pl-64 flex flex-col min-w-0 z-10">
                 
                 {/* Top Navbar */}
-                <header className="h-16 bg-white border-b border-gray-200/80 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                <header className="h-16 bg-white/85 dark:bg-[#0c101c]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-200">
                     
                     {/* Left: Mobile Toggle & Page Header Title */}
                     <div className="flex items-center space-x-3">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100"
+                            className="lg:hidden p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
@@ -259,42 +326,57 @@ export default function StudentLayout({ header, children }) {
                         </div>
                     </div>
 
-                    {/* Right: Notifications & User Menu Dropdown */}
-                    <div className="flex items-center space-x-3 sm:space-x-4">
+                    {/* Right: Theme Switcher, Notifications & User Menu Dropdown */}
+                    <div className="flex items-center space-x-2.5 sm:space-x-3">
+                        {/* Clean Theme Toggle Button */}
+                        <button
+                            type="button"
+                            onClick={toggleTheme}
+                            className="p-2 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-2xs"
+                            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+                            aria-label="Toggle Theme"
+                        >
+                            {theme === 'dark' ? (
+                                <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200 rotate-0 hover:rotate-45" />
+                            ) : (
+                                <Moon className="h-4 w-4 text-slate-600 hover:text-indigo-600 transition-transform duration-200" />
+                            )}
+                        </button>
+
                         <NotificationBell user={user} />
 
                         <Dropdown>
                             <Dropdown.Trigger>
-                                <button className="flex items-center space-x-2 text-xs font-semibold text-gray-700 hover:text-indigo-600 py-1.5 px-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/80 bg-white shadow-2xs transition">
-                                    <div className="h-7 w-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs shrink-0">
+                                <button className="flex items-center space-x-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 py-1.5 px-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs transition cursor-pointer">
+                                    <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs shrink-0">
                                         {user?.profile_pic ? (
                                             <img src={user.profile_pic} alt={user.name} className="h-full w-full object-cover" />
                                         ) : (
                                             user?.name ? user.name.charAt(0).toUpperCase() : 'S'
                                         )}
                                     </div>
-                                    <span className="hidden sm:inline-block font-semibold text-gray-800">{user?.name}</span>
-                                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                                    <span className="hidden sm:inline-block font-semibold text-slate-800 dark:text-slate-200">{user?.name}</span>
+                                    <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                                 </button>
                             </Dropdown.Trigger>
-                            <Dropdown.Content contentClasses="py-1.5 bg-white border border-gray-200 rounded-xl shadow-xl ring-0 divide-y divide-gray-100 w-52">
-                                <div className="px-4 py-2.5 bg-gray-50/70">
-                                    <p className="text-xs font-bold text-gray-900 truncate">{user?.name}</p>
-                                    <p className="text-[11px] text-gray-500 font-mono truncate mt-0.5">{user?.email}</p>
+                            <Dropdown.Content contentClasses="py-1.5 bg-white dark:bg-[#0c101c] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl ring-0 divide-y divide-slate-100 dark:divide-slate-800 w-52">
+                                <div className="px-4 py-2.5 bg-slate-50/70 dark:bg-slate-900/70">
+                                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name}</p>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate mt-0.5">{user?.email}</p>
                                 </div>
                                 <div className="py-1">
                                     <Dropdown.Link
                                         href={route('student.profile')}
-                                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50/70 transition"
+                                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 transition"
                                     >
-                                        <User className="h-3.5 w-3.5 text-gray-400" />
+                                        <User className="h-3.5 w-3.5 text-slate-400" />
                                         <span>My Profile</span>
                                     </Dropdown.Link>
                                     <Dropdown.Link
                                         href={route('logout')}
                                         method="post"
                                         as="button"
-                                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50/80 transition"
+                                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 transition"
                                     >
                                         <LogOut className="h-3.5 w-3.5 text-rose-500" />
                                         <span>Log Out</span>
