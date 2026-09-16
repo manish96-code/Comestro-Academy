@@ -216,11 +216,34 @@ class StudentController extends Controller
 
         $enrollment = $user ? $user->enrollments()->where('course_id', $course->id)->with('batch')->first() : null;
 
+        // Calculate unlocked lessons (sequential progression: lecture i is unlocked only if previous lecture was completed)
+        $allCourseLessons = $course->modules->flatMap(fn ($m) => $m->lessons)->values();
+        $unlockedLessonIds = [];
+        $isAdminOrInstructor = $user && ($user->isAdmin() || $user->isInstructor());
+
+        if ($isAdminOrInstructor) {
+            $unlockedLessonIds = $allCourseLessons->pluck('id')->toArray();
+        } else {
+            foreach ($allCourseLessons as $index => $courseLesson) {
+                if ($index === 0) {
+                    $unlockedLessonIds[] = $courseLesson->id;
+                } else {
+                    $prevLesson = $allCourseLessons[$index - 1];
+                    if (in_array($prevLesson->id, $completedLessonIds) && in_array($prevLesson->id, $unlockedLessonIds)) {
+                        $unlockedLessonIds[] = $courseLesson->id;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
             'enrollment' => $enrollment,
             'progress' => $progress,
             'completedLessonIds' => $completedLessonIds,
+            'unlockedLessonIds' => $unlockedLessonIds,
         ]);
     }
 
@@ -262,6 +285,27 @@ class StudentController extends Controller
         }
 
         $existing = $user->completedLessons()->where('lesson_id', $lesson->id)->first();
+
+        // Enforce sequential unlocking when attempting to complete a new lesson
+        if (! $existing && ! $user->isAdmin() && ! $user->isInstructor()) {
+            $allCourseLessons = $course->modules()->orderBy('sort_order')->with([
+                'lessons' => fn ($lq) => $lq->orderBy('sort_order'),
+            ])->get()->flatMap(fn ($m) => $m->lessons)->values();
+
+            $lessonIndex = $allCourseLessons->search(fn ($l) => $l->id === $lesson->id);
+
+            if ($lessonIndex !== false && $lessonIndex > 0) {
+                $completedLessonIds = $user->completedLessons()
+                    ->whereIn('lesson_id', $allCourseLessons->pluck('id'))
+                    ->pluck('course_lessons.id')
+                    ->toArray();
+
+                $prevLesson = $allCourseLessons[$lessonIndex - 1];
+                if (! in_array($prevLesson->id, $completedLessonIds)) {
+                    return redirect()->back()->with('error', 'You must complete the previous lecture before this one.');
+                }
+            }
+        }
 
         if ($existing) {
             $user->completedLessons()->detach($lesson->id);

@@ -1,5 +1,5 @@
 import StudentLayout from '@/Layouts/StudentLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import {
     Play,
@@ -17,11 +17,14 @@ import {
     FileArchive,
     File,
     FolderCheck,
-    Check
+    Check,
+    Lock,
 } from 'lucide-react';
 
-export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [] }) {
+export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [] }) {
     const modules = course.modules || [];
+    const { auth } = usePage().props;
+    const isAdminOrInstructor = auth?.user?.role === 'admin' || auth?.user?.role === 'instructor';
 
     // All lessons flat list
     const allLessons = useMemo(() => {
@@ -42,6 +45,14 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
     const isLessonCompleted = (lessonId) => completedLessonIds.includes(lessonId);
 
+    // Unlocked check (server-computed with sequential progression + admin bypass)
+    const unlockedSet = useMemo(() => {
+        if (isAdminOrInstructor) return new Set(allLessons.map((l) => l.id));
+        return new Set(unlockedLessonIds.length > 0 ? unlockedLessonIds : [allLessons[0]?.id]);
+    }, [unlockedLessonIds, allLessons, isAdminOrInstructor]);
+
+    const isLessonUnlocked = (lessonId) => !lessonId ? false : unlockedSet.has(lessonId);
+
     const completedCount = useMemo(() => {
         return allLessons.filter((l) => completedLessonIds.includes(l.id)).length;
     }, [allLessons, completedLessonIds]);
@@ -57,13 +68,13 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
     // Auto-advance countdown (seconds)
     const [autoAdvanceTimer, setAutoAdvanceTimer] = useState(null);
 
-    // Toggle lesson completed status
+    // Toggle lesson completed status (only allowed for unlocked lectures)
     const handleToggleComplete = (lessonId, e) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        if (isToggling || !lessonId) return;
+        if (isToggling || !lessonId || !isLessonUnlocked(lessonId)) return;
         setIsToggling(true);
 
         router.post(
@@ -77,9 +88,52 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
         );
     };
 
+    // Read URL query params
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const urlLessonId = urlParams ? Number(urlParams.get('lesson')) : null;
+    const urlTab = urlParams ? urlParams.get('tab') : null;
+
+    // Helper to resolve an accessible unlocked lesson
+    const resolveDefaultLessonId = () => {
+        if (allLessons.length === 0) return null;
+        if (urlLessonId && isLessonUnlocked(urlLessonId)) return urlLessonId;
+        const inProgress = allLessons.find((l) => isLessonUnlocked(l.id) && !isLessonCompleted(l.id));
+        return inProgress?.id || allLessons[0]?.id || null;
+    };
+
+    // Active lesson ID
+    const [activeLessonId, setActiveLessonId] = useState(() => resolveDefaultLessonId());
+
+    // Keep activeLessonId valid and unlocked
+    useEffect(() => {
+        if (allLessons.length > 0 && activeLessonId && !isLessonUnlocked(activeLessonId)) {
+            const fallbackId = resolveDefaultLessonId();
+            if (fallbackId && fallbackId !== activeLessonId) {
+                setActiveLessonId(fallbackId);
+            }
+        }
+    }, [activeLessonId, unlockedSet, allLessons]);
+
+    // Current lesson
+    const activeLesson = useMemo(() => {
+        return allLessons.find((l) => l.id === activeLessonId) || allLessons[0] || null;
+    }, [allLessons, activeLessonId]);
+
+    // Current lesson index
+    const activeIndex = useMemo(() => {
+        return allLessons.findIndex((l) => l.id === activeLesson?.id);
+    }, [allLessons, activeLesson]);
+
+    // Previous lesson in course sequence (for locking notice)
+    const activeLessonPrev = useMemo(() => {
+        if (!activeLesson) return null;
+        const idx = allLessons.findIndex((l) => l.id === activeLesson.id);
+        return idx > 0 ? allLessons[idx - 1] : null;
+    }, [activeLesson, allLessons]);
+
     // Handle video ended
     const handleVideoFinished = () => {
-        if (!activeLesson) return;
+        if (!activeLesson || !isLessonUnlocked(activeLesson.id)) return;
 
         // Mark active lesson completed
         if (!isLessonCompleted(activeLesson.id)) {
@@ -91,24 +145,6 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
             setAutoAdvanceTimer(5);
         }
     };
-
-    // Read URL query params
-    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-    const urlLessonId = urlParams ? Number(urlParams.get('lesson')) : null;
-    const urlTab = urlParams ? urlParams.get('tab') : null;
-
-    // Active lesson ID
-    const [activeLessonId, setActiveLessonId] = useState(urlLessonId || allLessons[0]?.id || null);
-
-    // Current lesson
-    const activeLesson = useMemo(() => {
-        return allLessons.find((l) => l.id === activeLessonId) || allLessons[0] || null;
-    }, [allLessons, activeLessonId]);
-
-    // Current lesson index
-    const activeIndex = useMemo(() => {
-        return allLessons.findIndex((l) => l.id === activeLesson?.id);
-    }, [allLessons, activeLesson]);
 
     // Current video URL
     const activeVideoUrl = useMemo(() => {
@@ -199,11 +235,14 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
         if (autoAdvanceTimer === 0) {
             if (activeIndex < allLessons.length - 1) {
-                setActiveLessonId(allLessons[activeIndex + 1].id);
+                const nextLesson = allLessons[activeIndex + 1];
+                if (nextLesson && (isLessonUnlocked(nextLesson.id) || isLessonCompleted(activeLesson?.id))) {
+                    setActiveLessonId(nextLesson.id);
+                }
             }
             setAutoAdvanceTimer(null);
         }
-    }, [autoAdvanceTimer, activeIndex, allLessons]);
+    }, [autoAdvanceTimer, activeIndex, allLessons, isLessonUnlocked, isLessonCompleted, activeLesson]);
 
     // Reset timer on lesson change
     useEffect(() => {
@@ -260,7 +299,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
     const handleNext = () => {
         if (activeIndex < allLessons.length - 1) {
-            setActiveLessonId(allLessons[activeIndex + 1].id);
+            const nextLesson = allLessons[activeIndex + 1];
+            if (nextLesson && isLessonUnlocked(nextLesson.id)) {
+                setActiveLessonId(nextLesson.id);
+            }
         }
     };
 
@@ -345,7 +387,35 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                             {/* Video player */}
                             <div className="bg-black rounded-2xl overflow-hidden shadow-xl border border-slate-800">
-                                {activeVideoUrl ? (
+                                {!isLessonUnlocked(activeLesson?.id) ? (
+                                    /* Locked Lecture Screen */
+                                    <div className="py-16 px-6 text-center space-y-4 bg-slate-900 rounded-2xl border border-slate-800 text-white shadow-xl">
+                                        <div className="h-14 w-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-lg">
+                                            <Lock className="h-7 w-7" />
+                                        </div>
+                                        <div className="max-w-md mx-auto space-y-1.5">
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                <Lock className="h-3 w-3" /> Lecture Locked
+                                            </span>
+                                            <h3 className="text-base font-bold text-white">
+                                                {activeLesson?.title || 'This Lecture is Locked'}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 leading-relaxed">
+                                                {activeLessonPrev
+                                                    ? `Please watch and complete "${activeLessonPrev.title}" first to unlock this lecture.`
+                                                    : 'You must complete the previous lecture before this lecture can be played.'}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveLessonId(resolveDefaultLessonId())}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition"
+                                        >
+                                            <Play className="h-3.5 w-3.5 fill-current" />
+                                            <span>Go to Current Lecture</span>
+                                        </button>
+                                    </div>
+                                ) : activeVideoUrl ? (
                                     <div className="relative w-full pt-[56.25%] bg-black">
                                         {isEmbeddable ? (
                                             <iframe
@@ -472,6 +542,11 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                     <span>{activeLesson.duration}</span>
                                                 </span>
                                             )}
+                                            {!isLessonUnlocked(activeLesson?.id) && (
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 font-mono">
+                                                    <Lock className="h-3 w-3" /> Locked
+                                                </span>
+                                            )}
                                         </div>
                                         <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 leading-tight">
                                             {activeLesson ? activeLesson.title : 'Select a Lecture'}
@@ -483,22 +558,34 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         {activeLesson && (
                                             <button
                                                 type="button"
-                                                disabled={isToggling}
+                                                disabled={isToggling || !isLessonUnlocked(activeLesson.id)}
                                                 onClick={(e) => handleToggleComplete(activeLesson.id, e)}
                                                 className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg shadow-2xs transition ${
-                                                    isLessonCompleted(activeLesson.id)
+                                                    !isLessonUnlocked(activeLesson.id)
+                                                        ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed opacity-75'
+                                                        : isLessonCompleted(activeLesson.id)
                                                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                                         : 'bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300'
                                                 }`}
                                                 title={
-                                                    isLessonCompleted(activeLesson.id)
+                                                    !isLessonUnlocked(activeLesson.id)
+                                                        ? 'Complete previous lecture to unlock'
+                                                        : isLessonCompleted(activeLesson.id)
                                                         ? 'Click to mark lesson as incomplete'
                                                         : 'Click to mark lesson as completed'
                                                 }
                                             >
-                                                <CheckCircle2 className="h-4 w-4" />
+                                                {!isLessonUnlocked(activeLesson.id) ? (
+                                                    <Lock className="h-4 w-4 text-gray-400" />
+                                                ) : (
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                )}
                                                 <span>
-                                                    {isLessonCompleted(activeLesson.id) ? 'Completed' : 'Mark Complete'}
+                                                    {!isLessonUnlocked(activeLesson.id)
+                                                        ? 'Locked'
+                                                        : isLessonCompleted(activeLesson.id)
+                                                        ? 'Completed'
+                                                        : 'Mark Complete'}
                                                 </span>
                                             </button>
                                         )}
@@ -515,12 +602,26 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                                         <button
                                             type="button"
-                                            disabled={activeIndex >= allLessons.length - 1}
+                                            disabled={
+                                                activeIndex >= allLessons.length - 1 ||
+                                                !isLessonUnlocked(allLessons[activeIndex + 1]?.id)
+                                            }
                                             onClick={handleNext}
+                                            title={
+                                                activeIndex < allLessons.length - 1 &&
+                                                !isLessonUnlocked(allLessons[activeIndex + 1]?.id)
+                                                    ? 'Complete this lecture to unlock next lecture'
+                                                    : 'Next Lecture'
+                                            }
                                             className="inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed transition"
                                         >
                                             <span>Next Lecture</span>
-                                            <ChevronRight className="h-4 w-4" />
+                                            {activeIndex < allLessons.length - 1 &&
+                                            !isLessonUnlocked(allLessons[activeIndex + 1]?.id) ? (
+                                                <Lock className="h-3.5 w-3.5 ml-0.5" />
+                                            ) : (
+                                                <ChevronRight className="h-3.5 w-3.5" />
+                                            )}
                                         </button>
                                     </div>
                                 </div>
@@ -572,7 +673,12 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 {/* Notes tab */}
                                 {activeTab === 'notes' && (
                                     <div className="space-y-4 pt-1">
-                                        {activeResources.length > 0 ? (
+                                        {!isLessonUnlocked(activeLesson?.id) ? (
+                                            <div className="p-6 text-center text-xs text-gray-500 border border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2">
+                                                <Lock className="h-4 w-4 text-gray-400" />
+                                                <span>Complete the previous lecture to unlock study notes and attachments.</span>
+                                            </div>
+                                        ) : activeResources.length > 0 ? (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 {activeResources.map((res) => (
                                                     <div
@@ -624,7 +730,11 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 {/* Overview tab */}
                                 {activeTab === 'overview' && (
                                     <div className="space-y-3 pt-1">
-                                        {activeLesson?.description ? (
+                                        {!isLessonUnlocked(activeLesson?.id) ? (
+                                            <p className="text-xs text-gray-400 italic">
+                                                Overview is locked. Complete the previous lecture to view description.
+                                            </p>
+                                        ) : activeLesson?.description ? (
                                             <div className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line bg-gray-50/70 p-4 rounded-xl border border-gray-100">
                                                 {activeLesson.description}
                                             </div>
@@ -754,6 +864,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 {isOpen && (
                                                     <div className="divide-y divide-gray-50 bg-white">
                                                         {modLessons.map((lesson, lIdx) => {
+                                                            const isUnlocked = isLessonUnlocked(lesson.id);
                                                             const isActive = lesson.id === activeLesson?.id;
                                                             const isCompleted = isLessonCompleted(lesson.id);
 
@@ -761,7 +872,9 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                 <div
                                                                     key={lesson.id}
                                                                     className={`w-full px-4 py-3 text-left transition flex items-start justify-between gap-3 group ${
-                                                                        isActive
+                                                                        !isUnlocked
+                                                                            ? 'bg-gray-50/50 opacity-60 cursor-not-allowed select-none'
+                                                                            : isActive
                                                                             ? 'bg-indigo-50/90 text-indigo-900 border-l-4 border-indigo-600 font-semibold'
                                                                             : isCompleted
                                                                             ? 'bg-emerald-50/20 hover:bg-emerald-50/40 text-gray-700'
@@ -770,32 +883,52 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                 >
                                                                     <button
                                                                         type="button"
-                                                                        onClick={() => setActiveLessonId(lesson.id)}
-                                                                        className="flex items-start gap-2.5 min-w-0 flex-1 text-left"
+                                                                        disabled={!isUnlocked}
+                                                                        onClick={() => isUnlocked && setActiveLessonId(lesson.id)}
+                                                                        className={`flex items-start gap-2.5 min-w-0 flex-1 text-left ${
+                                                                            !isUnlocked ? 'cursor-not-allowed' : ''
+                                                                        }`}
                                                                     >
-                                                                        <div className={`mt-0.5 p-1 rounded shrink-0 ${
-                                                                            isActive
-                                                                                ? 'bg-indigo-600 text-white'
-                                                                                : isCompleted
-                                                                                ? 'bg-emerald-100 text-emerald-700'
-                                                                                : 'text-gray-400'
-                                                                        }`}>
-                                                                            {isCompleted ? (
+                                                                        <div
+                                                                            className={`mt-0.5 p-1 rounded shrink-0 ${
+                                                                                !isUnlocked
+                                                                                    ? 'bg-gray-200/80 text-gray-400'
+                                                                                    : isActive
+                                                                                    ? 'bg-indigo-600 text-white'
+                                                                                    : isCompleted
+                                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                                    : 'text-gray-400'
+                                                                            }`}
+                                                                        >
+                                                                            {!isUnlocked ? (
+                                                                                <Lock className="h-3 w-3" />
+                                                                            ) : isCompleted ? (
                                                                                 <Check className="h-3 w-3" />
                                                                             ) : (
                                                                                 <Play className="h-3 w-3 fill-current" />
                                                                             )}
                                                                         </div>
                                                                         <div className="min-w-0 space-y-0.5">
-                                                                            <span className={`text-xs line-clamp-2 leading-snug ${
-                                                                                isActive
-                                                                                    ? 'font-bold text-indigo-950'
-                                                                                    : isCompleted
-                                                                                    ? 'font-medium text-gray-800'
-                                                                                    : 'font-medium'
-                                                                            }`}>
-                                                                                {lesson.title}
-                                                                            </span>
+                                                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                                                <span
+                                                                                    className={`text-xs line-clamp-2 leading-snug ${
+                                                                                        !isUnlocked
+                                                                                            ? 'text-gray-400 font-medium'
+                                                                                            : isActive
+                                                                                            ? 'font-bold text-indigo-950'
+                                                                                            : isCompleted
+                                                                                            ? 'font-medium text-gray-800'
+                                                                                            : 'font-medium text-gray-700'
+                                                                                    }`}
+                                                                                >
+                                                                                    {lesson.title}
+                                                                                </span>
+                                                                                {!isUnlocked && (
+                                                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-semibold font-mono bg-gray-200/70 text-gray-500 shrink-0">
+                                                                                        <Lock className="h-2 w-2" /> Locked
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
                                                                             {lesson.duration && (
                                                                                 <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1">
                                                                                     <Clock className="h-2.5 w-2.5" />
@@ -809,22 +942,46 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                         {/* Toggle complete button */}
                                                                         <button
                                                                             type="button"
-                                                                            title={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
-                                                                            disabled={isToggling}
-                                                                            onClick={(e) => handleToggleComplete(lesson.id, e)}
+                                                                            title={
+                                                                                !isUnlocked
+                                                                                    ? 'Complete previous lecture to unlock'
+                                                                                    : isCompleted
+                                                                                    ? 'Mark as incomplete'
+                                                                                    : 'Mark as completed'
+                                                                            }
+                                                                            disabled={isToggling || !isUnlocked}
+                                                                            onClick={(e) => isUnlocked && handleToggleComplete(lesson.id, e)}
                                                                             className={`p-1 rounded-md transition ${
-                                                                                isCompleted
+                                                                                !isUnlocked
+                                                                                    ? 'text-gray-300 cursor-not-allowed opacity-40'
+                                                                                    : isCompleted
                                                                                     ? 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100'
                                                                                     : 'text-gray-300 hover:text-emerald-600 hover:bg-gray-100'
                                                                             }`}
                                                                         >
-                                                                            <CheckCircle2 className={`h-4 w-4 ${isCompleted ? 'text-emerald-600 fill-emerald-100' : 'text-gray-300 group-hover:text-gray-400'}`} />
+                                                                            <CheckCircle2
+                                                                                className={`h-4 w-4 ${
+                                                                                    !isUnlocked
+                                                                                        ? 'text-gray-300'
+                                                                                        : isCompleted
+                                                                                        ? 'text-emerald-600 fill-emerald-100'
+                                                                                        : 'text-gray-300 group-hover:text-gray-400'
+                                                                                }`}
+                                                                            />
                                                                         </button>
 
                                                                         {lesson.resources && lesson.resources.length > 0 && (
                                                                             <span
-                                                                                title={`${lesson.resources.length} study material(s) attached`}
-                                                                                className="p-1 text-emerald-600 bg-emerald-50 rounded shrink-0"
+                                                                                title={
+                                                                                    !isUnlocked
+                                                                                        ? 'Locked study materials'
+                                                                                        : `${lesson.resources.length} study material(s) attached`
+                                                                                }
+                                                                                className={`p-1 rounded shrink-0 ${
+                                                                                    !isUnlocked
+                                                                                        ? 'text-gray-300 bg-gray-100 cursor-not-allowed'
+                                                                                        : 'text-emerald-600 bg-emerald-50'
+                                                                                }`}
                                                                             >
                                                                                 <Download className="h-3 w-3" />
                                                                             </span>

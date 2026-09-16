@@ -370,3 +370,118 @@ test('enrolled courses list provides course progress data to Inertia', function 
         ->where('enrollments.data.0.course.progress.progress_percentage', 100)
     );
 });
+
+test('student cannot complete lecture if previous lecture is not completed', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson1 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson2 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 2',
+        'sort_order' => 2,
+    ]);
+
+    // Attempt to complete lesson 2 directly without completing lesson 1
+    $response = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson2->id,
+    ]));
+
+    $response->assertSessionHas('error');
+    $this->assertDatabaseMissing('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson2->id,
+    ]);
+
+    // Now complete lesson 1 first
+    $response1 = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson1->id,
+    ]));
+
+    $response1->assertSessionHas('success');
+    $this->assertDatabaseHas('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson1->id,
+    ]);
+
+    // Now lesson 2 can be completed
+    $response2 = $this->actingAs($student)->post(route('student.courses.lessons.toggle-complete', [
+        'course' => $this->course->id,
+        'lesson' => $lesson2->id,
+    ]));
+
+    $response2->assertSessionHas('success');
+    $this->assertDatabaseHas('lesson_completions', [
+        'user_id' => $student->id,
+        'lesson_id' => $lesson2->id,
+    ]);
+});
+
+test('course classroom page returns unlockedLessonIds sequentially', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson1 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson2 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 2',
+        'sort_order' => 2,
+    ]);
+
+    $lesson3 = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 3',
+        'sort_order' => 3,
+    ]);
+
+    // When none completed, only lesson1 is unlocked
+    $response = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Courses/Learn')
+        ->where('unlockedLessonIds', [$lesson1->id])
+    );
+
+    // Complete lesson 1
+    $student->completedLessons()->attach($lesson1->id, ['completed_at' => now()]);
+
+    // Now lesson 1 and lesson 2 are unlocked, lesson 3 is locked
+    $response2 = $this->actingAs($student)->get(route('student.courses.learn', $this->course->id));
+    $response2->assertInertia(fn ($page) => $page
+        ->component('Student/Courses/Learn')
+        ->where('unlockedLessonIds', [$lesson1->id, $lesson2->id])
+    );
+});
