@@ -26,7 +26,9 @@ import {
     Upload,
     UploadCloud,
     Video,
-    Radio
+    Radio,
+    Calendar,
+    Users
 } from 'lucide-react';
 
 export default function CourseCreate({ course = null, categories = [], instructors = [] }) {
@@ -93,9 +95,34 @@ export default function CourseCreate({ course = null, categories = [], instructo
         type: course?.type || 'recorded',
         is_featured: Boolean(course?.is_featured),
         status: course?.status || 'draft',
+        batches: Array.isArray(course?.batches) && course.batches.length > 0
+            ? course.batches.map((b) => ({
+                id: b.id,
+                batch_name: b.batch_name || '',
+                time_slot: b.time_slot || '',
+                days: b.days || 'Monday - Friday',
+                capacity: b.capacity ?? '',
+                is_active: b.is_active ?? true,
+            }))
+            : [
+                {
+                    batch_name: 'Morning Batch',
+                    time_slot: '09:00 AM - 10:00 AM',
+                    days: 'Monday - Friday',
+                    capacity: '',
+                    is_active: true,
+                },
+                {
+                    batch_name: 'Afternoon Batch',
+                    time_slot: '02:00 PM - 03:00 PM',
+                    days: 'Monday - Friday',
+                    capacity: '',
+                    is_active: true,
+                },
+            ],
     });
 
-    // Automatically transform curriculum module title, subtitles array, and clean course_includes
+    // Automatically transform curriculum module title, subtitles array, clean course_includes, and batches
     transform((formData) => ({
         ...formData,
         curriculum: Array.isArray(formData.curriculum)
@@ -124,7 +151,49 @@ export default function CourseCreate({ course = null, categories = [], instructo
                 }))
                 .filter((c) => c.title || c.desc)
             : [],
+        batches: formData.type === 'live' && Array.isArray(formData.batches)
+            ? formData.batches
+                .filter((b) => (b.time_slot || '').trim().length > 0)
+                .map((b) => ({
+                    id: b.id || undefined,
+                    batch_name: (b.batch_name || '').trim() || 'Batch 1',
+                    time_slot: (b.time_slot || '').trim(),
+                    days: (b.days || '').trim() || 'Monday - Friday',
+                    capacity: b.capacity ? parseInt(b.capacity, 10) : null,
+                    is_active: b.is_active ?? true,
+                }))
+            : [],
     }));
+
+    const handleAddBatch = (preset = null) => {
+        const nextNum = (data.batches?.length || 0) + 1;
+        setData('batches', [
+            ...(data.batches || []),
+            preset || {
+                batch_name: `Batch ${nextNum}`,
+                time_slot: '09:00 AM - 10:00 AM',
+                days: 'Monday - Friday',
+                capacity: '',
+                is_active: true,
+            },
+        ]);
+    };
+
+    const handleRemoveBatch = (index) => {
+        setData(
+            'batches',
+            (data.batches || []).filter((_, i) => i !== index)
+        );
+    };
+
+    const handleBatchChange = (index, field, value) => {
+        const updated = [...(data.batches || [])];
+        updated[index] = {
+            ...updated[index],
+            [field]: value,
+        };
+        setData('batches', updated);
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
@@ -441,11 +510,11 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             onClick={() => setData('type', 'live')}
                                             className={`p-3 rounded-lg border text-left transition flex items-center gap-2.5 ${
                                                 data.type === 'live'
-                                                    ? 'bg-rose-50/80 border-rose-600 text-rose-900 shadow-2xs'
+                                                    ? 'bg-indigo-50/80 border-indigo-600 text-indigo-900 shadow-2xs'
                                                     : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                                             }`}
                                         >
-                                            <div className={`p-1.5 rounded-md ${data.type === 'live' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                                            <div className={`p-1.5 rounded-md ${data.type === 'live' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                                                 <Radio className="h-4 w-4" />
                                             </div>
                                             <div>
@@ -456,6 +525,154 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                     </div>
                                     <InputError className="mt-1" message={errors.type} />
                                 </div>
+
+                                {/* Live Class Batches / Timings (Only for Live Cohorts) */}
+                                {data.type === 'live' && (
+                                    <div className="p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/60 dark:bg-slate-900/40 space-y-4 transition">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 pb-3">
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                                    <Clock className="h-4 w-4 text-slate-600" />
+                                                    Live Cohort Batches & Timings *
+                                                </h4>
+                                            </div>
+                                            <span className="text-[11px] text-slate-500">
+                                                Students must pick an active batch when enrolling
+                                            </span>
+                                        </div>
+
+                                        {/* Quick Presets */}
+                                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                                            <span className="text-[11px] font-medium text-slate-500 mr-1">Quick Add:</span>
+                                            {[
+                                                { name: 'Morning Batch', time: '09:00 AM - 10:00 AM', days: 'Monday - Friday' },
+                                                { name: 'Afternoon Batch', time: '02:00 PM - 03:00 PM', days: 'Monday - Friday' },
+                                                { name: 'Evening Batch', time: '07:00 PM - 08:00 PM', days: 'Monday - Friday' },
+                                                { name: 'Night Batch', time: '08:00 PM - 09:00 PM', days: 'Monday - Friday' },
+                                                { name: 'Weekend Batch', time: '10:00 AM - 01:00 PM', days: 'Saturday - Sunday' },
+                                            ].map((preset, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => handleAddBatch({
+                                                        batch_name: preset.name,
+                                                        time_slot: preset.time,
+                                                        days: preset.days,
+                                                        capacity: '',
+                                                        is_active: true,
+                                                    })}
+                                                    className="inline-flex items-center gap-1 text-[11px] font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-md px-2.5 py-1 shadow-2xs transition cursor-pointer"
+                                                >
+                                                    <Plus className="h-3 w-3 text-slate-500" />
+                                                    {preset.time}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Batches List */}
+                                        <div className="space-y-3">
+                                            {(data.batches || []).map((batch, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="p-3.5 rounded-lg bg-white border border-slate-200 shadow-2xs space-y-3"
+                                                >
+                                                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs font-semibold text-slate-800">
+                                                                Batch #{index + 1}
+                                                            </span>
+                                                            <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium ${batch.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500'}`}>
+                                                                {batch.is_active ? 'Active' : 'Inactive'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="flex items-center gap-1.5 text-[11px] text-slate-600 cursor-pointer select-none">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={batch.is_active !== false}
+                                                                    onChange={(e) => handleBatchChange(index, 'is_active', e.target.checked)}
+                                                                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 text-xs"
+                                                                />
+                                                                Open for Enrollment
+                                                            </label>
+                                                            {(data.batches || []).length > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleRemoveBatch(index)}
+                                                                    className="p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer ml-1"
+                                                                    title="Remove batch"
+                                                                >
+                                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                                        <div className="sm:col-span-3">
+                                                            <InputLabel value="Batch Name" className="text-[11px]" />
+                                                            <TextInput
+                                                                type="text"
+                                                                value={batch.batch_name}
+                                                                onChange={(e) => handleBatchChange(index, 'batch_name', e.target.value)}
+                                                                placeholder="e.g. Morning Batch"
+                                                                className="mt-0.5 text-xs py-1.5 w-full"
+                                                            />
+                                                        </div>
+
+                                                        <div className="sm:col-span-4">
+                                                            <InputLabel value="Time Slot (e.g. 9-10 AM) *" className="text-[11px]" />
+                                                            <TextInput
+                                                                type="text"
+                                                                value={batch.time_slot}
+                                                                onChange={(e) => handleBatchChange(index, 'time_slot', e.target.value)}
+                                                                placeholder="e.g. 09:00 AM - 10:00 AM"
+                                                                className="mt-0.5 text-xs py-1.5 w-full"
+                                                                required
+                                                            />
+                                                        </div>
+
+                                                        <div className="sm:col-span-3">
+                                                            <InputLabel value="Days / Schedule" className="text-[11px]" />
+                                                            <TextInput
+                                                                type="text"
+                                                                value={batch.days}
+                                                                onChange={(e) => handleBatchChange(index, 'days', e.target.value)}
+                                                                placeholder="e.g. Mon - Fri"
+                                                                className="mt-0.5 text-xs py-1.5 w-full"
+                                                            />
+                                                        </div>
+
+                                                        <div className="sm:col-span-2">
+                                                            <InputLabel value="Seat Limit" className="text-[11px]" />
+                                                            <TextInput
+                                                                type="number"
+                                                                min="1"
+                                                                value={batch.capacity}
+                                                                onChange={(e) => handleBatchChange(index, 'capacity', e.target.value)}
+                                                                placeholder="Unlimited"
+                                                                className="mt-0.5 text-xs py-1.5 w-full"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddBatch()}
+                                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 shadow-2xs transition cursor-pointer"
+                                            >
+                                                <Plus className="h-3.5 w-3.5 text-slate-500" />
+                                                Add Another Batch Slot
+                                            </button>
+                                        </div>
+
+                                        <InputError className="mt-1" message={errors.batches} />
+                                    </div>
+                                )}
 
                                 {/* Description */}
                                 <div>

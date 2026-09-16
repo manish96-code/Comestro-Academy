@@ -14,6 +14,7 @@ class Enrollment extends Model
     protected $fillable = [
         'user_id',
         'course_id',
+        'batch_id',
         'status',
         'enrolled_at',
     ];
@@ -32,6 +33,12 @@ class Enrollment extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    // Batch relationship (for live courses)
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(CourseBatch::class, 'batch_id');
     }
 
     // Immutable Invoice relationship

@@ -31,7 +31,9 @@ import {
     Sparkles,
     CheckCircle2,
     Compass,
-    FileText
+    FileText,
+    Radio,
+    Calendar
 } from 'lucide-react';
 
 const getCourseImage = (c) => {
@@ -51,37 +53,48 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
 
-    // Theme synchronization (Default to dark)
+    const isLiveCourse = course?.type === 'live';
+    const availableBatches = useMemo(() => {
+        if (Array.isArray(course?.batches) && course.batches.length > 0) {
+            return course.batches.filter((b) => b.is_active !== false);
+        }
+        if (Array.isArray(course?.active_batches) && course.active_batches.length > 0) {
+            return course.active_batches;
+        }
+        return [];
+    }, [course]);
+
+    const [selectedBatchId, setSelectedBatchId] = useState(
+        availableBatches.length > 0 ? availableBatches[0].id : null
+    );
+
+    useEffect(() => {
+        if (availableBatches.length > 0 && !selectedBatchId) {
+            setSelectedBatchId(availableBatches[0].id);
+        }
+    }, [availableBatches, selectedBatchId]);
+
     const [theme, setTheme] = useState(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('theme');
-            if (saved === 'light' || saved === 'dark') return saved;
+            return localStorage.getItem('site_theme') || 'dark';
         }
         return 'dark';
     });
-    const isDark = !user && theme === 'dark';
 
     useEffect(() => {
-        if (!user) {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.documentElement.style.colorScheme = 'dark';
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.documentElement.style.colorScheme = 'light';
-            }
-            try {
-                localStorage.setItem('theme', theme);
-            } catch (e) {}
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
         }
+        localStorage.setItem('site_theme', theme);
     }, [theme, user]);
 
     const toggleTheme = () => {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
+
+    const isDark = !user && theme === 'dark';
 
     const [enrolling, setEnrolling] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -143,10 +156,21 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             return;
         }
 
+        if (isLiveCourse && availableBatches.length > 0 && !selectedBatchId) {
+            toast.error('Please select your preferred live batch timing to proceed.');
+            const batchEl = document.getElementById('batch-selection-section');
+            if (batchEl) {
+                batchEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
         setEnrolling(true);
 
         try {
-            const { data } = await axios.post(route('courses.payment.create-order', course.id));
+            const { data } = await axios.post(route('courses.payment.create-order', course.id), {
+                batch_id: selectedBatchId,
+            });
 
             if (data.free) {
                 router.visit(data.redirect_url || route('student.courses.enrolled'));
@@ -176,6 +200,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 notes: {
                     course_id: String(data.course.id),
                     user_id: String(user.id),
+                    batch_id: String(selectedBatchId || ''),
                 },
                 theme: {
                     color: '#2563eb',
@@ -193,6 +218,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
+                            batch_id: selectedBatchId,
                         },
                         {
                             preserveScroll: true,
@@ -690,7 +716,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             </div>
 
                             {/* Inline Checkout & Action Block */}
-                            <div className={`pt-3 border-t flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 ${
+                            <div className={`pt-4 border-t space-y-4 ${
                                 isDark ? 'border-slate-800/80' : 'border-slate-200'
                             }`}>
                                 <div>
@@ -722,7 +748,60 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
+                                {/* Enrolled Batch Info (if already enrolled) */}
+                                {isEnrolled && course.enrolled_batch && (
+                                    <div className={`p-3 rounded-xl border flex items-center gap-2.5 max-w-md ${
+                                        isDark ? 'bg-emerald-950/30 border-emerald-800/80 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                                    }`}>
+                                        <Clock className="h-4 w-4 text-emerald-500 shrink-0" />
+                                        <div className="text-xs">
+                                            <span className="font-semibold block">Enrolled Live Batch: {course.enrolled_batch.time_slot}</span>
+                                            <span className="text-[11px] opacity-80">{course.enrolled_batch.batch_name} {course.enrolled_batch.days ? `• ${course.enrolled_batch.days}` : ''}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Live Cohort Batch Selection */}
+                                {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
+                                    <div id="batch-selection-section" className="space-y-1.5 max-w-md">
+                                        <label
+                                            htmlFor="batch-select"
+                                            className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                                                isDark ? 'text-sky-400' : 'text-slate-700'
+                                            }`}
+                                        >
+                                            <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                                            Select Batch Timing *
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                id="batch-select"
+                                                value={selectedBatchId || ''}
+                                                onChange={(e) => setSelectedBatchId(Number(e.target.value))}
+                                                className={`w-full text-xs sm:text-sm font-semibold rounded-xl border py-2.5 pl-3 pr-9 transition cursor-pointer appearance-none ${
+                                                    isDark
+                                                        ? 'bg-slate-900 border-slate-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                                                        : 'bg-white border-slate-300 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 shadow-2xs'
+                                                }`}
+                                            >
+                                                {availableBatches.map((b) => (
+                                                    <option
+                                                        key={b.id}
+                                                        value={b.id}
+                                                        className="text-slate-900 bg-white dark:bg-slate-900 dark:text-white py-1"
+                                                    >
+                                                        {b.batch_name ? `${b.batch_name}: ` : ''}{b.time_slot}{b.days ? ` (${b.days})` : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                                <ChevronDown className="h-4 w-4" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-3 pt-1">
                                     {isEnrolled ? (
                                         <Link
                                             href={route('student.courses.learn', course.id)}
@@ -1210,6 +1289,15 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         Join cohorts designed for real software engineering careers with hands-on capstones, verified certificates, and senior mentorship.
                     </p>
 
+                    {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
+                        <div className="flex items-center justify-center gap-2 text-xs pt-1">
+                            <span className="text-slate-500 dark:text-slate-400">Selected Live Batch:</span>
+                            <span className="font-bold text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900/60 rounded-md px-2 py-0.5">
+                                {availableBatches.find((b) => b.id === selectedBatchId)?.time_slot || availableBatches[0]?.time_slot}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                         {isEnrolled ? (
                             <Link
@@ -1316,7 +1404,14 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 isDark ? 'border-slate-800 bg-[#090d16]/95' : 'border-slate-200 bg-white/95'
             }`}>
                 <div>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider">Tuition</span>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Tuition</span>
+                        {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
+                            <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                                {availableBatches.find((b) => b.id === selectedBatchId)?.time_slot || availableBatches[0]?.time_slot}
+                            </span>
+                        )}
+                    </div>
                     <div className="flex items-baseline gap-1.5">
                         <span className="text-lg font-bold text-slate-900 dark:text-white">
                             {formattedPrice}

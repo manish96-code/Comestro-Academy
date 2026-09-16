@@ -124,6 +124,18 @@ export default function EnrolledCourses({ enrollments }) {
                                                         <Calendar className="h-3 w-3" />
                                                         <span>Enrolled on {enrolledDate}</span>
                                                     </div>
+
+                                                    {enrollment.batch && (
+                                                        <div className="flex items-center justify-between gap-1 text-[11px] text-slate-700 bg-slate-50 border border-slate-200 rounded-md px-2 py-1 font-mono">
+                                                            <span className="flex items-center gap-1 font-semibold">
+                                                                <Clock className="h-3 w-3 text-slate-500 shrink-0" />
+                                                                {enrollment.batch.time_slot}
+                                                            </span>
+                                                            <span className="text-slate-500 text-[10px]">
+                                                                {enrollment.batch.batch_name}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* Course Completion Progress Bar */}

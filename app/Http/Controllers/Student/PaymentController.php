@@ -12,6 +12,7 @@ use App\Services\RazorpayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class PaymentController extends Controller
@@ -45,6 +46,20 @@ class PaymentController extends Controller
             ], 409);
         }
 
+        $batchRules = ['nullable', 'integer', Rule::exists('course_batches', 'id')->where('course_id', $course->id)->where('is_active', true)];
+        if ($course->type === 'live') {
+            $batchRules = ['required', 'integer', Rule::exists('course_batches', 'id')->where('course_id', $course->id)->where('is_active', true)];
+        }
+
+        $validated = $request->validate([
+            'batch_id' => $batchRules,
+        ], [
+            'batch_id.required' => 'Please select a batch timing to enroll in this live cohort.',
+            'batch_id.exists' => 'The selected batch timing is invalid or no longer available.',
+        ]);
+
+        $batchId = $validated['batch_id'] ?? null;
+
         // Determine effective payable price
         $price = (float) $course->price;
         $discountPrice = $course->discount_price !== null ? (float) $course->discount_price : null;
@@ -55,8 +70,12 @@ class PaymentController extends Controller
         if ($payableAmount <= 0) {
             $enrollment = Enrollment::firstOrCreate(
                 ['user_id' => $user->id, 'course_id' => $course->id],
-                ['status' => 'active', 'enrolled_at' => now()]
+                ['batch_id' => $batchId, 'status' => 'active', 'enrolled_at' => now()]
             );
+
+            if ($batchId && ! $enrollment->batch_id) {
+                $enrollment->update(['batch_id' => $batchId]);
+            }
 
             Invoice::createSnapshot($enrollment);
 
@@ -83,6 +102,7 @@ class PaymentController extends Controller
                     'course_id' => (string) $course->id,
                     'course_title' => mb_substr($course->title, 0, 40),
                     'user_id' => (string) $user->id,
+                    'batch_id' => (string) ($batchId ?? ''),
                 ]
             );
 
@@ -102,6 +122,7 @@ class PaymentController extends Controller
                 'order_id' => $order['id'],
                 'amount' => $order['amount'],
                 'currency' => 'INR',
+                'batch_id' => $batchId,
                 'course' => [
                     'id' => $course->id,
                     'title' => $course->title,
@@ -136,11 +157,13 @@ class PaymentController extends Controller
             'razorpay_order_id' => ['required', 'string'],
             'razorpay_payment_id' => ['required', 'string'],
             'razorpay_signature' => ['required', 'string'],
+            'batch_id' => ['nullable', 'integer'],
         ]);
 
         $orderId = $validated['razorpay_order_id'];
         $paymentId = $validated['razorpay_payment_id'];
         $signature = $validated['razorpay_signature'];
+        $batchId = $validated['batch_id'] ?? null;
 
         // Retrieve recorded pending payment
         $payment = Payment::where('razorpay_order_id', $orderId)
@@ -192,8 +215,12 @@ class PaymentController extends Controller
         // Activate course enrollment
         $enrollment = Enrollment::firstOrCreate(
             ['user_id' => $user->id, 'course_id' => $course->id],
-            ['status' => 'active', 'enrolled_at' => now()]
+            ['batch_id' => $batchId, 'status' => 'active', 'enrolled_at' => now()]
         );
+
+        if ($batchId && ! $enrollment->batch_id) {
+            $enrollment->update(['batch_id' => $batchId]);
+        }
 
         Invoice::createSnapshot($enrollment, $payment);
 

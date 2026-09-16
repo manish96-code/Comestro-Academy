@@ -13,6 +13,7 @@ use App\Models\Invoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -30,6 +31,26 @@ class StudentController extends Controller
             ->take(3)
             ->get();
 
+        $completedCoursesCount = 0;
+        foreach ($user->enrollments()->with('course')->get() as $enrollment) {
+            if ($enrollment->course) {
+                $progress = $enrollment->course->getProgressFor($user);
+                if ($progress['is_completed']) {
+                    $completedCoursesCount++;
+                }
+            }
+        }
+
+        // Calculate continuous learning streak
+        $activeDays = $user->completedLessons()
+            ->selectRaw('DATE(completed_at) as date')
+            ->distinct()
+            ->orderBy('date', 'desc')
+            ->pluck('date')
+            ->toArray();
+
+        $learningStreakDays = count($activeDays);
+
         return Inertia::render('Student/Dashboard', [
             'student' => $user->only([
                 'id',
@@ -43,36 +64,39 @@ class StudentController extends Controller
             ]),
             'enrolledCoursesCount' => $enrolledCoursesCount,
             'recentEnrollments' => $recentEnrollments,
+            'completedCoursesCount' => $completedCoursesCount,
+            'learningStreakDays' => $learningStreakDays,
         ]);
     }
 
     // Display list of published courses for students to browse and enroll
     public function courses(Request $request): Response
     {
-        $user = $request->user();
-        $search = $request->query('search');
-        $categoryId = $request->query('category_id');
+        $categories = Category::where('status', 'active')->get();
 
-        $query = Course::query()
-            ->where('status', 'published')
-            ->with(['category', 'instructor.user']);
+        $query = Course::where('status', 'published')
+            ->with(['category', 'instructor.user'])
+            ->withCount(['enrollments' => function ($q) {
+                $q->where('status', 'active');
+            }]);
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('instructor.user', function ($iq) use ($search) {
-                        $iq->where('name', 'like', "%{$search}%");
-                    });
+        if ($request->filled('category')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
             });
         }
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
 
         $courses = $query->latest()->paginate(9)->withQueryString();
 
+        $user = $request->user();
         $enrolledCourseIds = $user ? $user->enrollments()->pluck('course_id')->toArray() : [];
 
         $courses->through(function ($course) use ($enrolledCourseIds) {
@@ -81,19 +105,14 @@ class StudentController extends Controller
             return $course;
         });
 
-        $categories = Category::where('status', 'active')->get(['id', 'name']);
-
         return Inertia::render('Student/Courses/Index', [
             'courses' => $courses,
             'categories' => $categories,
-            'filters' => [
-                'search' => $search,
-                'category_id' => $categoryId,
-            ],
+            'filters' => $request->only(['search', 'category']),
         ]);
     }
 
-    // Display single course view / detail page (accessible with or without login)
+    // Display detailed single course overview page with syllabus, capstones and reviews
     public function showCourse(Request $request, string $slug): Response
     {
         $user = $request->user();
@@ -103,6 +122,7 @@ class StudentController extends Controller
             ->with([
                 'category',
                 'instructor.user',
+                'activeBatches',
                 'modules' => fn ($q) => $q->orderBy('sort_order')->with([
                     'lessons' => fn ($lq) => $lq->select('id', 'module_id', 'title', 'sort_order')->orderBy('sort_order'),
                 ]),
@@ -112,6 +132,8 @@ class StudentController extends Controller
             }])
             ->firstOrFail();
 
+        $course->batches = $course->activeBatches;
+
         // If course is draft or archived, only admin or instructor can view
         if ($course->status !== 'published') {
             if (! $user || (! $user->isAdmin() && ! $user->isInstructor())) {
@@ -120,14 +142,18 @@ class StudentController extends Controller
         }
 
         $isEnrolled = false;
+        $userEnrollment = null;
         if ($user) {
-            $isEnrolled = $user->enrollments()
+            $userEnrollment = $user->enrollments()
                 ->where('course_id', $course->id)
                 ->where('status', 'active')
-                ->exists();
+                ->with('batch')
+                ->first();
+            $isEnrolled = (bool) $userEnrollment;
         }
 
         $course->is_enrolled = $isEnrolled;
+        $course->enrolled_batch = $userEnrollment?->batch;
 
         if ($course->instructor) {
             $course->instructor->courses_count = $course->instructor->courses()->where('status', 'published')->count();
@@ -188,8 +214,11 @@ class StudentController extends Controller
             ->pluck('course_lessons.id')
             ->toArray() : [];
 
+        $enrollment = $user ? $user->enrollments()->where('course_id', $course->id)->with('batch')->first() : null;
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
+            'enrollment' => $enrollment,
             'progress' => $progress,
             'completedLessonIds' => $completedLessonIds,
         ]);
@@ -201,7 +230,7 @@ class StudentController extends Controller
         $user = $request->user();
 
         $enrollments = $user->enrollments()
-            ->with(['course.category', 'course.instructor.user'])
+            ->with(['course.category', 'course.instructor.user', 'batch'])
             ->latest('enrolled_at')
             ->paginate(9);
 
@@ -266,9 +295,22 @@ class StudentController extends Controller
             return redirect()->back()->with('error', 'You are already enrolled in this course.');
         }
 
+        $batchRules = ['nullable', 'integer', Rule::exists('course_batches', 'id')->where('course_id', $course->id)->where('is_active', true)];
+        if ($course->type === 'live') {
+            $batchRules = ['required', 'integer', Rule::exists('course_batches', 'id')->where('course_id', $course->id)->where('is_active', true)];
+        }
+
+        $validated = $request->validate([
+            'batch_id' => $batchRules,
+        ], [
+            'batch_id.required' => 'Please select a batch timing to enroll in this live cohort.',
+            'batch_id.exists' => 'The selected batch timing is invalid or no longer available.',
+        ]);
+
         $enrollment = Enrollment::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
+            'batch_id' => $validated['batch_id'] ?? null,
             'status' => 'active',
             'enrolled_at' => now(),
         ]);

@@ -304,9 +304,14 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                                                 >
                                                                     {course?.title || 'Unknown Course'}
                                                                 </Link>
-                                                                <p className="text-[11px] text-slate-400 font-mono mt-0.5">
-                                                                    {course?.duration || 'Self-Paced'}
-                                                                </p>
+                                                                <div className="text-[11px] text-slate-400 font-mono mt-0.5 flex flex-wrap items-center gap-1.5">
+                                                                    <span>{course?.duration || 'Self-Paced'}</span>
+                                                                    {enrollment.batch && (
+                                                                        <span className="text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded font-semibold text-[10px]">
+                                                                            Batch: {enrollment.batch.time_slot} ({enrollment.batch.batch_name})
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>

@@ -100,6 +100,18 @@ class Course extends Model
         return $this->hasMany(LiveClass::class)->orderBy('start_time');
     }
 
+    // Batches relationship (for live courses)
+    public function batches(): HasMany
+    {
+        return $this->hasMany(CourseBatch::class)->orderBy('id');
+    }
+
+    // Active Batches relationship
+    public function activeBatches(): HasMany
+    {
+        return $this->hasMany(CourseBatch::class)->where('is_active', true)->orderBy('id');
+    }
+
     // Progress stats for a given user
     public function getProgressFor(?User $user): array
     {

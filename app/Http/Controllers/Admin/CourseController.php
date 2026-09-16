@@ -120,7 +120,18 @@ class CourseController extends Controller
             'type' => ['nullable', 'in:live,recorded'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
+            'batches' => ['nullable', 'array'],
+            'batches.*.id' => ['nullable', 'integer'],
+            'batches.*.batch_name' => ['required_with:batches', 'string', 'max:255'],
+            'batches.*.time_slot' => ['required_with:batches', 'string', 'max:255'],
+            'batches.*.days' => ['nullable', 'string', 'max:255'],
+            'batches.*.capacity' => ['nullable', 'integer', 'min:1'],
+            'batches.*.is_active' => ['nullable', 'boolean'],
         ]);
+
+        if (($validated['type'] ?? 'recorded') === 'live' && empty($validated['batches'])) {
+            return back()->withErrors(['batches' => 'Live courses require at least one batch timing (e.g. 09:00 AM - 10:00 AM).'])->withInput();
+        }
 
         $thumbnailUrl = $validated['thumbnail'] ?? null;
 
@@ -144,7 +155,7 @@ class CourseController extends Controller
 
         $isFeatured = $validated['status'] === 'published' && ($validated['is_featured'] ?? false);
 
-        Course::create([
+        $course = Course::create([
             'category_id' => $validated['category_id'],
             'instructor_id' => $validated['instructor_id'] ?? null,
             'title' => $validated['title'],
@@ -163,13 +174,27 @@ class CourseController extends Controller
             'status' => $validated['status'],
         ]);
 
+        if (! empty($validated['batches'])) {
+            foreach ($validated['batches'] as $b) {
+                if (! empty($b['time_slot'])) {
+                    $course->batches()->create([
+                        'batch_name' => ! empty($b['batch_name']) ? $b['batch_name'] : 'Batch 1',
+                        'time_slot' => $b['time_slot'],
+                        'days' => $b['days'] ?? 'Monday - Friday',
+                        'capacity' => ! empty($b['capacity']) ? (int) $b['capacity'] : null,
+                        'is_active' => isset($b['is_active']) ? (bool) $b['is_active'] : true,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('admin.courses.index')->with('success', 'Course created successfully.');
     }
 
     // Display / edit form for a single course
     public function show(Course $course): Response
     {
-        $course->load(['category', 'instructor.user']);
+        $course->load(['category', 'instructor.user', 'batches']);
         $categories = Category::where('status', 'active')->get(['id', 'name']);
 
         $instructors = Instructor::whereHas('user', function ($q) {
@@ -222,7 +247,18 @@ class CourseController extends Controller
             'type' => ['nullable', 'in:live,recorded'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:draft,published,archived'],
+            'batches' => ['nullable', 'array'],
+            'batches.*.id' => ['nullable', 'integer'],
+            'batches.*.batch_name' => ['required_with:batches', 'string', 'max:255'],
+            'batches.*.time_slot' => ['required_with:batches', 'string', 'max:255'],
+            'batches.*.days' => ['nullable', 'string', 'max:255'],
+            'batches.*.capacity' => ['nullable', 'integer', 'min:1'],
+            'batches.*.is_active' => ['nullable', 'boolean'],
         ]);
+
+        if (($validated['type'] ?? 'recorded') === 'live' && empty($validated['batches'])) {
+            return back()->withErrors(['batches' => 'Live courses require at least one batch timing (e.g. 09:00 AM - 10:00 AM).'])->withInput();
+        }
 
         $thumbnailUrl = $validated['thumbnail'] ?? $course->thumbnail;
 
@@ -264,6 +300,42 @@ class CourseController extends Controller
             'is_featured' => $isFeatured,
             'status' => $validated['status'],
         ]);
+
+        // Sync batches
+        if (isset($validated['batches'])) {
+            $submittedBatchIds = [];
+            foreach ($validated['batches'] as $b) {
+                if (empty($b['time_slot'])) {
+                    continue;
+                }
+                if (! empty($b['id'])) {
+                    $existing = $course->batches()->where('id', $b['id'])->first();
+                    if ($existing) {
+                        $existing->update([
+                            'batch_name' => ! empty($b['batch_name']) ? $b['batch_name'] : 'Batch 1',
+                            'time_slot' => $b['time_slot'],
+                            'days' => $b['days'] ?? 'Monday - Friday',
+                            'capacity' => ! empty($b['capacity']) ? (int) $b['capacity'] : null,
+                            'is_active' => isset($b['is_active']) ? (bool) $b['is_active'] : true,
+                        ]);
+                        $submittedBatchIds[] = $existing->id;
+
+                        continue;
+                    }
+                }
+
+                $created = $course->batches()->create([
+                    'batch_name' => ! empty($b['batch_name']) ? $b['batch_name'] : 'Batch 1',
+                    'time_slot' => $b['time_slot'],
+                    'days' => $b['days'] ?? 'Monday - Friday',
+                    'capacity' => ! empty($b['capacity']) ? (int) $b['capacity'] : null,
+                    'is_active' => isset($b['is_active']) ? (bool) $b['is_active'] : true,
+                ]);
+                $submittedBatchIds[] = $created->id;
+            }
+
+            $course->batches()->whereNotIn('id', $submittedBatchIds)->delete();
+        }
 
         return redirect()->route('admin.courses.index')->with('success', 'Course details updated successfully.');
     }

@@ -67,10 +67,6 @@ class Invoice extends Model
         return $this->belongsTo(Payment::class);
     }
 
-    /**
-     * Create an immutable snapshot invoice for an enrollment.
-     * If an invoice already exists for this enrollment, returns existing invoice to guarantee immutability.
-     */
     public static function createSnapshot(Enrollment $enrollment, ?Payment $payment = null): self
     {
         $existing = self::where('enrollment_id', $enrollment->id)->first();
@@ -82,6 +78,7 @@ class Invoice extends Model
             'user.studentProfile',
             'course.category',
             'course.instructor.user',
+            'batch',
         ]);
 
         if (! $payment) {
@@ -94,6 +91,7 @@ class Invoice extends Model
 
         $user = $enrollment->user;
         $course = $enrollment->course;
+        $batch = $enrollment->batch;
         $profile = $user?->studentProfile;
 
         $enrolledDate = $enrollment->enrolled_at ?? $enrollment->created_at ?? now();
@@ -131,6 +129,12 @@ class Invoice extends Model
                 'instructor_name' => $course?->instructor?->user?->name ?? 'Comestro Faculty Team',
                 'duration' => $course?->duration ?? 'Self-paced',
                 'type' => $course?->type ?? 'recorded',
+                'batch' => $batch ? [
+                    'id' => $batch->id,
+                    'batch_name' => $batch->batch_name,
+                    'time_slot' => $batch->time_slot,
+                    'days' => $batch->days,
+                ] : null,
                 'original_price' => $originalPrice,
                 'discount_price' => $discountPrice,
             ],

@@ -75,6 +75,7 @@ class AdminController extends Controller
         $student->load([
             'studentProfile',
             'enrollments.course.category',
+            'enrollments.batch',
         ]);
 
         $enrolledCourseIds = $student->enrollments->pluck('course_id');

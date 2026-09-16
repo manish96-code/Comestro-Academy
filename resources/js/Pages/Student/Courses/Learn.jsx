@@ -20,7 +20,7 @@ import {
     Check
 } from 'lucide-react';
 
-export default function CourseLearn({ course, progress = {}, completedLessonIds = [] }) {
+export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [] }) {
     const modules = course.modules || [];
 
     // All lessons flat list
@@ -292,9 +292,17 @@ export default function CourseLearn({ course, progress = {}, completedLessonIds 
                                     {course.title}
                                 </span>
                             </div>
-                            <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate">
-                                {course.title}
-                            </h1>
+                            <div className="flex flex-wrap items-center gap-2.5">
+                                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate">
+                                    {course.title}
+                                </h1>
+                                {enrollment?.batch && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs font-mono">
+                                        <Clock className="h-3 w-3 text-slate-500" />
+                                        Batch: {enrollment.batch.time_slot} ({enrollment.batch.batch_name})
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
 

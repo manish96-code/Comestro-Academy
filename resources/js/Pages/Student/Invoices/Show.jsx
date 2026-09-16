@@ -168,6 +168,14 @@ export default function InvoiceShow({ invoice, enrollmentId }) {
                                                     </>
                                                 )}
                                             </div>
+                                            {invoice.course.batch && (
+                                                <div className="pt-0.5">
+                                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded font-mono">
+                                                        <span>Live Batch: {invoice.course.batch.time_slot}</span>
+                                                        <span className="text-slate-500 font-normal">({invoice.course.batch.batch_name})</span>
+                                                    </span>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="py-4 px-3 text-center align-top whitespace-nowrap">
                                             <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-slate-100 text-slate-600 font-mono">
