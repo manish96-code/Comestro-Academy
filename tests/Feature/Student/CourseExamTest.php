@@ -45,6 +45,7 @@ test('admin can create and update exam settings', function () {
         'title' => 'Certification Exam',
         'description' => 'Test your knowledge',
         'duration_minutes' => 45,
+        'marks_per_question' => 2,
         'passing_percentage' => 75,
         'is_published' => true,
     ]);
@@ -54,6 +55,7 @@ test('admin can create and update exam settings', function () {
         'course_id' => $this->course->id,
         'title' => 'Certification Exam',
         'duration_minutes' => 45,
+        'marks_per_question' => 2,
         'passing_percentage' => 75,
     ]);
 });
@@ -63,9 +65,6 @@ test('admin can add question with options and delete it', function () {
 
     $response = $this->actingAs($admin)->post(route('admin.courses.exam.questions.store', $this->course->id), [
         'question_text' => 'What is React?',
-        'question_type' => 'single_choice',
-        'points' => 2,
-        'explanation' => 'React is a JavaScript UI library.',
         'options' => [
             ['option_text' => 'A UI Library', 'is_correct' => true],
             ['option_text' => 'A Database', 'is_correct' => false],
@@ -75,7 +74,6 @@ test('admin can add question with options and delete it', function () {
     $response->assertSessionHas('success');
     $this->assertDatabaseHas('exam_questions', [
         'question_text' => 'What is React?',
-        'points' => 2,
     ]);
 
     $question = ExamQuestion::where('question_text', 'What is React?')->first();
@@ -168,7 +166,7 @@ test('student with 100% course completion can access exam', function () {
     $question = $exam->questions()->create([
         'question_text' => 'Sample Question',
         'question_type' => 'single_choice',
-        'points' => 1,
+        'marks' => 1,
         'sort_order' => 1,
     ]);
 
@@ -224,7 +222,7 @@ test('student can submit exam once and score is graded accurately', function () 
     $q1 = $exam->questions()->create([
         'question_text' => 'Question 1',
         'question_type' => 'single_choice',
-        'points' => 5,
+        'marks' => 5,
         'sort_order' => 1,
     ]);
     $q1Correct = $q1->options()->create(['option_text' => 'Correct 1', 'is_correct' => true]);
@@ -233,13 +231,13 @@ test('student can submit exam once and score is graded accurately', function () 
     $q2 = $exam->questions()->create([
         'question_text' => 'Question 2',
         'question_type' => 'single_choice',
-        'points' => 5,
+        'marks' => 5,
         'sort_order' => 2,
     ]);
     $q2Correct = $q2->options()->create(['option_text' => 'Correct 2', 'is_correct' => true]);
     $q2Wrong = $q2->options()->create(['option_text' => 'Wrong 2', 'is_correct' => false]);
 
-    // Submit: answer Q1 correctly and Q2 incorrectly (5/10 points = 50% => Passed!)
+    // Submit: answer Q1 correctly and Q2 incorrectly (5/10 marks = 50% => Passed!)
     $response = $this->actingAs($student)->post(route('student.courses.exam.submit', $this->course->id), [
         'answers' => [
             $q1->id => [$q1Correct->id],
@@ -254,7 +252,7 @@ test('student can submit exam once and score is graded accurately', function () 
         'course_exam_id' => $exam->id,
         'user_id' => $student->id,
         'score' => 5,
-        'total_points' => 10,
+        'total_marks' => 10,
         'percentage' => 50,
         'is_passed' => true,
     ]);

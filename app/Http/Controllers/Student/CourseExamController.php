@@ -65,7 +65,7 @@ class CourseExamController extends Controller
                     'id' => $q->id,
                     'question_text' => $q->question_text,
                     'question_type' => $q->question_type,
-                    'points' => $q->points,
+                    'marks' => $q->marks,
                     'sort_order' => $q->sort_order,
                     'options' => $q->options->map(fn ($o) => [
                         'id' => $o->id,
@@ -81,7 +81,7 @@ class CourseExamController extends Controller
                     'id' => $q->id,
                     'question_text' => $q->question_text,
                     'question_type' => $q->question_type,
-                    'points' => $q->points,
+                    'marks' => $q->marks,
                     'explanation' => $q->explanation,
                     'sort_order' => $q->sort_order,
                     'options' => $q->options->map(fn ($o) => [
@@ -101,6 +101,7 @@ class CourseExamController extends Controller
                 'title' => $exam->title,
                 'description' => $exam->description,
                 'duration_minutes' => $exam->duration_minutes,
+                'marks_per_question' => $exam->marks_per_question ?? 1,
                 'passing_percentage' => $exam->passing_percentage,
                 'total_questions' => $exam->questions->count(),
             ],
@@ -155,11 +156,12 @@ class CourseExamController extends Controller
         ]);
 
         $submittedAnswers = $validated['answers'];
-        $totalPoints = 0;
+        $totalMarks = 0;
         $earnedScore = 0;
 
         foreach ($exam->questions as $question) {
-            $totalPoints += $question->points;
+            $questionMarks = (int) ($question->marks ?? 1);
+            $totalMarks += $questionMarks;
             $correctOptionIds = $question->options->where('is_correct', true)->pluck('id')->sort()->values()->toArray();
 
             $userSelected = isset($submittedAnswers[$question->id])
@@ -169,11 +171,11 @@ class CourseExamController extends Controller
 
             // Compare selected options against correct options
             if ($userSelected === $correctOptionIds && ! empty($correctOptionIds)) {
-                $earnedScore += $question->points;
+                $earnedScore += $questionMarks;
             }
         }
 
-        $percentage = $totalPoints > 0 ? (int) round(($earnedScore / $totalPoints) * 100) : 0;
+        $percentage = $totalMarks > 0 ? (int) round(($earnedScore / $totalMarks) * 100) : 0;
         $isPassed = $percentage >= $exam->passing_percentage;
 
         ExamSubmission::create([
@@ -182,7 +184,7 @@ class CourseExamController extends Controller
             'started_at' => $validated['started_at'] ?? now(),
             'submitted_at' => now(),
             'score' => $earnedScore,
-            'total_points' => $totalPoints,
+            'total_marks' => $totalMarks,
             'percentage' => $percentage,
             'is_passed' => $isPassed,
             'answers' => $submittedAnswers,

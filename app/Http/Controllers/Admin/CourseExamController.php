@@ -62,14 +62,18 @@ class CourseExamController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'duration_minutes' => ['required', 'integer', 'min:0', 'max:360'],
+            'marks_per_question' => ['required', 'integer', 'min:1', 'max:50'],
             'passing_percentage' => ['required', 'integer', 'min:1', 'max:100'],
             'is_published' => ['required', 'boolean'],
         ]);
 
-        $course->exam()->updateOrCreate(
+        $exam = $course->exam()->updateOrCreate(
             ['course_id' => $course->id],
             $validated
         );
+
+        // Keep all questions marks in sync with exam marks_per_question
+        $exam->questions()->update(['marks' => $validated['marks_per_question']]);
 
         return back()->with('success', 'Course exam settings saved successfully.');
     }
@@ -79,9 +83,6 @@ class CourseExamController extends Controller
     {
         $validated = $request->validate([
             'question_text' => ['required', 'string'],
-            'question_type' => ['required', 'in:single_choice,multiple_choice,true_false'],
-            'points' => ['required', 'integer', 'min:1', 'max:100'],
-            'explanation' => ['nullable', 'string', 'max:2000'],
             'options' => ['required', 'array', 'min:2'],
             'options.*.option_text' => ['required', 'string', 'max:1000'],
             'options.*.is_correct' => ['required', 'boolean'],
@@ -94,7 +95,8 @@ class CourseExamController extends Controller
                 'title' => "Final Assessment: {$course->title}",
                 'description' => 'Answer all questions carefully to earn your certification.',
                 'duration_minutes' => 30,
-                'passing_percentage' => 70,
+                'marks_per_question' => 1,
+                'passing_percentage' => 60,
                 'is_published' => true,
             ]
         );
@@ -104,9 +106,9 @@ class CourseExamController extends Controller
 
         $question = $exam->questions()->create([
             'question_text' => $validated['question_text'],
-            'question_type' => $validated['question_type'],
-            'points' => $validated['points'],
-            'explanation' => $validated['explanation'] ?? null,
+            'question_type' => 'single_choice',
+            'marks' => $exam->marks_per_question ?? 1,
+            'explanation' => null,
             'sort_order' => $nextOrder,
         ]);
 

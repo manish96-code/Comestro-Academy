@@ -16,11 +16,8 @@ import {
     Save,
     FileCheck,
     Layers,
-    AlertCircle,
-    CheckSquare,
     HelpCircle,
     UserCheck,
-    Calendar
 } from 'lucide-react';
 
 export default function CourseExamPage({ course, exam }) {
@@ -37,6 +34,7 @@ export default function CourseExamPage({ course, exam }) {
         title: exam?.title || `Final Assessment: ${course.title}`,
         description: exam?.description || 'Complete all questions to verify your learning and earn your course certification.',
         duration_minutes: exam?.duration_minutes ?? 30,
+        marks_per_question: exam?.marks_per_question ?? 1,
         passing_percentage: exam?.passing_percentage ?? 70,
         is_published: exam?.is_published ?? true,
     });
@@ -48,8 +46,7 @@ export default function CourseExamPage({ course, exam }) {
         });
     };
 
-    // Form for adding a Question
-    const [questionType, setQuestionType] = useState('single_choice');
+    // Form for adding a Question (standard single-choice with options)
     const [options, setOptions] = useState([
         { option_text: '', is_correct: true },
         { option_text: '', is_correct: false },
@@ -60,33 +57,13 @@ export default function CourseExamPage({ course, exam }) {
     const {
         data: qData,
         setData: setQData,
-        post: postQuestion,
         processing: qProcessing,
         errors: qErrors,
         reset: resetQuestion,
         clearErrors: clearQErrors,
     } = useForm({
         question_text: '',
-        question_type: 'single_choice',
-        points: 1,
-        explanation: '',
-        options: [],
     });
-
-    const handleTypeChange = (type) => {
-        setQuestionType(type);
-        if (type === 'true_false') {
-            setOptions([
-                { option_text: 'True', is_correct: true },
-                { option_text: 'False', is_correct: false },
-            ]);
-        } else if (options.length < 2) {
-            setOptions([
-                { option_text: '', is_correct: true },
-                { option_text: '', is_correct: false },
-            ]);
-        }
-    };
 
     const handleOptionTextChange = (index, text) => {
         const next = [...options];
@@ -95,18 +72,11 @@ export default function CourseExamPage({ course, exam }) {
     };
 
     const handleOptionCorrectChange = (index) => {
-        if (questionType === 'single_choice' || questionType === 'true_false') {
-            const next = options.map((opt, i) => ({
-                ...opt,
-                is_correct: i === index,
-            }));
-            setOptions(next);
-        } else {
-            // multiple choice
-            const next = [...options];
-            next[index].is_correct = !next[index].is_correct;
-            setOptions(next);
-        }
+        const next = options.map((opt, i) => ({
+            ...opt,
+            is_correct: i === index,
+        }));
+        setOptions(next);
     };
 
     const addOptionRow = () => {
@@ -122,14 +92,13 @@ export default function CourseExamPage({ course, exam }) {
         e.preventDefault();
         clearQErrors();
 
-        // Validation
         const validOptions = options.filter((o) => o.option_text.trim() !== '');
         if (validOptions.length < 2) {
             alert('Please provide at least 2 options with text.');
             return;
         }
         if (!validOptions.some((o) => o.is_correct)) {
-            alert('Please designate at least one correct option.');
+            alert('Please select the correct option.');
             return;
         }
 
@@ -137,28 +106,18 @@ export default function CourseExamPage({ course, exam }) {
             route('admin.courses.exam.questions.store', course.id),
             {
                 question_text: qData.question_text,
-                question_type: questionType,
-                points: Number(qData.points) || 1,
-                explanation: qData.explanation,
                 options: validOptions,
             },
             {
                 preserveScroll: true,
                 onSuccess: () => {
                     resetQuestion();
-                    if (questionType === 'true_false') {
-                        setOptions([
-                            { option_text: 'True', is_correct: true },
-                            { option_text: 'False', is_correct: false },
-                        ]);
-                    } else {
-                        setOptions([
-                            { option_text: '', is_correct: true },
-                            { option_text: '', is_correct: false },
-                            { option_text: '', is_correct: false },
-                            { option_text: '', is_correct: false },
-                        ]);
-                    }
+                    setOptions([
+                        { option_text: '', is_correct: true },
+                        { option_text: '', is_correct: false },
+                        { option_text: '', is_correct: false },
+                        { option_text: '', is_correct: false },
+                    ]);
                 },
             }
         );
@@ -171,9 +130,10 @@ export default function CourseExamPage({ course, exam }) {
         });
     };
 
+    const marksPerQ = Number(settingsData.marks_per_question) || Number(exam?.marks_per_question) || 1;
     const questionsList = exam?.questions || [];
     const submissionsList = exam?.submissions || [];
-    const totalPoints = questionsList.reduce((sum, q) => sum + (q.points || 1), 0);
+    const totalMarks = questionsList.length * marksPerQ;
 
     return (
         <AdminLayout
@@ -241,7 +201,7 @@ export default function CourseExamPage({ course, exam }) {
                             </div>
                             <div>
                                 <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Marks</p>
-                                <p className="text-lg font-bold text-slate-800 font-mono">{totalPoints} pts</p>
+                                <p className="text-lg font-bold text-slate-800 font-mono">{totalMarks} marks</p>
                             </div>
                         </div>
 
@@ -306,7 +266,7 @@ export default function CourseExamPage({ course, exam }) {
                                             Exam Configuration
                                         </h2>
                                         <p className="text-xs text-slate-400 mt-0.5">
-                                            Set title, time limits, and passing criteria
+                                            Set title, marks per question, and passing score
                                         </p>
                                     </div>
 
@@ -336,6 +296,50 @@ export default function CourseExamPage({ course, exam }) {
                                                 placeholder="Instructions for the student..."
                                             />
                                             <InputError message={settingsErrors.description} className="mt-1" />
+                                        </div>
+
+                                        {/* Marks per Question Input */}
+                                        <div>
+                                            <div className="flex items-center justify-between">
+                                                <InputLabel htmlFor="marks_per_question" value="Marks per Question *" className="text-xs font-semibold text-slate-700" />
+                                                <div className="flex items-center gap-1">
+                                                    {[1, 2, 5].map((preset) => (
+                                                        <button
+                                                            key={preset}
+                                                            type="button"
+                                                            onClick={() => setSettingsData('marks_per_question', preset)}
+                                                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold font-mono transition ${
+                                                                Number(settingsData.marks_per_question) === preset
+                                                                    ? 'bg-indigo-600 text-white shadow-2xs'
+                                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                            }`}
+                                                            title={`Set ${preset} ${preset === 1 ? 'Mark' : 'Marks'}`}
+                                                        >
+                                                            {preset}M
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="relative mt-1">
+                                                <TextInput
+                                                    id="marks_per_question"
+                                                    type="number"
+                                                    min="1"
+                                                    max="50"
+                                                    value={settingsData.marks_per_question}
+                                                    onChange={(e) => setSettingsData('marks_per_question', e.target.value)}
+                                                    className="block w-full text-xs pr-14"
+                                                    placeholder="1"
+                                                    required
+                                                />
+                                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-slate-400 font-semibold font-mono">
+                                                    {Number(settingsData.marks_per_question) === 1 ? 'Mark' : 'Marks'}
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] text-slate-400 mt-1">
+                                                Applies uniformly to all questions in this exam.
+                                            </p>
+                                            <InputError message={settingsErrors.marks_per_question} className="mt-1" />
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-3">
@@ -399,7 +403,7 @@ export default function CourseExamPage({ course, exam }) {
                             {/* Right Column: Question Builder & List */}
                             <div className="lg:col-span-8 space-y-6">
 
-                                {/* Add Question Card */}
+                                {/* Add Question Card (Streamlined) */}
                                 <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
                                     <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
                                         <div>
@@ -408,44 +412,12 @@ export default function CourseExamPage({ course, exam }) {
                                                 Add New Question
                                             </h2>
                                             <p className="text-xs text-slate-400 mt-0.5">
-                                                Create single choice, multiple choice, or true/false questions
+                                                Enter question text and options. Each question is worth {marksPerQ} {marksPerQ === 1 ? 'mark' : 'marks'}.
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleTypeChange('single_choice')}
-                                                className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition ${
-                                                    questionType === 'single_choice'
-                                                        ? 'bg-white text-indigo-600 shadow-2xs'
-                                                        : 'text-slate-500 hover:text-slate-800'
-                                                }`}
-                                            >
-                                                Single Choice
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleTypeChange('multiple_choice')}
-                                                className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition ${
-                                                    questionType === 'multiple_choice'
-                                                        ? 'bg-white text-indigo-600 shadow-2xs'
-                                                        : 'text-slate-500 hover:text-slate-800'
-                                                }`}
-                                            >
-                                                Multiple Choice
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleTypeChange('true_false')}
-                                                className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition ${
-                                                    questionType === 'true_false'
-                                                        ? 'bg-white text-indigo-600 shadow-2xs'
-                                                        : 'text-slate-500 hover:text-slate-800'
-                                                }`}
-                                            >
-                                                True / False
-                                            </button>
-                                        </div>
+                                        <span className="px-2.5 py-1 rounded-md text-[11px] font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                            {marksPerQ} {marksPerQ === 1 ? 'Mark' : 'Marks'}
+                                        </span>
                                     </div>
 
                                     <form onSubmit={handleAddQuestion} className="space-y-4">
@@ -463,51 +435,22 @@ export default function CourseExamPage({ course, exam }) {
                                             <InputError message={qErrors.question_text} className="mt-1" />
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <InputLabel htmlFor="points" value="Points / Marks" className="text-xs font-semibold text-slate-700" />
-                                                <TextInput
-                                                    id="points"
-                                                    type="number"
-                                                    min="1"
-                                                    max="50"
-                                                    value={qData.points}
-                                                    onChange={(e) => setQData('points', e.target.value)}
-                                                    className="mt-1 block w-full text-xs font-mono"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputLabel htmlFor="explanation" value="Explanation (Optional)" className="text-xs font-semibold text-slate-700" />
-                                                <TextInput
-                                                    id="explanation"
-                                                    type="text"
-                                                    value={qData.explanation}
-                                                    onChange={(e) => setQData('explanation', e.target.value)}
-                                                    className="mt-1 block w-full text-xs"
-                                                    placeholder="Shown to students after submission"
-                                                />
-                                            </div>
-                                        </div>
-
                                         {/* Options Editor */}
                                         <div className="space-y-2 pt-2 border-t border-slate-100">
                                             <div className="flex items-center justify-between">
                                                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                                     <span>Options & Answers</span>
                                                     <span className="text-[10px] font-normal text-slate-400">
-                                                        ({questionType === 'multiple_choice' ? 'Select all correct answers' : 'Select the single correct answer'})
+                                                        (Click the circle to select the correct answer)
                                                     </span>
                                                 </label>
-                                                {questionType !== 'true_false' && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={addOptionRow}
-                                                        className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
-                                                    >
-                                                        <Plus className="h-3 w-3" /> Add Option
-                                                    </button>
-                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={addOptionRow}
+                                                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                                                >
+                                                    <Plus className="h-3 w-3" /> Add Option
+                                                </button>
                                             </div>
 
                                             <div className="space-y-2">
@@ -530,7 +473,6 @@ export default function CourseExamPage({ course, exam }) {
                                                             type="text"
                                                             value={opt.option_text}
                                                             onChange={(e) => handleOptionTextChange(idx, e.target.value)}
-                                                            disabled={questionType === 'true_false'}
                                                             placeholder={`Option ${idx + 1}`}
                                                             className={`block w-full text-xs rounded-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 ${
                                                                 opt.is_correct ? 'bg-emerald-50/30 border-emerald-200 font-medium' : ''
@@ -538,7 +480,7 @@ export default function CourseExamPage({ course, exam }) {
                                                             required
                                                         />
 
-                                                        {questionType !== 'true_false' && options.length > 2 && (
+                                                        {options.length > 2 && (
                                                             <button
                                                                 type="button"
                                                                 onClick={() => removeOptionRow(idx)}
@@ -576,7 +518,7 @@ export default function CourseExamPage({ course, exam }) {
                                             <HelpCircle className="h-8 w-8 text-slate-300 mx-auto" />
                                             <p className="text-xs font-bold text-slate-700">No questions added yet</p>
                                             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                                                Use the question builder above to add questions to this exam. Students will see these once they complete 100% of lectures.
+                                                Use the question builder above to add questions to this exam. Each question will carry {marksPerQ} {marksPerQ === 1 ? 'mark' : 'marks'}.
                                             </p>
                                         </div>
                                     ) : (
@@ -592,11 +534,8 @@ export default function CourseExamPage({ course, exam }) {
                                                                 {q.question_text}
                                                             </p>
                                                             <div className="flex items-center gap-2 mt-1">
-                                                                <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase font-mono">
-                                                                    {q.question_type.replace('_', ' ')}
-                                                                </span>
-                                                                <span className="text-[10px] font-semibold text-slate-400 font-mono">
-                                                                    {q.points} {q.points === 1 ? 'Point' : 'Points'}
+                                                                <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-mono">
+                                                                    {marksPerQ} {marksPerQ === 1 ? 'Mark' : 'Marks'}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -632,12 +571,6 @@ export default function CourseExamPage({ course, exam }) {
                                                         </div>
                                                     ))}
                                                 </div>
-
-                                                {q.explanation && (
-                                                    <p className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                                        <span className="font-bold text-slate-600">Explanation:</span> {q.explanation}
-                                                    </p>
-                                                )}
                                             </div>
                                         ))
                                     )}
@@ -671,7 +604,7 @@ export default function CourseExamPage({ course, exam }) {
                                         <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold">
                                             <tr>
                                                 <th className="px-4 py-3">Student</th>
-                                                <th className="px-4 py-3">Score</th>
+                                                <th className="px-4 py-3">Marks</th>
                                                 <th className="px-4 py-3">Percentage</th>
                                                 <th className="px-4 py-3">Status</th>
                                                 <th className="px-4 py-3">Submitted At</th>
@@ -685,7 +618,7 @@ export default function CourseExamPage({ course, exam }) {
                                                         <p className="text-[10px] text-slate-400 font-mono font-normal">{sub.user?.email}</p>
                                                     </td>
                                                     <td className="px-4 py-3 font-mono font-bold text-slate-800">
-                                                        {sub.score} / {sub.total_points}
+                                                        {sub.score} / {sub.total_marks} marks
                                                     </td>
                                                     <td className="px-4 py-3 font-mono font-bold text-indigo-600">
                                                         {sub.percentage}%

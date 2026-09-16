@@ -232,7 +232,7 @@ export default function ExamAttempt({ course, exam, questions = [], submission =
                                         {submission.percentage}%
                                     </p>
                                     <p className="text-xs text-slate-500 font-mono mt-0.5">
-                                        {submission.score} / {submission.total_points} marks
+                                        {submission.score} / {submission.total_marks} marks
                                     </p>
                                 </div>
                             </div>
@@ -284,11 +284,8 @@ export default function ExamAttempt({ course, exam, questions = [], submission =
                                                     {q.question_text}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-semibold text-slate-400 uppercase font-mono">
-                                                        {q.question_type.replace('_', ' ')}
-                                                    </span>
                                                     <span className="text-[10px] font-semibold text-indigo-600 font-mono">
-                                                        • {q.points} {q.points === 1 ? 'Point' : 'Points'}
+                                                        {q.marks || exam.marks_per_question || 1} {((q.marks || exam.marks_per_question || 1) === 1) ? 'Mark' : 'Marks'}
                                                     </span>
                                                 </div>
                                             </div>

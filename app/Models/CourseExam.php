@@ -16,12 +16,14 @@ class CourseExam extends Model
         'title',
         'description',
         'duration_minutes',
+        'marks_per_question',
         'passing_percentage',
         'is_published',
     ];
 
     protected $casts = [
         'duration_minutes' => 'integer',
+        'marks_per_question' => 'integer',
         'passing_percentage' => 'integer',
         'is_published' => 'boolean',
     ];

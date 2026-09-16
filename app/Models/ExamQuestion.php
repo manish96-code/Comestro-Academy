@@ -15,13 +15,13 @@ class ExamQuestion extends Model
         'course_exam_id',
         'question_text',
         'question_type',
-        'points',
+        'marks',
         'explanation',
         'sort_order',
     ];
 
     protected $casts = [
-        'points' => 'integer',
+        'marks' => 'integer',
         'sort_order' => 'integer',
     ];
 

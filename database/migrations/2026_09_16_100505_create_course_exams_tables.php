@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('duration_minutes')->default(30);
+            $table->unsignedSmallInteger('marks_per_question')->default(1);
             $table->unsignedTinyInteger('passing_percentage')->default(70);
             $table->boolean('is_published')->default(true);
             $table->timestamps();
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->foreignId('course_exam_id')->constrained('course_exams')->cascadeOnDelete();
             $table->text('question_text');
             $table->string('question_type')->default('single_choice'); // single_choice, multiple_choice, true_false
-            $table->unsignedSmallInteger('points')->default(1);
+            $table->unsignedSmallInteger('marks')->default(1);
             $table->text('explanation')->nullable();
             $table->unsignedSmallInteger('sort_order')->default(1);
             $table->timestamps();
@@ -49,7 +50,7 @@ return new class extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('submitted_at')->nullable();
             $table->unsignedSmallInteger('score')->default(0);
-            $table->unsignedSmallInteger('total_points')->default(0);
+            $table->unsignedSmallInteger('total_marks')->default(0);
             $table->unsignedTinyInteger('percentage')->default(0);
             $table->boolean('is_passed')->default(false);
             $table->json('answers')->nullable();
