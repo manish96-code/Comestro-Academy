@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\CourseExamController as AdminCourseExamController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Student\CourseExamController as StudentCourseExamController;
 use App\Http\Controllers\Student\InvoiceController;
 use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentController;
@@ -108,6 +110,11 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/courses/{course}/lessons', [CourseController::class, 'storeLesson'])->name('courses.lessons.store');
     Route::post('/courses/{course}/lessons/{lesson}', [CourseController::class, 'updateLesson'])->name('courses.lessons.update');
     Route::delete('/courses/{course}/lessons/{lesson}', [CourseController::class, 'destroyLesson'])->name('courses.lessons.destroy');
+    Route::get('/courses/{course}/exam', [AdminCourseExamController::class, 'show'])->name('courses.exam.show');
+    Route::post('/courses/{course}/exam', [AdminCourseExamController::class, 'saveSettings'])->name('courses.exam.save');
+    Route::post('/courses/{course}/exam/questions', [AdminCourseExamController::class, 'storeQuestion'])->name('courses.exam.questions.store');
+    Route::delete('/courses/{course}/exam/questions/{question}', [AdminCourseExamController::class, 'deleteQuestion'])->name('courses.exam.questions.destroy');
+    Route::get('/exams', [AdminCourseExamController::class, 'index'])->name('exams.index');
 });
 
 // Public Course Catalog & Detail Page
@@ -121,6 +128,8 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/enrolled-courses', [StudentController::class, 'enrolledCourses'])->name('courses.enrolled');
     Route::get('/courses/{course}/learn', [StudentController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/lessons/{lesson}/toggle-complete', [StudentController::class, 'toggleLessonComplete'])->name('courses.lessons.toggle-complete');
+    Route::get('/courses/{course}/exam', [StudentCourseExamController::class, 'show'])->name('courses.exam.show');
+    Route::post('/courses/{course}/exam/submit', [StudentCourseExamController::class, 'submit'])->name('courses.exam.submit');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::match(['post', 'patch'], '/profile', [StudentController::class, 'updateProfile'])->name('profile.update');

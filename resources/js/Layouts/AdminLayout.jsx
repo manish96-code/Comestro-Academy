@@ -19,7 +19,8 @@ import {
     Code,
     Sparkles,
     ShieldCheck,
-    UserCheck
+    UserCheck,
+    Award
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
@@ -54,8 +55,14 @@ export default function AdminLayout({ header, children }) {
                 {
                     name: 'Courses',
                     href: route('admin.courses.index', undefined, false),
-                    active: route().current('admin.courses.*'),
+                    active: route().current('admin.courses.*') && !route().current('admin.courses.exam.*'),
                     icon: BookOpen,
+                },
+                {
+                    name: 'Course Exams',
+                    href: route('admin.exams.index', undefined, false),
+                    active: route().current('admin.exams.*') || route().current('admin.courses.exam.*'),
+                    icon: Award,
                 },
                 {
                     name: 'Course Categories',

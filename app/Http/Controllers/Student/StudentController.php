@@ -238,12 +238,26 @@ class StudentController extends Controller
             }
         }
 
+        $exam = $course->exam()
+            ->where('is_published', true)
+            ->withCount('questions')
+            ->first();
+
+        $examSubmission = null;
+        if ($exam && $user) {
+            $examSubmission = $exam->submissions()
+                ->where('user_id', $user->id)
+                ->first();
+        }
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
             'enrollment' => $enrollment,
             'progress' => $progress,
             'completedLessonIds' => $completedLessonIds,
             'unlockedLessonIds' => $unlockedLessonIds,
+            'exam' => $exam,
+            'examSubmission' => $examSubmission,
         ]);
     }
 
