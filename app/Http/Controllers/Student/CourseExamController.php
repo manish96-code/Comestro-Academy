@@ -12,6 +12,107 @@ use Inertia\Response;
 
 class CourseExamController extends Controller
 {
+    // Display all available exams for the student's enrolled courses
+    public function index(Request $request): Response
+    {
+        $user = $request->user();
+
+        // Retrieve active enrolled courses with published exams
+        $enrollments = $user->enrollments()
+            ->where('status', 'active')
+            ->with([
+                'course.category',
+                'course.exam' => function ($q) {
+                    $q->where('is_published', true)->withCount('questions');
+                },
+            ])
+            ->get();
+
+        $examsData = [];
+        $totalExams = 0;
+        $passedExams = 0;
+        $readyExams = 0;
+        $lockedExams = 0;
+
+        foreach ($enrollments as $enrollment) {
+            $course = $enrollment->course;
+            if (! $course || ! $course->exam) {
+                continue;
+            }
+
+            $exam = $course->exam;
+            $progress = $course->getProgressFor($user);
+
+            $submission = ExamSubmission::where('course_exam_id', $exam->id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            $status = 'locked';
+            if ($submission) {
+                $status = $submission->is_passed ? 'passed' : 'failed';
+                if ($submission->is_passed) {
+                    $passedExams++;
+                }
+            } elseif ($progress['is_completed']) {
+                $status = 'ready';
+                $readyExams++;
+            } else {
+                $status = 'locked';
+                $lockedExams++;
+            }
+
+            $totalExams++;
+
+            $marksPerQ = $exam->marks_per_question ?? 1;
+            $totalMarks = ($exam->questions_count ?? 0) * $marksPerQ;
+
+            $examsData[] = [
+                'course' => [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'slug' => $course->slug,
+                    'thumbnail' => $course->thumbnail,
+                    'category' => $course->category?->only(['id', 'name', 'color']),
+                ],
+                'exam' => [
+                    'id' => $exam->id,
+                    'title' => $exam->title,
+                    'description' => $exam->description,
+                    'duration_minutes' => $exam->duration_minutes,
+                    'marks_per_question' => $marksPerQ,
+                    'passing_percentage' => $exam->passing_percentage,
+                    'questions_count' => $exam->questions_count,
+                    'total_marks' => $totalMarks,
+                ],
+                'progress' => [
+                    'completed_lessons' => $progress['completed_lessons'],
+                    'total_lessons' => $progress['total_lessons'],
+                    'progress_percentage' => $progress['progress_percentage'],
+                    'is_completed' => $progress['is_completed'],
+                ],
+                'submission' => $submission ? [
+                    'id' => $submission->id,
+                    'score' => $submission->score,
+                    'total_marks' => $submission->total_marks,
+                    'percentage' => $submission->percentage,
+                    'is_passed' => $submission->is_passed,
+                    'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
+                ] : null,
+                'status' => $status,
+            ];
+        }
+
+        return Inertia::render('Student/Exams/Index', [
+            'exams' => $examsData,
+            'stats' => [
+                'total' => $totalExams,
+                'passed' => $passedExams,
+                'ready' => $readyExams,
+                'locked' => $lockedExams,
+            ],
+        ]);
+    }
+
     // Display the course exam / attempt portal
     public function show(Request $request, Course $course): Response|RedirectResponse
     {

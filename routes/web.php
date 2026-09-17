@@ -128,6 +128,7 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/enrolled-courses', [StudentController::class, 'enrolledCourses'])->name('courses.enrolled');
     Route::get('/courses/{course}/learn', [StudentController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/lessons/{lesson}/toggle-complete', [StudentController::class, 'toggleLessonComplete'])->name('courses.lessons.toggle-complete');
+    Route::get('/exams', [StudentCourseExamController::class, 'index'])->name('exams.index');
     Route::get('/courses/{course}/exam', [StudentCourseExamController::class, 'show'])->name('courses.exam.show');
     Route::post('/courses/{course}/exam/submit', [StudentCourseExamController::class, 'submit'])->name('courses.exam.submit');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');

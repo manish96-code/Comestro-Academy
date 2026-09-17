@@ -268,3 +268,34 @@ test('student can submit exam once and score is graded accurately', function () 
     $secondAttempt->assertSessionHas('error');
     expect(ExamSubmission::where('user_id', $student->id)->count())->toBe(1);
 });
+
+test('student can view their exams listing page', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Master Certification Exam',
+        'duration_minutes' => 30,
+        'marks_per_question' => 1,
+        'passing_percentage' => 70,
+        'is_published' => true,
+    ]);
+
+    $response = $this->actingAs($student)->get(route('student.exams.index'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Student/Exams/Index')
+        ->has('exams', 1)
+        ->has('stats')
+        ->where('exams.0.course.title', 'Fullstack Mastery')
+        ->where('exams.0.exam.title', 'Master Certification Exam')
+        ->where('exams.0.status', 'locked') // 0% lectures completed => locked
+    );
+});

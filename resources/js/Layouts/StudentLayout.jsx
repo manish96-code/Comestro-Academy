@@ -18,7 +18,8 @@ import {
     Receipt,
     Sparkles,
     Sun,
-    Moon
+    Moon,
+    FileCheck
 } from 'lucide-react';
 
 export default function StudentLayout({ header, children }) {
@@ -73,6 +74,12 @@ export default function StudentLayout({ header, children }) {
                     href: route('student.courses.enrolled'),
                     active: route().current('student.courses.enrolled'),
                     icon: BookOpen,
+                },
+                {
+                    name: 'Course Exams',
+                    href: route('student.exams.index'),
+                    active: route().current('student.exams.*') || route().current('student.courses.exam.*'),
+                    icon: FileCheck,
                 },
                 {
                     name: 'Browse Courses',
