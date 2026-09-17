@@ -20,7 +20,8 @@ import {
     Sparkles,
     ShieldCheck,
     UserCheck,
-    Award
+    Award,
+    ClipboardList
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
@@ -63,6 +64,12 @@ export default function AdminLayout({ header, children }) {
                     href: route('admin.exams.index', undefined, false),
                     active: route().current('admin.exams.*') || route().current('admin.courses.exam.*'),
                     icon: Award,
+                },
+                {
+                    name: 'Assignments',
+                    href: route('admin.assignments.index', undefined, false),
+                    active: route().current('admin.assignments.*') || route().current('admin.courses.assignments.*'),
+                    icon: ClipboardList,
                 },
                 {
                     name: 'Course Categories',

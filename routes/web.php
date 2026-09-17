@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CourseAssignmentController as AdminCourseAssignmentController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseExamController as AdminCourseExamController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Student\CourseAssignmentController as StudentCourseAssignmentController;
 use App\Http\Controllers\Student\CourseExamController as StudentCourseExamController;
 use App\Http\Controllers\Student\InvoiceController;
 use App\Http\Controllers\Student\PaymentController;
@@ -115,6 +117,14 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/courses/{course}/exam/questions', [AdminCourseExamController::class, 'storeQuestion'])->name('courses.exam.questions.store');
     Route::delete('/courses/{course}/exam/questions/{question}', [AdminCourseExamController::class, 'deleteQuestion'])->name('courses.exam.questions.destroy');
     Route::get('/exams', [AdminCourseExamController::class, 'index'])->name('exams.index');
+
+    // Admin Course Assignments
+    Route::get('/assignments', [AdminCourseAssignmentController::class, 'globalIndex'])->name('assignments.index');
+    Route::get('/courses/{course}/assignments', [AdminCourseAssignmentController::class, 'index'])->name('courses.assignments.index');
+    Route::post('/courses/{course}/assignments', [AdminCourseAssignmentController::class, 'store'])->name('courses.assignments.store');
+    Route::post('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'update'])->name('courses.assignments.update');
+    Route::delete('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'destroy'])->name('courses.assignments.destroy');
+    Route::post('/assignments/submissions/{submission}/grade', [AdminCourseAssignmentController::class, 'grade'])->name('assignments.submissions.grade');
 });
 
 // Public Course Catalog & Detail Page
@@ -131,6 +141,9 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/exams', [StudentCourseExamController::class, 'index'])->name('exams.index');
     Route::get('/courses/{course}/exam', [StudentCourseExamController::class, 'show'])->name('courses.exam.show');
     Route::post('/courses/{course}/exam/submit', [StudentCourseExamController::class, 'submit'])->name('courses.exam.submit');
+    Route::get('/assignments', [StudentCourseAssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('/assignments/{assignment}', [StudentCourseAssignmentController::class, 'show'])->name('assignments.show');
+    Route::post('/assignments/{assignment}/submit', [StudentCourseAssignmentController::class, 'submit'])->name('assignments.submit');
     Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::match(['post', 'patch'], '/profile', [StudentController::class, 'updateProfile'])->name('profile.update');

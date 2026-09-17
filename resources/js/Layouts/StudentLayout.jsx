@@ -19,7 +19,8 @@ import {
     Sparkles,
     Sun,
     Moon,
-    FileCheck
+    FileCheck,
+    ClipboardList
 } from 'lucide-react';
 
 export default function StudentLayout({ header, children }) {
@@ -80,6 +81,12 @@ export default function StudentLayout({ header, children }) {
                     href: route('student.exams.index'),
                     active: route().current('student.exams.*') || route().current('student.courses.exam.*'),
                     icon: FileCheck,
+                },
+                {
+                    name: 'Assignments',
+                    href: route('student.assignments.index'),
+                    active: route().current('student.assignments.*'),
+                    icon: ClipboardList,
                 },
                 {
                     name: 'Browse Courses',

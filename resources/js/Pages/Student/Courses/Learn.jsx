@@ -22,9 +22,10 @@ import {
     GraduationCap,
     AlertCircle,
     XCircle,
+    ClipboardList,
 } from 'lucide-react';
 
-export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exam = null, examSubmission = null }) {
+export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exam = null, examSubmission = null, assignments = [] }) {
     const modules = course.modules || [];
     const { auth } = usePage().props;
     const isAdminOrInstructor = auth?.user?.role === 'admin' || auth?.user?.role === 'instructor';
@@ -698,6 +699,21 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                             </span>
                                         </button>
                                     )}
+
+                                    {assignments && assignments.length > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab('assignments')}
+                                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                                activeTab === 'assignments'
+                                                    ? 'bg-indigo-600 text-white shadow-xs'
+                                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                            }`}
+                                        >
+                                            <ClipboardList className="h-3.5 w-3.5" />
+                                            <span>Assignments ({assignments.length})</span>
+                                        </button>
+                                    )}
                                 </div>
 
                                 {/* Notes tab */}
@@ -958,6 +974,61 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 </p>
                                             </div>
                                         )}
+                                    </div>
+                                )}
+
+                                {/* Assignments tab */}
+                                {activeTab === 'assignments' && (
+                                    <div className="pt-2 space-y-3">
+                                        {assignments.map((asgn) => (
+                                            <div
+                                                key={asgn.id}
+                                                className="p-4 bg-white border border-gray-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-gray-300"
+                                            >
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-gray-900">
+                                                            {asgn.title}
+                                                        </h4>
+                                                        {asgn.submission ? (
+                                                            asgn.submission.status === 'reviewed' ? (
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                                    <CheckCircle2 className="h-3 w-3" />
+                                                                    Score: {asgn.submission.marks_obtained}/{asgn.total_marks}M
+                                                                </span>
+                                                            ) : asgn.submission.status === 'resubmit' ? (
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-50 text-rose-700 border border-rose-200">
+                                                                    <AlertCircle className="h-3 w-3" /> Revision Needed
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                                    <Clock className="h-3 w-3" /> Under Review
+                                                                </span>
+                                                            )
+                                                        ) : (
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 text-amber-700 border border-amber-200">
+                                                                Pending Submission
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 line-clamp-1">
+                                                        {asgn.description}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 font-mono">
+                                                        {asgn.total_marks} Marks • {asgn.due_date ? `Due ${new Date(asgn.due_date).toLocaleDateString()}` : 'No deadline'}
+                                                        {asgn.creator && ` • Assigned by ${asgn.creator.name}`}
+                                                    </p>
+                                                </div>
+
+                                                <Link
+                                                    href={route('student.assignments.show', asgn.id)}
+                                                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition shrink-0"
+                                                >
+                                                    <span>{asgn.submission?.status === 'reviewed' ? 'View Feedback' : 'Open & Submit'}</span>
+                                                    <ChevronRight className="h-3.5 w-3.5" />
+                                                </Link>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>

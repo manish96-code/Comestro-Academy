@@ -119,6 +119,12 @@ class Course extends Model
         return $this->hasOne(CourseExam::class);
     }
 
+    // Assignments relationship
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(CourseAssignment::class)->orderBy('sort_order')->orderBy('id');
+    }
+
     // Progress stats for a given user
     public function getProgressFor(?User $user): array
     {

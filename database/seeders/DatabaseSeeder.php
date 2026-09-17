@@ -384,5 +384,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(CourseSeeder::class);
         $this->call(CourseExamSeeder::class);
+        $this->call(CourseAssignmentSeeder::class);
     }
 }

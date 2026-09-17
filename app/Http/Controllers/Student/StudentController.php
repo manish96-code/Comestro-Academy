@@ -250,6 +250,29 @@ class StudentController extends Controller
                 ->first();
         }
 
+        $assignments = $course->assignments()
+            ->where('is_published', true)
+            ->with([
+                'creator:id,name',
+                'submissions' => fn ($q) => $user ? $q->where('user_id', $user->id) : $q->whereNull('id'),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function ($assignment) {
+                return [
+                    'id' => $assignment->id,
+                    'title' => $assignment->title,
+                    'description' => $assignment->description,
+                    'total_marks' => $assignment->total_marks,
+                    'passing_marks' => $assignment->passing_marks,
+                    'due_date' => $assignment->due_date?->toISOString(),
+                    'is_overdue' => $assignment->isOverdue(),
+                    'creator' => $assignment->creator,
+                    'submission' => $assignment->submissions->first(),
+                ];
+            });
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
             'enrollment' => $enrollment,
@@ -258,6 +281,7 @@ class StudentController extends Controller
             'unlockedLessonIds' => $unlockedLessonIds,
             'exam' => $exam,
             'examSubmission' => $examSubmission,
+            'assignments' => $assignments,
         ]);
     }
 
