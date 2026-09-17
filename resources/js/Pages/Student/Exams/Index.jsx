@@ -15,7 +15,9 @@ import {
     Play,
     AlertCircle,
     FileCheck,
-    RotateCcw
+    ChevronRight,
+    Sparkles,
+    Target
 } from 'lucide-react';
 
 export default function StudentExamsIndex({ exams = [], stats = {} }) {
@@ -65,7 +67,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             </span>
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Exams unlock automatically when you reach 100% lecture completion
+                            Official assessments unlock automatically upon completing 100% of course lectures
                         </p>
                     </div>
 
@@ -81,311 +83,378 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
         >
             <Head title="Course Exams - Student Portal" />
 
-            <div className="space-y-6">
+            {/* Main Outer Container with Proper Padding & Max Width */}
+            <div className="py-6 sm:py-8">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
-                {/* Top Metrics Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                    <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60">
-                                <FileCheck className="h-5 w-5" />
+                    {/* Overview Header Banner - Flat & Clean */}
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                        <div className="space-y-1.5 max-w-2xl">
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold font-mono uppercase tracking-wider">
+                                <Sparkles className="h-3.5 w-3.5" />
+                                Certification Center
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Exams</p>
-                                <p className="text-xl font-black text-slate-900 dark:text-white font-mono">{stats.total || exams.length}</p>
+                            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                Validate Your Skills & Earn Certificates
+                            </h2>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Each course features an official comprehensive assessment. Finish all syllabus lectures to unlock your examination, verify your mastery, and claim your credential.
+                            </p>
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="flex items-center gap-3 shrink-0">
+                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
+                                <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.passed || 0}</p>
+                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Certificates</p>
+                            </div>
+                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
+                                <p className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400">{stats.ready || 0}</p>
+                                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Ready to Take</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60">
-                                <Unlock className="h-5 w-5" />
+                    {/* Top Metrics Cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
+                                    <FileCheck className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Exams</p>
+                                    <p className="text-lg font-bold text-slate-900 dark:text-white font-mono">{stats.total || exams.length}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ready to Attempt</p>
-                                <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{stats.ready || 0}</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
+                                    <Unlock className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Ready to Take</p>
+                                    <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">{stats.ready || 0}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
+                                    <Award className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Passed & Certified</p>
+                                    <p className="text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">{stats.passed || 0}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
+                                    <Lock className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Locked</p>
+                                    <p className="text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">{stats.locked || 0}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60">
-                                <Award className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Passed & Certified</p>
-                                <p className="text-xl font-black text-amber-600 dark:text-amber-400 font-mono">{stats.passed || 0}</p>
-                            </div>
+                    {/* Filter and Search Bar */}
+                    <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                        {/* Filter Tabs */}
+                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto">
+                            <button
+                                type="button"
+                                onClick={() => setFilterTab('all')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                    filterTab === 'all'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                <span>All Assessments</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'all' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                                    {exams.length}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFilterTab('ready')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                    filterTab === 'ready'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                <span>Ready to Attempt</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'ready' ? 'bg-indigo-700 text-white' : 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600'}`}>
+                                    {stats.ready || 0}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFilterTab('passed')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                    filterTab === 'passed'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                <span>Passed & Certified</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'passed' ? 'bg-indigo-700 text-white' : 'bg-amber-50 dark:bg-amber-950 text-amber-600'}`}>
+                                    {stats.passed || 0}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFilterTab('locked')}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                    filterTab === 'locked'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                }`}
+                            >
+                                <span>Locked</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'locked' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                                    {stats.locked || 0}
+                                </span>
+                            </button>
+                        </div>
+
+                        {/* Search Input */}
+                        <div className="relative w-full md:w-72">
+                            <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search assessment..."
+                                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                            />
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                                <Lock className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Locked</p>
-                                <p className="text-xl font-black text-slate-700 dark:text-slate-300 font-mono">{stats.locked || 0}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    {/* Exams Grid / List */}
+                    {filteredExams.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                            {filteredExams.map((item) => {
+                                const { course, exam, progress, submission, status } = item;
 
-                {/* Filter and Search Bar */}
-                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-                    {/* Filter Tabs */}
-                    <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900/90 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-x-auto">
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab('all')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
-                                filterTab === 'all'
-                                    ? 'bg-indigo-600 text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                            }`}
-                        >
-                            All ({exams.length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab('ready')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
-                                filterTab === 'ready'
-                                    ? 'bg-indigo-600 text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                            }`}
-                        >
-                            Ready to Attempt ({stats.ready || 0})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab('passed')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
-                                filterTab === 'passed'
-                                    ? 'bg-indigo-600 text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                            }`}
-                        >
-                            Passed ({stats.passed || 0})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab('locked')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
-                                filterTab === 'locked'
-                                    ? 'bg-indigo-600 text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                            }`}
-                        >
-                            Locked ({stats.locked || 0})
-                        </button>
-                    </div>
+                                return (
+                                    <div
+                                        key={exam.id}
+                                        className="group bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 transition hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between gap-5 relative"
+                                    >
+                                        <div className="space-y-3.5">
+                                            {/* Top Tag & Status Row */}
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                                                    {course.category?.name || 'Course Assessment'}
+                                                </span>
 
-                    {/* Search Input */}
-                    <div className="relative w-full md:w-72">
-                        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search exams or courses..."
-                            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                        />
-                    </div>
-                </div>
+                                                {status === 'ready' && (
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                                        Ready to Attempt
+                                                    </span>
+                                                )}
 
-                {/* Exams Grid / List */}
-                {filteredExams.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredExams.map((item) => {
-                            const { course, exam, progress, submission, status } = item;
+                                                {status === 'passed' && (
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                                        Passed • {submission.percentage}%
+                                                    </span>
+                                                )}
 
-                            return (
-                                <div
-                                    key={exam.id}
-                                    className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-2xs flex flex-col justify-between gap-4 transition hover:border-slate-300 dark:hover:border-slate-700"
-                                >
-                                    <div className="space-y-3">
-                                        {/* Header Row: Category & Status Badge */}
-                                        <div className="flex items-center justify-between gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                                {course.category?.name || 'Course Assessment'}
-                                            </span>
+                                                {status === 'failed' && (
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                                                        <XCircle className="h-3.5 w-3.5" />
+                                                        Completed • {submission.percentage}%
+                                                    </span>
+                                                )}
+
+                                                {status === 'locked' && (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                                        <Lock className="h-3 w-3" />
+                                                        Locked ({progress.progress_percentage}%)
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Exam Title & Course Meta */}
+                                            <div className="space-y-1">
+                                                <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
+                                                    {exam.title}
+                                                </h3>
+                                                <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                                                    <BookOpen className="h-3 w-3 text-slate-400 shrink-0" />
+                                                    <span className="truncate">Course: {course.title}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Description if present */}
+                                            {exam.description && (
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                                                    {exam.description}
+                                                </p>
+                                            )}
+
+                                            {/* 4-Item Clean Specifications Grid */}
+                                            <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-[11px] font-mono">
+                                                <div>
+                                                    <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold tracking-wider">Duration</p>
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1">
+                                                        <Clock className="h-3 w-3 text-slate-400" />
+                                                        {exam.duration_minutes > 0 ? `${exam.duration_minutes}m` : 'Untimed'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold tracking-wider">Questions</p>
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1">
+                                                        <FileCheck className="h-3 w-3 text-slate-400" />
+                                                        {exam.questions_count} Qs
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold tracking-wider">Total Marks</p>
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1">
+                                                        <Award className="h-3 w-3 text-amber-500" />
+                                                        {exam.total_marks}M
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold tracking-wider">Pass Mark</p>
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1">
+                                                        <Target className="h-3 w-3 text-emerald-500" />
+                                                        {exam.passing_percentage}%
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Status Details / Progress Bars */}
+                                            {status === 'locked' && (
+                                                <div className="space-y-2 p-3 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 text-xs">
+                                                    <div className="flex items-center justify-between text-[11px]">
+                                                        <span className="text-amber-900 dark:text-amber-200 font-semibold flex items-center gap-1.5">
+                                                            <Lock className="h-3 w-3 text-amber-600" />
+                                                            Lecture Progress: {progress.completed_lessons} of {progress.total_lessons}
+                                                        </span>
+                                                        <span className="font-mono font-bold text-amber-700 dark:text-amber-400">
+                                                            {progress.progress_percentage}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full bg-amber-200/60 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                                                            style={{ width: `${progress.progress_percentage}%` }}
+                                                        />
+                                                    </div>
+                                                    <p className="text-[10px] text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                                                        <AlertCircle className="h-3 w-3 shrink-0" />
+                                                        Complete 100% of lectures in classroom to automatically unlock this exam.
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {(status === 'passed' || status === 'failed') && submission && (
+                                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-xs">
+                                                    <div>
+                                                        <p className="text-[10px] text-slate-400 uppercase font-semibold">Your Score</p>
+                                                        <p className="font-mono font-bold text-slate-900 dark:text-white text-sm mt-0.5">
+                                                            {submission.score} / {submission.total_marks} Marks ({submission.percentage}%)
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[10px] text-slate-400 uppercase font-semibold">Submitted On</p>
+                                                        <span className="text-[11px] text-slate-600 dark:text-slate-300 font-mono">
+                                                            {submission.submitted_at}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             {status === 'ready' && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                                    <Unlock className="h-3 w-3" />
-                                                    Ready to Attempt
-                                                </span>
+                                                <div className="p-3 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                    <div className="leading-snug">
+                                                        <p className="font-semibold text-emerald-900 dark:text-emerald-200">All lectures completed</p>
+                                                        <p className="text-[11px] text-emerald-700 dark:text-emerald-300">You are eligible for your single attempt.</p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Action Button Footer */}
+                                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                                            {status === 'ready' && (
+                                                <Link
+                                                    href={route('student.courses.exam.show', course.id)}
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
+                                                >
+                                                    <span>Attempt Examination</span>
+                                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                                </Link>
                                             )}
 
-                                            {status === 'passed' && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                                    <CheckCircle2 className="h-3 w-3" />
-                                                    Passed • {submission.percentage}%
-                                                </span>
-                                            )}
-
-                                            {status === 'failed' && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
-                                                    <XCircle className="h-3 w-3" />
-                                                    Submitted • {submission.percentage}%
-                                                </span>
+                                            {(status === 'passed' || status === 'failed') && (
+                                                <Link
+                                                    href={route('student.courses.exam.show', course.id)}
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition"
+                                                >
+                                                    <span>Review Answers & Results</span>
+                                                    <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                                </Link>
                                             )}
 
                                             {status === 'locked' && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                                                    <Lock className="h-3 w-3" />
-                                                    Locked ({progress.progress_percentage}% Done)
-                                                </span>
+                                                <Link
+                                                    href={route('student.courses.learn', course.id)}
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition"
+                                                >
+                                                    <Play className="h-3 w-3 fill-current" />
+                                                    <span>Continue Course Lectures</span>
+                                                </Link>
                                             )}
                                         </div>
-
-                                        {/* Exam Title & Course Link */}
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                                                {exam.title}
-                                            </h2>
-                                            <Link
-                                                href={route('student.courses.learn', course.id)}
-                                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium line-clamp-1 mt-0.5 inline-block"
-                                            >
-                                                Course: {course.title}
-                                            </Link>
-                                        </div>
-
-                                        {/* Specs Pills */}
-                                        <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-100 dark:border-slate-800/80 text-[11px] font-mono">
-                                            <div>
-                                                <p className="text-[10px] text-slate-400 uppercase font-sans font-semibold">Questions</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200">
-                                                    {exam.questions_count} Qs
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] text-slate-400 uppercase font-sans font-semibold">Total Marks</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200">
-                                                    {exam.total_marks} Marks
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] text-slate-400 uppercase font-sans font-semibold">Passing</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200">
-                                                    {exam.passing_percentage}%
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Course Progress or Submission Result info */}
-                                        {status === 'locked' && (
-                                            <div className="space-y-1.5 pt-1">
-                                                <div className="flex items-center justify-between text-[11px]">
-                                                    <span className="text-slate-500 dark:text-slate-400 font-medium">
-                                                        Lectures Completed: {progress.completed_lessons} / {progress.total_lessons}
-                                                    </span>
-                                                    <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                                                        {progress.progress_percentage}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="bg-amber-500 h-full rounded-full transition-all duration-300"
-                                                        style={{ width: `${progress.progress_percentage}%` }}
-                                                    />
-                                                </div>
-                                                <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1">
-                                                    <AlertCircle className="h-3 w-3 text-amber-500 shrink-0" />
-                                                    Watch 100% of course lectures to unlock this exam.
-                                                </p>
-                                            </div>
-                                        )}
-
-                                        {(status === 'passed' || status === 'failed') && submission && (
-                                            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-xs">
-                                                <div>
-                                                    <p className="text-[10px] text-slate-400 uppercase font-semibold">Your Score</p>
-                                                    <p className="font-mono font-bold text-slate-900 dark:text-white">
-                                                        {submission.score} / {submission.total_marks} marks ({submission.percentage}%)
-                                                    </p>
-                                                </div>
-                                                <span className="text-[10px] text-slate-400 font-mono">
-                                                    {submission.submitted_at}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {status === 'ready' && (
-                                            <div className="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-                                                <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                                                <span>All lectures finished! You are eligible for 1 attempt.</span>
-                                            </div>
-                                        )}
                                     </div>
-
-                                    {/* Action Button */}
-                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                                        {status === 'ready' && (
-                                            <Link
-                                                href={route('student.courses.exam.show', course.id)}
-                                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition"
-                                            >
-                                                <span>Attempt Exam Now</span>
-                                                <ArrowRight className="h-3.5 w-3.5" />
-                                            </Link>
-                                        )}
-
-                                        {(status === 'passed' || status === 'failed') && (
-                                            <Link
-                                                href={route('student.courses.exam.show', course.id)}
-                                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition"
-                                            >
-                                                <span>Review Submission</span>
-                                                <ArrowRight className="h-3.5 w-3.5" />
-                                            </Link>
-                                        )}
-
-                                        {status === 'locked' && (
-                                            <Link
-                                                href={route('student.courses.learn', course.id)}
-                                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition"
-                                            >
-                                                <Play className="h-3.5 w-3.5" />
-                                                <span>Continue Lectures</span>
-                                            </Link>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-12 text-center space-y-3">
-                        <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
-                            <GraduationCap className="h-6 w-6" />
+                                );
+                            })}
                         </div>
-                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                            {searchQuery ? 'No matching exams found' : 'No course exams available'}
-                        </h2>
-                        <p className="text-xs text-slate-400 max-w-md mx-auto">
-                            {searchQuery
-                                ? 'Try clearing your search query or switching tabs.'
-                                : 'When your enrolled courses have exams published by instructors, they will be listed here for you to attempt upon completing 100% of course lectures.'}
-                        </p>
-                        <div className="pt-2">
-                            <Link
-                                href={route('student.courses.enrolled')}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition shadow-2xs"
-                            >
-                                <BookOpen className="h-3.5 w-3.5" />
-                                <span>Go to My Enrolled Courses</span>
-                            </Link>
+                    ) : (
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-12 text-center space-y-3">
+                            <div className="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
+                                <GraduationCap className="h-6 w-6" />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                    {searchQuery ? 'No matching assessments found' : 'No course exams available yet'}
+                                </h3>
+                                <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                                    {searchQuery
+                                        ? 'Try clearing your search query or switching to another filter tab.'
+                                        : 'When your enrolled courses have exams published, they will be listed here for you to attempt.'}
+                                </p>
+                            </div>
+                            <div className="pt-2">
+                                <Link
+                                    href={route('student.courses.enrolled')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                                >
+                                    <BookOpen className="h-3.5 w-3.5" />
+                                    <span>Browse Enrolled Courses</span>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
+                </div>
             </div>
         </StudentLayout>
     );

@@ -891,7 +891,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                         <div className="text-right">
                                                             <p className="text-[10px] text-gray-400 font-semibold uppercase">Your Score</p>
                                                             <p className="text-lg font-black font-mono text-gray-900">{examSubmission.percentage}%</p>
-                                                            <p className="text-[10px] text-gray-400 font-mono">{examSubmission.score} / {examSubmission.total_points} marks</p>
+                                                            <p className="text-[10px] text-gray-400 font-mono">{examSubmission.score} / {examSubmission.total_marks ?? examSubmission.total_points} marks</p>
                                                         </div>
                                                         <Link
                                                             href={route('student.courses.exam.show', course.id)}
