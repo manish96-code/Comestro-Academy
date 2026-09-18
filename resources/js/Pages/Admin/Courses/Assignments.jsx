@@ -332,7 +332,7 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                                                     <div className="flex items-center gap-2 flex-wrap">
                                                                         {sub.file_path && (
                                                                             <a
-                                                                                href={`/storage/${sub.file_path}`}
+                                                                                href={sub.file_path.startsWith('http') ? sub.file_path : `/storage/${sub.file_path}`}
                                                                                 target="_blank"
                                                                                 rel="noreferrer"
                                                                                 className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 text-[11px] font-medium border border-slate-200/60 dark:border-slate-700"

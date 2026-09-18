@@ -139,6 +139,17 @@ test('student can submit valid pdf and github url', function () {
 
     $fakePdf = UploadedFile::fake()->create('architecture.pdf', 500, 'application/pdf');
 
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->with(Mockery::type(UploadedFile::class), '/assignments/submissions')
+        ->andReturn([
+            'url' => 'https://ik.imagekit.io/comestro/assignments/submissions/architecture.pdf',
+            'fileId' => 'sub_123',
+            'name' => 'architecture.pdf',
+        ]);
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
     $response = $this->actingAs($student)->post(route('student.assignments.submit', $assignment->id), [
         'pdf_file' => $fakePdf,
         'github_url' => 'https://github.com/rahul/my-portfolio',
@@ -151,6 +162,7 @@ test('student can submit valid pdf and github url', function () {
         'course_assignment_id' => $assignment->id,
         'user_id' => $student->id,
         'file_name' => 'architecture.pdf',
+        'file_path' => 'https://ik.imagekit.io/comestro/assignments/submissions/architecture.pdf',
         'github_url' => 'https://github.com/rahul/my-portfolio',
         'is_late' => false,
         'status' => 'submitted',
@@ -177,6 +189,17 @@ test('submission after due date is accepted and marked as late', function () {
 
     $fakePdf = UploadedFile::fake()->create('late_doc.pdf', 300, 'application/pdf');
 
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->with(Mockery::type(UploadedFile::class), '/assignments/submissions')
+        ->andReturn([
+            'url' => 'https://ik.imagekit.io/comestro/assignments/submissions/late_doc.pdf',
+            'fileId' => 'sub_456',
+            'name' => 'late_doc.pdf',
+        ]);
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
     $response = $this->actingAs($student)->post(route('student.assignments.submit', $assignment->id), [
         'pdf_file' => $fakePdf,
     ]);
@@ -187,6 +210,7 @@ test('submission after due date is accepted and marked as late', function () {
         'course_assignment_id' => $assignment->id,
         'user_id' => $student->id,
         'file_name' => 'late_doc.pdf',
+        'file_path' => 'https://ik.imagekit.io/comestro/assignments/submissions/late_doc.pdf',
         'is_late' => true,
         'status' => 'submitted',
     ]);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\AssignmentSubmission;
 use App\Models\CourseAssignment;
+use App\Services\ImageKitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class CourseAssignmentController extends Controller
 {
@@ -111,7 +113,7 @@ class CourseAssignmentController extends Controller
             'submission' => $submission ? [
                 'id' => $submission->id,
                 'submission_text' => $submission->submission_text,
-                'file_url' => $submission->file_path ? Storage::url($submission->file_path) : null,
+                'file_url' => $submission->file_path ? (Str::startsWith($submission->file_path, ['http://', 'https://']) ? $submission->file_path : Storage::url($submission->file_path)) : null,
                 'file_name' => $submission->file_name,
                 'github_url' => $submission->github_url,
                 'submitted_at' => $submission->submitted_at?->format('d M Y, h:i A'),
@@ -127,7 +129,7 @@ class CourseAssignmentController extends Controller
     }
 
     // Submit or resubmit an assignment
-    public function submit(Request $request, CourseAssignment $assignment): RedirectResponse
+    public function submit(Request $request, CourseAssignment $assignment, ImageKitService $imageKit): RedirectResponse
     {
         $user = Auth::user();
 
@@ -166,13 +168,19 @@ class CourseAssignmentController extends Controller
         $fileName = $existing?->file_name;
 
         if ($request->hasFile('pdf_file')) {
-            // Delete old file if exists
-            if ($existing?->file_path && Storage::disk('public')->exists($existing->file_path)) {
+            // Delete old file if stored locally
+            if ($existing?->file_path && ! Str::startsWith($existing->file_path, ['http://', 'https://']) && Storage::disk('public')->exists($existing->file_path)) {
                 Storage::disk('public')->delete($existing->file_path);
             }
             $file = $request->file('pdf_file');
             $fileName = $file->getClientOriginalName();
-            $filePath = $file->store('assignments/submissions', 'public');
+
+            try {
+                $upload = $imageKit->upload($file, '/assignments/submissions');
+                $filePath = $upload['url'];
+            } catch (Throwable $e) {
+                return back()->withErrors(['pdf_file' => 'PDF upload failed: '.$e->getMessage()])->withInput();
+            }
         }
 
         // Automatically determine if submitted after due date
