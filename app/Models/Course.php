@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Course extends Model
 {
@@ -113,10 +112,16 @@ class Course extends Model
         return $this->hasMany(CourseBatch::class)->where('is_active', true)->orderBy('id');
     }
 
-    // Exam relationship
-    public function exam(): HasOne
+    // Exams relationship
+    public function exams(): HasMany
     {
-        return $this->hasOne(CourseExam::class);
+        return $this->hasMany(CourseExam::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    // Published exams relationship
+    public function publishedExams(): HasMany
+    {
+        return $this->hasMany(CourseExam::class)->where('is_published', true)->orderBy('sort_order')->orderBy('id');
     }
 
     // Assignments relationship

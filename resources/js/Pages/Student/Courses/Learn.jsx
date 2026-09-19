@@ -25,10 +25,12 @@ import {
     ClipboardList,
 } from 'lucide-react';
 
-export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exam = null, examSubmission = null, assignments = [] }) {
+export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exams = [], assignments = [] }) {
     const modules = course.modules || [];
     const { auth } = usePage().props;
     const isAdminOrInstructor = auth?.user?.role === 'admin' || auth?.user?.role === 'instructor';
+
+    const courseExams = exams || [];
 
     // All lessons flat list
     const allLessons = useMemo(() => {
@@ -673,7 +675,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         </button>
                                     )}
 
-                                    {exam && (
+                                    {courseExams.length > 0 && (
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('exam')}
@@ -685,16 +687,9 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         >
                                             <GraduationCap className="h-3.5 w-3.5" />
                                             <span>
-                                                Course Exam
+                                                Exams ({courseExams.length})
                                                 {!progress?.is_completed && !isAdminOrInstructor && (
                                                     <Lock className="h-2.5 w-2.5 inline ml-1 text-amber-500" />
-                                                )}
-                                                {examSubmission && (
-                                                    <span className={`ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                                                        examSubmission.is_passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                                                    }`}>
-                                                        {examSubmission.percentage}%
-                                                    </span>
                                                 )}
                                             </span>
                                         </button>
@@ -831,149 +826,145 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 )}
 
                                 {/* Exam tab */}
-                                {activeTab === 'exam' && exam && (
-                                    <div className="pt-2">
-                                        {!progress?.is_completed && !isAdminOrInstructor ? (
-                                            /* Locked Exam State */
-                                            <div className="p-8 text-center space-y-3 bg-amber-50/40 border border-amber-200/80 rounded-2xl">
-                                                <div className="h-12 w-12 mx-auto rounded-2xl bg-amber-100 border border-amber-200 text-amber-600 flex items-center justify-center">
-                                                    <Lock className="h-6 w-6" />
+                                {activeTab === 'exam' && courseExams.length > 0 && (
+                                    <div className="pt-2 space-y-4">
+                                        {!progress?.is_completed && !isAdminOrInstructor && (
+                                            <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5">
+                                                <div className="h-10 w-10 rounded-xl bg-amber-100 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+                                                    <Lock className="h-5 w-5" />
                                                 </div>
-                                                <div className="max-w-md mx-auto space-y-1">
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 font-mono">
-                                                        <Lock className="h-2.5 w-2.5" /> Exam Locked
-                                                    </span>
-                                                    <h3 className="text-sm font-bold text-gray-900">
-                                                        {exam.title}
-                                                    </h3>
-                                                    <p className="text-xs text-gray-500 leading-relaxed">
-                                                        You must complete all {progress.total_lessons || allLessons.length} lectures in this course to unlock the final assessment.
+                                                <div className="flex-1 text-center sm:text-left">
+                                                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 font-mono">
+                                                            Exams Locked
+                                                        </span>
+                                                        <span className="text-xs font-semibold text-gray-700">
+                                                            {completedCount} of {allLessons.length} lectures completed ({progressPct}% progress)
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-0.5">
+                                                        Complete 100% of all lectures in this course to unlock your examinations.
                                                     </p>
                                                 </div>
-                                                <div className="max-w-xs mx-auto pt-2 space-y-1">
-                                                    <div className="flex justify-between text-[11px] font-semibold text-gray-600">
-                                                        <span>Course Progress</span>
-                                                        <span className="font-mono">{progressPct}%</span>
-                                                    </div>
-                                                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                                        <div
-                                                            className="bg-amber-500 h-2 rounded-full transition-all duration-300"
-                                                            style={{ width: `${progressPct}%` }}
-                                                        />
-                                                    </div>
-                                                    <p className="text-[10px] text-gray-400 font-mono">
-                                                        {completedCount} of {allLessons.length} lectures completed
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ) : examSubmission ? (
-                                            /* Completed / Evaluated State */
-                                            <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-xs space-y-4">
-                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className={`p-3 rounded-xl ${
-                                                            examSubmission.is_passed
-                                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                                                                : 'bg-rose-50 text-rose-600 border border-rose-200'
-                                                        }`}>
-                                                            {examSubmission.is_passed ? (
-                                                                <CheckCircle2 className="h-6 w-6" />
-                                                            ) : (
-                                                                <XCircle className="h-6 w-6" />
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <h3 className="text-sm font-bold text-gray-900">
-                                                                    {exam.title}
-                                                                </h3>
-                                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
-                                                                    examSubmission.is_passed
-                                                                        ? 'bg-emerald-100 text-emerald-800'
-                                                                        : 'bg-rose-100 text-rose-800'
-                                                                }`}>
-                                                                    {examSubmission.is_passed ? 'Passed' : 'Completed'}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-500 mt-0.5">
-                                                                {examSubmission.is_passed
-                                                                    ? 'Congratulations! You passed the assessment. This assessment allowed 1 attempt.'
-                                                                    : `You scored ${examSubmission.percentage}%. The passing threshold was ${exam.passing_percentage}%.`}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="text-right">
-                                                            <p className="text-[10px] text-gray-400 font-semibold uppercase">Your Score</p>
-                                                            <p className="text-lg font-black font-mono text-gray-900">{examSubmission.percentage}%</p>
-                                                            <p className="text-[10px] text-gray-400 font-mono">{examSubmission.score} / {examSubmission.total_marks ?? examSubmission.total_points} marks</p>
-                                                        </div>
-                                                        <Link
-                                                            href={route('student.courses.exam.show', course.id)}
-                                                            className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-xl transition inline-flex items-center gap-1.5"
-                                                        >
-                                                            <span>Review Answers</span>
-                                                            <ChevronRight className="h-3.5 w-3.5" />
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            /* Unlocked Ready to Attempt State */
-                                            <div className="p-6 bg-gradient-to-br from-indigo-50/50 via-white to-white border border-indigo-100 rounded-2xl shadow-xs space-y-4">
-                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className="p-3 bg-indigo-600 text-white rounded-xl shadow-md">
-                                                            <GraduationCap className="h-6 w-6" />
-                                                        </div>
-                                                        <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <h3 className="text-sm font-bold text-gray-900">
-                                                                    {exam.title}
-                                                                </h3>
-                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                                    Unlocked
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-500 mt-0.5">
-                                                                {exam.description || 'You have finished 100% of the lectures and are eligible for the final assessment.'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <Link
-                                                        href={route('student.courses.exam.show', course.id)}
-                                                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition shrink-0"
-                                                    >
-                                                        <Play className="h-3.5 w-3.5 fill-current" />
-                                                        <span>Start Final Exam</span>
-                                                    </Link>
-                                                </div>
-
-                                                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-indigo-50/80 text-center">
-                                                    <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-                                                        <p className="text-[10px] font-semibold text-gray-400 uppercase">Questions</p>
-                                                        <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">{exam.questions_count || 0}</p>
-                                                    </div>
-                                                    <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-                                                        <p className="text-[10px] font-semibold text-gray-400 uppercase">Time Limit</p>
-                                                        <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">
-                                                            {exam.duration_minutes > 0 ? `${exam.duration_minutes} Mins` : 'Untimed'}
-                                                        </p>
-                                                    </div>
-                                                    <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-                                                        <p className="text-[10px] font-semibold text-gray-400 uppercase">Passing Score</p>
-                                                        <p className="text-xs font-bold text-emerald-600 font-mono mt-0.5">{exam.passing_percentage}%</p>
-                                                    </div>
-                                                </div>
-
-                                                <p className="text-[11px] text-amber-700 bg-amber-50/80 p-2.5 rounded-xl border border-amber-100 flex items-center gap-2">
-                                                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                                                    <span>Please note: This examination permits <strong>ONE single attempt</strong>. Once submitted, your score will be final.</span>
-                                                </p>
                                             </div>
                                         )}
+
+                                        <div className="space-y-4">
+                                            {courseExams.map((examItem) => {
+                                                const sub = examItem.submission;
+                                                const isLocked = !progress?.is_completed && !isAdminOrInstructor;
+
+                                                return (
+                                                    <div
+                                                        key={examItem.id}
+                                                        className="p-5 bg-white border border-gray-200 rounded-2xl shadow-xs space-y-4 transition hover:border-gray-300"
+                                                    >
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                            <div className="flex items-start sm:items-center gap-3.5">
+                                                                <div className={`p-3 rounded-xl shrink-0 ${
+                                                                    sub?.is_passed
+                                                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                                                        : isLocked
+                                                                        ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                                                                        : 'bg-indigo-50 text-indigo-600 border border-indigo-200'
+                                                                }`}>
+                                                                    {sub?.is_passed ? (
+                                                                        <CheckCircle2 className="h-5 w-5" />
+                                                                    ) : isLocked ? (
+                                                                        <Lock className="h-5 w-5" />
+                                                                    ) : (
+                                                                        <GraduationCap className="h-5 w-5" />
+                                                                    )}
+                                                                </div>
+
+                                                                <div>
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        <h3 className="text-sm font-bold text-gray-900">
+                                                                            {examItem.title}
+                                                                        </h3>
+                                                                        {sub ? (
+                                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
+                                                                                sub.is_passed
+                                                                                    ? 'bg-emerald-100 text-emerald-800'
+                                                                                    : 'bg-rose-100 text-rose-800'
+                                                                            }`}>
+                                                                                {sub.is_passed ? 'Passed' : 'Completed'}
+                                                                            </span>
+                                                                        ) : isLocked ? (
+                                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-amber-50 text-amber-700 border border-amber-200">
+                                                                                Locked
+                                                                            </span>
+                                                                        ) : (
+                                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                                                Ready to Attempt
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    {examItem.description && (
+                                                                        <p className="text-xs text-gray-500 mt-1">
+                                                                            {examItem.description}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
+                                                                {sub ? (
+                                                                    <>
+                                                                        <div className="text-right">
+                                                                            <p className="text-[10px] text-gray-400 font-semibold uppercase">Your Score</p>
+                                                                            <p className="text-base font-black font-mono text-gray-900">{sub.percentage}%</p>
+                                                                            <p className="text-[10px] text-gray-400 font-mono">{sub.score} / {sub.total_marks} marks</p>
+                                                                        </div>
+                                                                        <Link
+                                                                            href={route('student.exams.show', examItem.id)}
+                                                                            className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-xl transition inline-flex items-center gap-1.5"
+                                                                        >
+                                                                            <span>Review Answers</span>
+                                                                            <ChevronRight className="h-3.5 w-3.5" />
+                                                                        </Link>
+                                                                    </>
+                                                                ) : isLocked ? (
+                                                                    <button
+                                                                        type="button"
+                                                                        disabled
+                                                                        className="px-4 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 cursor-not-allowed"
+                                                                    >
+                                                                        <Lock className="h-3.5 w-3.5" />
+                                                                        <span>Locked</span>
+                                                                    </button>
+                                                                ) : (
+                                                                    <Link
+                                                                        href={route('student.exams.show', examItem.id)}
+                                                                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                                                                    >
+                                                                        <Play className="h-3.5 w-3.5 fill-current" />
+                                                                        <span>Start Exam</span>
+                                                                    </Link>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-3 gap-2.5 pt-3 border-t border-gray-100 text-center">
+                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
+                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Questions</p>
+                                                                <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">{examItem.questions_count ?? 0}</p>
+                                                            </div>
+                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
+                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Time Limit</p>
+                                                                <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">
+                                                                    {examItem.duration_minutes > 0 ? `${examItem.duration_minutes} Mins` : 'Untimed'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
+                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Passing Score</p>
+                                                                <p className="text-xs font-bold text-emerald-600 font-mono mt-0.5">{examItem.passing_percentage}%</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
 

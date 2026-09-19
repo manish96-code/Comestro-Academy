@@ -25,14 +25,17 @@ class CourseExamSeeder extends Seeder
         $course1 = Course::where('slug', 'master-full-stack-laravel-12-inertia-react')->first();
         if ($course1) {
             $exam1 = CourseExam::updateOrCreate(
-                ['course_id' => $course1->id],
                 [
+                    'course_id' => $course1->id,
                     'title' => 'Master Certification Exam: Laravel 12 & Inertia React',
+                ],
+                [
                     'description' => 'Comprehensive evaluation testing your knowledge on Eloquent ORM, Inertia v2 deferred props, authentication, and REST API architecture.',
                     'duration_minutes' => 30,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
                     'is_published' => true,
+                    'sort_order' => 2,
                 ]
             );
 
@@ -147,6 +150,51 @@ class CourseExamSeeder extends Seeder
                     $admin->completedLessons()->syncWithoutDetaching($lessonIds);
                 }
             }
+            // EXAM 1B: Midterm Quiz for Course 1
+            $exam1b = CourseExam::updateOrCreate(
+                [
+                    'course_id' => $course1->id,
+                    'title' => 'Midterm Assessment: Laravel Fundamentals & Routing',
+                ],
+                [
+                    'description' => 'Midterm quiz covering Laravel routing, controllers, middleware, and request validation.',
+                    'duration_minutes' => 15,
+                    'marks_per_question' => 1,
+                    'passing_percentage' => 60,
+                    'is_published' => true,
+                    'sort_order' => 1,
+                ]
+            );
+
+            $exam1b->questions()->delete();
+
+            $qb1 = $exam1b->questions()->create([
+                'question_text' => 'Which Artisan command is used to display all registered routes in a Laravel application?',
+                'question_type' => 'single_choice',
+                'marks' => 1,
+                'explanation' => 'php artisan route:list lists all registered application routes.',
+                'sort_order' => 1,
+            ]);
+            $qb1->options()->createMany([
+                ['option_text' => 'php artisan route:list', 'is_correct' => true, 'sort_order' => 1],
+                ['option_text' => 'php artisan routes:show', 'is_correct' => false, 'sort_order' => 2],
+                ['option_text' => 'php artisan url:all', 'is_correct' => false, 'sort_order' => 3],
+                ['option_text' => 'php artisan routes:view', 'is_correct' => false, 'sort_order' => 4],
+            ]);
+
+            $qb2 = $exam1b->questions()->create([
+                'question_text' => 'Where are HTTP middleware typically registered in modern Laravel 12 applications?',
+                'question_type' => 'single_choice',
+                'marks' => 1,
+                'explanation' => 'In Laravel 11/12, middleware are configured in bootstrap/app.php using withMiddleware().',
+                'sort_order' => 2,
+            ]);
+            $qb2->options()->createMany([
+                ['option_text' => 'bootstrap/app.php', 'is_correct' => true, 'sort_order' => 1],
+                ['option_text' => 'app/Http/Kernel.php', 'is_correct' => false, 'sort_order' => 2],
+                ['option_text' => 'config/middleware.php', 'is_correct' => false, 'sort_order' => 3],
+                ['option_text' => 'routes/web.php', 'is_correct' => false, 'sort_order' => 4],
+            ]);
         }
 
         // -------------------------------------------------------------
@@ -155,14 +203,17 @@ class CourseExamSeeder extends Seeder
         $course2 = Course::where('slug', 'nextjs-15-fullstack-typescript-masterclass')->first();
         if ($course2) {
             $exam2 = CourseExam::updateOrCreate(
-                ['course_id' => $course2->id],
                 [
+                    'course_id' => $course2->id,
                     'title' => 'Final Certification Exam: Next.js 15 & TypeScript',
+                ],
+                [
                     'description' => 'Test your proficiency in Server Components, Server Actions, TypeScript strict types, and App Router caching.',
                     'duration_minutes' => 25,
                     'marks_per_question' => 1,
                     'passing_percentage' => 60,
                     'is_published' => true,
+                    'sort_order' => 1,
                 ]
             );
 
@@ -243,14 +294,17 @@ class CourseExamSeeder extends Seeder
         $course3 = Course::where('slug', 'complete-modern-web-development-zero-to-pro')->first();
         if ($course3) {
             $exam3 = CourseExam::updateOrCreate(
-                ['course_id' => $course3->id],
                 [
+                    'course_id' => $course3->id,
                     'title' => 'Web Development Fundamentals Certification Exam',
+                ],
+                [
                     'description' => 'Test your core understanding of semantic HTML5, modern flexbox & grid CSS layout systems, and modern ES6+ JavaScript.',
                     'duration_minutes' => 20,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
                     'is_published' => true,
+                    'sort_order' => 1,
                 ]
             );
 
@@ -320,14 +374,17 @@ class CourseExamSeeder extends Seeder
         $course4 = Course::where('slug', 'docker-kubernetes-aws-devops-bootcamp')->first();
         if ($course4) {
             $exam4 = CourseExam::updateOrCreate(
-                ['course_id' => $course4->id],
                 [
+                    'course_id' => $course4->id,
                     'title' => 'DevOps & Cloud Engineering Certification Assessment',
+                ],
+                [
                     'description' => 'Verify your command over Docker multi-stage builds, Kubernetes Pod deployments, and CI/CD pipelines.',
                     'duration_minutes' => 30,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
                     'is_published' => true,
+                    'sort_order' => 1,
                 ]
             );
 

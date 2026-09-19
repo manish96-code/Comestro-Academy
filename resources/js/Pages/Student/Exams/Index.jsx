@@ -395,7 +395,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                         <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
                                             {status === 'ready' && (
                                                 <Link
-                                                    href={route('student.courses.exam.show', course.id)}
+                                                    href={route('student.exams.show', exam.id)}
                                                     className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
                                                 >
                                                     <span>Attempt Examination</span>
@@ -405,7 +405,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                                             {(status === 'passed' || status === 'failed') && (
                                                 <Link
-                                                    href={route('student.courses.exam.show', course.id)}
+                                                    href={route('student.exams.show', exam.id)}
                                                     className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition"
                                                 >
                                                     <span>Review Answers & Results</span>

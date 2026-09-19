@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseExam;
 use App\Models\ExamSubmission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,8 +23,8 @@ class CourseExamController extends Controller
             ->where('status', 'active')
             ->with([
                 'course.category',
-                'course.exam' => function ($q) {
-                    $q->where('is_published', true)->withCount('questions');
+                'course.exams' => function ($q) {
+                    $q->where('is_published', true)->withCount('questions')->orderBy('sort_order')->orderBy('id');
                 },
             ])
             ->get();
@@ -36,70 +37,72 @@ class CourseExamController extends Controller
 
         foreach ($enrollments as $enrollment) {
             $course = $enrollment->course;
-            if (! $course || ! $course->exam) {
+            if (! $course || $course->exams->isEmpty()) {
                 continue;
             }
 
-            $exam = $course->exam;
             $progress = $course->getProgressFor($user);
 
-            $submission = ExamSubmission::where('course_exam_id', $exam->id)
-                ->where('user_id', $user->id)
-                ->first();
+            foreach ($course->exams as $exam) {
+                $submission = ExamSubmission::where('course_exam_id', $exam->id)
+                    ->where('user_id', $user->id)
+                    ->first();
 
-            $status = 'locked';
-            if ($submission) {
-                $status = $submission->is_passed ? 'passed' : 'failed';
-                if ($submission->is_passed) {
-                    $passedExams++;
-                }
-            } elseif ($progress['is_completed']) {
-                $status = 'ready';
-                $readyExams++;
-            } else {
                 $status = 'locked';
-                $lockedExams++;
+                if ($submission) {
+                    $status = $submission->is_passed ? 'passed' : 'failed';
+                    if ($submission->is_passed) {
+                        $passedExams++;
+                    }
+                } elseif ($progress['is_completed']) {
+                    $status = 'ready';
+                    $readyExams++;
+                } else {
+                    $status = 'locked';
+                    $lockedExams++;
+                }
+
+                $totalExams++;
+
+                $marksPerQ = $exam->marks_per_question ?? 1;
+                $totalMarks = ($exam->questions_count ?? 0) * $marksPerQ;
+
+                $examsData[] = [
+                    'course' => [
+                        'id' => $course->id,
+                        'title' => $course->title,
+                        'slug' => $course->slug,
+                        'thumbnail' => $course->thumbnail,
+                        'category' => $course->category?->only(['id', 'name', 'color']),
+                    ],
+                    'exam' => [
+                        'id' => $exam->id,
+                        'title' => $exam->title,
+                        'description' => $exam->description,
+                        'duration_minutes' => $exam->duration_minutes,
+                        'marks_per_question' => $marksPerQ,
+                        'passing_percentage' => $exam->passing_percentage,
+                        'questions_count' => $exam->questions_count,
+                        'total_marks' => $totalMarks,
+                        'sort_order' => $exam->sort_order,
+                    ],
+                    'progress' => [
+                        'completed_lessons' => $progress['completed_lessons'],
+                        'total_lessons' => $progress['total_lessons'],
+                        'progress_percentage' => $progress['progress_percentage'],
+                        'is_completed' => $progress['is_completed'],
+                    ],
+                    'submission' => $submission ? [
+                        'id' => $submission->id,
+                        'score' => $submission->score,
+                        'total_marks' => $submission->total_marks,
+                        'percentage' => $submission->percentage,
+                        'is_passed' => $submission->is_passed,
+                        'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
+                    ] : null,
+                    'status' => $status,
+                ];
             }
-
-            $totalExams++;
-
-            $marksPerQ = $exam->marks_per_question ?? 1;
-            $totalMarks = ($exam->questions_count ?? 0) * $marksPerQ;
-
-            $examsData[] = [
-                'course' => [
-                    'id' => $course->id,
-                    'title' => $course->title,
-                    'slug' => $course->slug,
-                    'thumbnail' => $course->thumbnail,
-                    'category' => $course->category?->only(['id', 'name', 'color']),
-                ],
-                'exam' => [
-                    'id' => $exam->id,
-                    'title' => $exam->title,
-                    'description' => $exam->description,
-                    'duration_minutes' => $exam->duration_minutes,
-                    'marks_per_question' => $marksPerQ,
-                    'passing_percentage' => $exam->passing_percentage,
-                    'questions_count' => $exam->questions_count,
-                    'total_marks' => $totalMarks,
-                ],
-                'progress' => [
-                    'completed_lessons' => $progress['completed_lessons'],
-                    'total_lessons' => $progress['total_lessons'],
-                    'progress_percentage' => $progress['progress_percentage'],
-                    'is_completed' => $progress['is_completed'],
-                ],
-                'submission' => $submission ? [
-                    'id' => $submission->id,
-                    'score' => $submission->score,
-                    'total_marks' => $submission->total_marks,
-                    'percentage' => $submission->percentage,
-                    'is_passed' => $submission->is_passed,
-                    'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
-                ] : null,
-                'status' => $status,
-            ];
         }
 
         return Inertia::render('Student/Exams/Index', [
@@ -114,9 +117,14 @@ class CourseExamController extends Controller
     }
 
     // Display the course exam / attempt portal
-    public function show(Request $request, Course $course): Response|RedirectResponse
+    public function show(Request $request, CourseExam $exam): Response|RedirectResponse
     {
         $user = $request->user();
+        $course = $exam->course;
+
+        if (! $course) {
+            abort(404);
+        }
 
         // 1. Check enrollment
         $isEnrolled = $user->enrollments()
@@ -128,19 +136,17 @@ class CourseExamController extends Controller
             return redirect()->route('courses.show', $course->slug)->with('error', 'Please enroll in this course to access the exam.');
         }
 
-        // 2. Check if course has a published exam
-        $exam = $course->exam()
-            ->where('is_published', true)
-            ->with([
-                'questions' => fn ($q) => $q->orderBy('sort_order')->with([
-                    'options' => fn ($oq) => $oq->orderBy('sort_order'),
-                ]),
-            ])
-            ->first();
-
-        if (! $exam) {
-            return redirect()->route('student.courses.learn', $course->id)->with('error', 'No published exam is currently available for this course.');
+        // 2. Check if published
+        if (! $exam->is_published) {
+            return redirect()->route('student.courses.learn', $course->id)->with('error', 'This exam is currently not published.');
         }
+
+        // Load questions with options
+        $exam->load([
+            'questions' => fn ($q) => $q->orderBy('sort_order')->with([
+                'options' => fn ($oq) => $oq->orderBy('sort_order'),
+            ]),
+        ]);
 
         // 3. Verify 100% course completion
         $progress = $course->getProgressFor($user);
@@ -150,10 +156,10 @@ class CourseExamController extends Controller
             return redirect()->route('student.courses.learn', [
                 'course' => $course->id,
                 'tab' => 'exam',
-            ])->with('error', 'You must complete 100% of the course lectures before attempting the final exam.');
+            ])->with('error', 'You must complete 100% of the course lectures before attempting this exam.');
         }
 
-        // 4. Check if student has already submitted (single attempt only)
+        // 4. Check if student has already submitted (single attempt per exam)
         $submission = ExamSubmission::where('course_exam_id', $exam->id)
             ->where('user_id', $user->id)
             ->first();
@@ -168,15 +174,17 @@ class CourseExamController extends Controller
                     'question_type' => $q->question_type,
                     'marks' => $q->marks,
                     'sort_order' => $q->sort_order,
-                    'options' => $q->options->map(fn ($o) => [
-                        'id' => $o->id,
-                        'option_text' => $o->option_text,
-                        'sort_order' => $o->sort_order,
-                    ]),
+                    'options' => $q->options->map(function ($opt) {
+                        return [
+                            'id' => $opt->id,
+                            'option_text' => $opt->option_text,
+                            'sort_order' => $opt->sort_order,
+                        ];
+                    }),
                 ];
             });
         } else {
-            // If already submitted, include review with correct answers & explanations
+            // Include correct answers and explanations for completed submission review
             $sanitizedQuestions = $exam->questions->map(function ($q) {
                 return [
                     'id' => $q->id,
@@ -185,15 +193,20 @@ class CourseExamController extends Controller
                     'marks' => $q->marks,
                     'explanation' => $q->explanation,
                     'sort_order' => $q->sort_order,
-                    'options' => $q->options->map(fn ($o) => [
-                        'id' => $o->id,
-                        'option_text' => $o->option_text,
-                        'is_correct' => $o->is_correct,
-                        'sort_order' => $o->sort_order,
-                    ]),
+                    'options' => $q->options->map(function ($opt) {
+                        return [
+                            'id' => $opt->id,
+                            'option_text' => $opt->option_text,
+                            'is_correct' => (bool) $opt->is_correct,
+                            'sort_order' => $opt->sort_order,
+                        ];
+                    }),
                 ];
             });
         }
+
+        $marksPerQ = $exam->marks_per_question ?? 1;
+        $totalMarks = $exam->questions->count() * $marksPerQ;
 
         return Inertia::render('Student/Courses/ExamAttempt', [
             'course' => $course->only(['id', 'title', 'slug']),
@@ -202,20 +215,33 @@ class CourseExamController extends Controller
                 'title' => $exam->title,
                 'description' => $exam->description,
                 'duration_minutes' => $exam->duration_minutes,
-                'marks_per_question' => $exam->marks_per_question ?? 1,
+                'marks_per_question' => $marksPerQ,
                 'passing_percentage' => $exam->passing_percentage,
-                'total_questions' => $exam->questions->count(),
+                'total_marks' => $totalMarks,
             ],
             'questions' => $sanitizedQuestions,
-            'submission' => $submission,
+            'submission' => $submission ? [
+                'id' => $submission->id,
+                'score' => $submission->score,
+                'total_marks' => $submission->total_marks,
+                'percentage' => $submission->percentage,
+                'is_passed' => $submission->is_passed,
+                'answers' => $submission->answers,
+                'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
+            ] : null,
             'progress' => $progress,
         ]);
     }
 
-    // Evaluate and record the student's single exam submission
-    public function submit(Request $request, Course $course): RedirectResponse
+    // Submit answers for the course exam
+    public function submit(Request $request, CourseExam $exam): RedirectResponse
     {
         $user = $request->user();
+        $course = $exam->course;
+
+        if (! $course) {
+            abort(404);
+        }
 
         // 1. Check enrollment
         $isEnrolled = $user->enrollments()
@@ -224,67 +250,65 @@ class CourseExamController extends Controller
             ->exists();
 
         if (! $isEnrolled && ! $user->isAdmin() && ! $user->isInstructor()) {
-            return redirect()->route('courses.show', $course->slug)->with('error', 'Please enroll in this course to submit the exam.');
+            return redirect()->route('courses.show', $course->slug)->with('error', 'Please enroll in this course to take the exam.');
         }
 
-        // 2. Check 100% course completion
+        // 2. Verify completion
         $progress = $course->getProgressFor($user);
-        if (! $progress['is_completed'] && ! $user->isAdmin() && ! $user->isInstructor()) {
-            return redirect()->route('student.courses.learn', $course->id)->with('error', 'You must complete 100% of the course lectures before attempting the final exam.');
+        $isAdminOrInstructor = $user->isAdmin() || $user->isInstructor();
+
+        if (! $progress['is_completed'] && ! $isAdminOrInstructor) {
+            return redirect()->route('student.courses.learn', $course->id)->with('error', 'You must complete 100% of the lectures before submitting the exam.');
         }
 
-        // 3. Load exam with questions and options
-        $exam = $course->exam()
-            ->where('is_published', true)
-            ->with([
-                'questions.options',
-            ])
-            ->firstOrFail();
-
-        // 4. Enforce Single Attempt: Check if already submitted
+        // 3. Prevent duplicate submission
         $existing = ExamSubmission::where('course_exam_id', $exam->id)
             ->where('user_id', $user->id)
             ->first();
 
         if ($existing) {
-            return redirect()->route('student.courses.exam.show', $course->id)
-                ->with('error', 'You have already submitted this exam. Only one attempt is permitted.');
+            return redirect()->route('student.exams.show', $exam->id)->with('error', 'You have already attempted this exam.');
         }
 
+        // 4. Validate submission input
         $validated = $request->validate([
             'answers' => ['required', 'array'],
             'started_at' => ['nullable', 'date'],
         ]);
 
-        $submittedAnswers = $validated['answers'];
-        $totalMarks = 0;
-        $earnedScore = 0;
+        $submittedAnswers = $validated['answers']; // [question_id => selected_option_id]
+
+        // 5. Calculate Score
+        $exam->load('questions.options');
+        $marksPerQ = $exam->marks_per_question ?? 1;
+        $totalQuestions = $exam->questions->count();
+        $totalMarks = $exam->questions->sum(fn ($q) => $q->marks ?: $marksPerQ) ?: ($totalQuestions * $marksPerQ);
+        $score = 0;
 
         foreach ($exam->questions as $question) {
-            $questionMarks = (int) ($question->marks ?? 1);
-            $totalMarks += $questionMarks;
-            $correctOptionIds = $question->options->where('is_correct', true)->pluck('id')->sort()->values()->toArray();
+            $selectedOptionId = $submittedAnswers[$question->id] ?? null;
+            if (is_array($selectedOptionId)) {
+                $selectedOptionId = $selectedOptionId[0] ?? null;
+            }
 
-            $userSelected = isset($submittedAnswers[$question->id])
-                ? (is_array($submittedAnswers[$question->id]) ? $submittedAnswers[$question->id] : [$submittedAnswers[$question->id]])
-                : [];
-            $userSelected = collect($userSelected)->map(fn ($id) => (int) $id)->sort()->values()->toArray();
-
-            // Compare selected options against correct options
-            if ($userSelected === $correctOptionIds && ! empty($correctOptionIds)) {
-                $earnedScore += $questionMarks;
+            if ($selectedOptionId) {
+                $correctOption = $question->options->firstWhere('is_correct', true);
+                if ($correctOption && (int) $correctOption->id === (int) $selectedOptionId) {
+                    $score += $question->marks ?: $marksPerQ;
+                }
             }
         }
 
-        $percentage = $totalMarks > 0 ? (int) round(($earnedScore / $totalMarks) * 100) : 0;
+        $percentage = $totalMarks > 0 ? (int) round(($score / $totalMarks) * 100) : 0;
         $isPassed = $percentage >= $exam->passing_percentage;
 
+        // 6. Save Submission
         ExamSubmission::create([
             'course_exam_id' => $exam->id,
             'user_id' => $user->id,
             'started_at' => $validated['started_at'] ?? now(),
             'submitted_at' => now(),
-            'score' => $earnedScore,
+            'score' => $score,
             'total_marks' => $totalMarks,
             'percentage' => $percentage,
             'is_passed' => $isPassed,
@@ -292,11 +316,10 @@ class CourseExamController extends Controller
             'status' => 'completed',
         ]);
 
-        $message = $isPassed
-            ? "Congratulations! You passed the exam with {$percentage}% score."
-            : "Exam submitted. You scored {$percentage}%. Passing score is {$exam->passing_percentage}%.";
+        $statusMsg = $isPassed
+            ? "Congratulations! You scored {$percentage}% ({$score}/{$totalMarks}) and passed this exam!"
+            : "Exam submitted. You scored {$percentage}% ({$score}/{$totalMarks}). Passing percentage is {$exam->passing_percentage}%.";
 
-        return redirect()->route('student.courses.exam.show', $course->id)
-            ->with($isPassed ? 'success' : 'error', $message);
+        return redirect()->route('student.exams.show', $exam->id)->with('success', $statusMsg);
     }
 }

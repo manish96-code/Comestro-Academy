@@ -238,17 +238,39 @@ class StudentController extends Controller
             }
         }
 
-        $exam = $course->exam()
+        $exams = $course->exams()
             ->where('is_published', true)
             ->withCount('questions')
-            ->first();
+            ->with([
+                'submissions' => fn ($q) => $user ? $q->where('user_id', $user->id) : $q->whereNull('id'),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function ($examItem) {
+                $submission = $examItem->submissions->first();
+                $marksPerQ = $examItem->marks_per_question ?? 1;
+                $totalMarks = ($examItem->questions_count ?? 0) * $marksPerQ;
 
-        $examSubmission = null;
-        if ($exam && $user) {
-            $examSubmission = $exam->submissions()
-                ->where('user_id', $user->id)
-                ->first();
-        }
+                return [
+                    'id' => $examItem->id,
+                    'title' => $examItem->title,
+                    'description' => $examItem->description,
+                    'duration_minutes' => $examItem->duration_minutes,
+                    'marks_per_question' => $marksPerQ,
+                    'passing_percentage' => $examItem->passing_percentage,
+                    'questions_count' => $examItem->questions_count,
+                    'total_marks' => $totalMarks,
+                    'submission' => $submission ? [
+                        'id' => $submission->id,
+                        'score' => $submission->score,
+                        'total_marks' => $submission->total_marks,
+                        'percentage' => $submission->percentage,
+                        'is_passed' => $submission->is_passed,
+                        'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
+                    ] : null,
+                ];
+            });
 
         $assignments = $course->assignments()
             ->where('is_published', true)
@@ -279,8 +301,7 @@ class StudentController extends Controller
             'progress' => $progress,
             'completedLessonIds' => $completedLessonIds,
             'unlockedLessonIds' => $unlockedLessonIds,
-            'exam' => $exam,
-            'examSubmission' => $examSubmission,
+            'exams' => $exams,
             'assignments' => $assignments,
         ]);
     }

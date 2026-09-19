@@ -34,14 +34,14 @@ test('admin can view all course exams listing', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('Admin/Exams/Index')
-        ->has('courses.data')
+        ->has('exams.data')
     );
 });
 
 test('admin can create and update exam settings', function () {
     $admin = User::factory()->create(['role' => 'admin']);
 
-    $response = $this->actingAs($admin)->post(route('admin.courses.exam.save', $this->course->id), [
+    $response = $this->actingAs($admin)->post(route('admin.courses.exams.store', $this->course->id), [
         'title' => 'Certification Exam',
         'description' => 'Test your knowledge',
         'duration_minutes' => 45,
@@ -58,12 +58,38 @@ test('admin can create and update exam settings', function () {
         'marks_per_question' => 2,
         'passing_percentage' => 75,
     ]);
+
+    $exam = CourseExam::where('course_id', $this->course->id)->first();
+    $updateResponse = $this->actingAs($admin)->post(route('admin.exams.settings.save', $exam->id), [
+        'title' => 'Updated Certification Exam',
+        'description' => 'Updated description',
+        'duration_minutes' => 60,
+        'marks_per_question' => 2,
+        'passing_percentage' => 80,
+        'is_published' => true,
+    ]);
+
+    $updateResponse->assertSessionHas('success');
+    $this->assertDatabaseHas('course_exams', [
+        'id' => $exam->id,
+        'title' => 'Updated Certification Exam',
+        'passing_percentage' => 80,
+    ]);
 });
 
 test('admin can add question with options and delete it', function () {
     $admin = User::factory()->create(['role' => 'admin']);
 
-    $response = $this->actingAs($admin)->post(route('admin.courses.exam.questions.store', $this->course->id), [
+    $exam = CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Test Assessment',
+        'duration_minutes' => 30,
+        'marks_per_question' => 1,
+        'passing_percentage' => 70,
+        'is_published' => true,
+    ]);
+
+    $response = $this->actingAs($admin)->post(route('admin.exams.questions.store', $exam->id), [
         'question_text' => 'What is React?',
         'options' => [
             ['option_text' => 'A UI Library', 'is_correct' => true],
@@ -73,6 +99,7 @@ test('admin can add question with options and delete it', function () {
 
     $response->assertSessionHas('success');
     $this->assertDatabaseHas('exam_questions', [
+        'course_exam_id' => $exam->id,
         'question_text' => 'What is React?',
     ]);
 
@@ -80,8 +107,8 @@ test('admin can add question with options and delete it', function () {
     expect($question->options)->toHaveCount(2);
 
     // Delete question
-    $delResponse = $this->actingAs($admin)->delete(route('admin.courses.exam.questions.destroy', [
-        'course' => $this->course->id,
+    $delResponse = $this->actingAs($admin)->delete(route('admin.exams.questions.destroy', [
+        'exam' => $exam->id,
         'question' => $question->id,
     ]));
 
@@ -111,7 +138,7 @@ test('student cannot access exam if course progress is under 100%', function () 
     ]);
 
     // Create exam
-    CourseExam::create([
+    $exam = CourseExam::create([
         'course_id' => $this->course->id,
         'title' => 'Final Exam',
         'duration_minutes' => 30,
@@ -120,7 +147,7 @@ test('student cannot access exam if course progress is under 100%', function () 
     ]);
 
     // Student has not completed Lesson 1 (0% completed)
-    $response = $this->actingAs($student)->get(route('student.courses.exam.show', $this->course->id));
+    $response = $this->actingAs($student)->get(route('student.exams.show', $exam->id));
 
     // Must redirect with error message
     $response->assertRedirect(route('student.courses.learn', [
@@ -176,7 +203,7 @@ test('student with 100% course completion can access exam', function () {
         'sort_order' => 1,
     ]);
 
-    $response = $this->actingAs($student)->get(route('student.courses.exam.show', $this->course->id));
+    $response = $this->actingAs($student)->get(route('student.exams.show', $exam->id));
 
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
@@ -238,14 +265,14 @@ test('student can submit exam once and score is graded accurately', function () 
     $q2Wrong = $q2->options()->create(['option_text' => 'Wrong 2', 'is_correct' => false]);
 
     // Submit: answer Q1 correctly and Q2 incorrectly (5/10 marks = 50% => Passed!)
-    $response = $this->actingAs($student)->post(route('student.courses.exam.submit', $this->course->id), [
+    $response = $this->actingAs($student)->post(route('student.exams.submit', $exam->id), [
         'answers' => [
             $q1->id => [$q1Correct->id],
             $q2->id => [$q2Wrong->id],
         ],
     ]);
 
-    $response->assertRedirect(route('student.courses.exam.show', $this->course->id));
+    $response->assertRedirect(route('student.exams.show', $exam->id));
     $response->assertSessionHas('success');
 
     $this->assertDatabaseHas('exam_submissions', [
@@ -258,7 +285,7 @@ test('student can submit exam once and score is graded accurately', function () 
     ]);
 
     // Attempting a second submission must be blocked (single attempt only)
-    $secondAttempt = $this->actingAs($student)->post(route('student.courses.exam.submit', $this->course->id), [
+    $secondAttempt = $this->actingAs($student)->post(route('student.exams.submit', $exam->id), [
         'answers' => [
             $q1->id => [$q1Correct->id],
             $q2->id => [$q2Correct->id],
@@ -298,4 +325,94 @@ test('student can view their exams listing page', function () {
         ->where('exams.0.exam.title', 'Master Certification Exam')
         ->where('exams.0.status', 'locked') // 0% lectures completed => locked
     );
+});
+
+test('a course can have multiple exams and a student can submit both independently', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+
+    // Student completes the lecture to unlock exams
+    $student->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
+
+    // Create 2 exams for the same course
+    $exam1 = CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Midterm Assessment',
+        'duration_minutes' => 20,
+        'marks_per_question' => 1,
+        'passing_percentage' => 50,
+        'is_published' => true,
+        'sort_order' => 1,
+    ]);
+
+    $exam2 = CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Final Certification Exam',
+        'duration_minutes' => 45,
+        'marks_per_question' => 2,
+        'passing_percentage' => 70,
+        'is_published' => true,
+        'sort_order' => 2,
+    ]);
+
+    expect($this->course->exams)->toHaveCount(2);
+
+    // Add questions
+    $q1 = $exam1->questions()->create(['question_text' => 'Midterm Q1', 'marks' => 1]);
+    $opt1 = $q1->options()->create(['option_text' => 'Ans 1', 'is_correct' => true]);
+
+    $q2 = $exam2->questions()->create(['question_text' => 'Final Q1', 'marks' => 2]);
+    $opt2 = $q2->options()->create(['option_text' => 'Ans 2', 'is_correct' => true]);
+
+    // Student submits exam 1
+    $resp1 = $this->actingAs($student)->post(route('student.exams.submit', $exam1->id), [
+        'answers' => [$q1->id => $opt1->id],
+    ]);
+    $resp1->assertRedirect(route('student.exams.show', $exam1->id));
+    $resp1->assertSessionHas('success');
+
+    // Exam 1 is submitted and passed
+    $this->assertDatabaseHas('exam_submissions', [
+        'course_exam_id' => $exam1->id,
+        'user_id' => $student->id,
+        'is_passed' => true,
+    ]);
+
+    // Exam 2 is NOT yet submitted
+    $this->assertDatabaseMissing('exam_submissions', [
+        'course_exam_id' => $exam2->id,
+        'user_id' => $student->id,
+    ]);
+
+    // Student submits exam 2
+    $resp2 = $this->actingAs($student)->post(route('student.exams.submit', $exam2->id), [
+        'answers' => [$q2->id => $opt2->id],
+    ]);
+    $resp2->assertRedirect(route('student.exams.show', $exam2->id));
+    $resp2->assertSessionHas('success');
+
+    // Both exams now have separate submissions
+    $this->assertDatabaseHas('exam_submissions', [
+        'course_exam_id' => $exam2->id,
+        'user_id' => $student->id,
+        'is_passed' => true,
+    ]);
+    expect(ExamSubmission::where('user_id', $student->id)->count())->toBe(2);
 });

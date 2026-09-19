@@ -100,7 +100,7 @@ export default function ExamAttempt({ course, exam, questions = [], submission =
 
         setIsSubmitting(true);
         router.post(
-            route('student.courses.exam.submit', course.id),
+            route('student.exams.submit', exam.id),
             {
                 answers: answers,
                 started_at: startedAt,

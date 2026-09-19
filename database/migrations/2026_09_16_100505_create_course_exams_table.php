@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('course_exams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete()->unique();
+            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('duration_minutes')->default(30);
             $table->unsignedSmallInteger('marks_per_question')->default(1);
             $table->unsignedTinyInteger('passing_percentage')->default(70);
             $table->boolean('is_published')->default(true);
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

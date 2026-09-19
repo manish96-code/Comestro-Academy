@@ -56,13 +56,13 @@ export default function AdminLayout({ header, children }) {
                 {
                     name: 'Courses',
                     href: route('admin.courses.index', undefined, false),
-                    active: route().current('admin.courses.*') && !route().current('admin.courses.exam.*'),
+                    active: route().current('admin.courses.*') && !route().current('admin.courses.exams.*') && !route().current('admin.courses.assignments.*'),
                     icon: BookOpen,
                 },
                 {
                     name: 'Course Exams',
                     href: route('admin.exams.index', undefined, false),
-                    active: route().current('admin.exams.*') || route().current('admin.courses.exam.*'),
+                    active: route().current('admin.exams.*') || route().current('admin.courses.exams.*'),
                     icon: Award,
                 },
                 {

@@ -41,12 +41,12 @@ export default function CourseExamPage({ course, exam }) {
 
     const handleSaveSettings = (e) => {
         e.preventDefault();
-        postSettings(route('admin.courses.exam.save', course.id), {
+        postSettings(route('admin.exams.settings.save', exam.id), {
             preserveScroll: true,
         });
     };
 
-    // Form for adding a Question (standard single-choice with options)
+    // Form for adding a Question
     const [options, setOptions] = useState([
         { option_text: '', is_correct: true },
         { option_text: '', is_correct: false },
@@ -60,50 +60,58 @@ export default function CourseExamPage({ course, exam }) {
         processing: qProcessing,
         errors: qErrors,
         reset: resetQuestion,
-        clearErrors: clearQErrors,
     } = useForm({
         question_text: '',
     });
 
-    const handleOptionTextChange = (index, text) => {
+    const handleOptionTextChange = (idx, value) => {
         const next = [...options];
-        next[index].option_text = text;
+        next[idx].option_text = value;
         setOptions(next);
     };
 
-    const handleOptionCorrectChange = (index) => {
+    const handleSelectCorrect = (idx) => {
         const next = options.map((opt, i) => ({
             ...opt,
-            is_correct: i === index,
+            is_correct: i === idx,
         }));
         setOptions(next);
     };
 
-    const addOptionRow = () => {
+    const handleAddOption = () => {
+        if (options.length >= 6) return;
         setOptions([...options, { option_text: '', is_correct: false }]);
     };
 
-    const removeOptionRow = (index) => {
+    const handleRemoveOption = (idx) => {
         if (options.length <= 2) return;
-        setOptions(options.filter((_, i) => i !== index));
+        const next = options.filter((_, i) => i !== idx);
+        if (!next.some((o) => o.is_correct) && next.length > 0) {
+            next[0].is_correct = true;
+        }
+        setOptions(next);
     };
 
-    const handleAddQuestion = (e) => {
+    const handleStoreQuestion = (e) => {
         e.preventDefault();
-        clearQErrors();
-
-        const validOptions = options.filter((o) => o.option_text.trim() !== '');
-        if (validOptions.length < 2) {
-            alert('Please provide at least 2 options with text.');
+        if (!qData.question_text.trim()) {
+            alert('Please enter the question text.');
             return;
         }
+
+        const validOptions = options.filter((o) => o.option_text.trim().length > 0);
+        if (validOptions.length < 2) {
+            alert('Please provide at least 2 valid options.');
+            return;
+        }
+
         if (!validOptions.some((o) => o.is_correct)) {
             alert('Please select the correct option.');
             return;
         }
 
         router.post(
-            route('admin.courses.exam.questions.store', course.id),
+            route('admin.exams.questions.store', exam.id),
             {
                 question_text: qData.question_text,
                 options: validOptions,
@@ -123,9 +131,11 @@ export default function CourseExamPage({ course, exam }) {
         );
     };
 
+    const handleAddQuestion = handleStoreQuestion;
+
     const handleDeleteQuestion = (questionId) => {
         if (!confirm('Are you sure you want to delete this question?')) return;
-        router.delete(route('admin.courses.exam.questions.destroy', [course.id, questionId]), {
+        router.delete(route('admin.exams.questions.destroy', [exam.id, questionId]), {
             preserveScroll: true,
         });
     };

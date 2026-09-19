@@ -19,6 +19,7 @@ class CourseExam extends Model
         'marks_per_question',
         'passing_percentage',
         'is_published',
+        'sort_order',
     ];
 
     protected $casts = [
@@ -26,6 +27,7 @@ class CourseExam extends Model
         'marks_per_question' => 'integer',
         'passing_percentage' => 'integer',
         'is_published' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public function course(): BelongsTo

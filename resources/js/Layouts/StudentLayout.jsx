@@ -79,7 +79,7 @@ export default function StudentLayout({ header, children }) {
                 {
                     name: 'Course Exams',
                     href: route('student.exams.index'),
-                    active: route().current('student.exams.*') || route().current('student.courses.exam.*'),
+                    active: route().current('student.exams.*'),
                     icon: FileCheck,
                 },
                 {
