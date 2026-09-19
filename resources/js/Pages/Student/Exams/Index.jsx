@@ -396,7 +396,12 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             {status === 'ready' && (
                                                 <Link
                                                     href={route('student.exams.show', exam.id)}
-                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
+                                                    onClick={() => {
+                                                        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                                                            document.documentElement.requestFullscreen().catch(() => {});
+                                                        }
+                                                    }}
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer"
                                                 >
                                                     <span>Attempt Examination</span>
                                                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />

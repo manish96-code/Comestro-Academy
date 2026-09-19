@@ -416,3 +416,57 @@ test('a course can have multiple exams and a student can submit both independent
     ]);
     expect(ExamSubmission::where('user_id', $student->id)->count())->toBe(2);
 });
+
+test('auto submit with empty answers on tab switch or timeout records completed submission', function () {
+    $student = User::factory()->create(['role' => 'student']);
+
+    $this->course->enrollments()->create([
+        'user_id' => $student->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module Auto Submit',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson Auto Submit',
+        'sort_order' => 1,
+    ]);
+
+    $student->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
+
+    $exam = CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Auto Submit Exam',
+        'duration_minutes' => 30,
+        'passing_percentage' => 50,
+        'is_published' => true,
+    ]);
+
+    $q1 = $exam->questions()->create([
+        'question_text' => 'Auto Submit Q1',
+        'marks' => 5,
+    ]);
+    $q1->options()->create(['option_text' => 'Option 1', 'is_correct' => true]);
+
+    // Send empty answers (auto submit upon tab switch / blur)
+    $response = $this->actingAs($student)->post(route('student.exams.submit', $exam->id), [
+        'answers' => [],
+    ]);
+
+    $response->assertRedirect(route('student.exams.show', $exam->id));
+    $response->assertSessionHas('success');
+
+    $this->assertDatabaseHas('exam_submissions', [
+        'course_exam_id' => $exam->id,
+        'user_id' => $student->id,
+        'score' => 0,
+        'is_passed' => false,
+        'status' => 'completed',
+    ]);
+});

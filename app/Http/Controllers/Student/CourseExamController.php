@@ -272,11 +272,11 @@ class CourseExamController extends Controller
 
         // 4. Validate submission input
         $validated = $request->validate([
-            'answers' => ['required', 'array'],
+            'answers' => ['nullable', 'array'],
             'started_at' => ['nullable', 'date'],
         ]);
 
-        $submittedAnswers = $validated['answers']; // [question_id => selected_option_id]
+        $submittedAnswers = $validated['answers'] ?? []; // [question_id => selected_option_id]
 
         // 5. Calculate Score
         $exam->load('questions.options');
