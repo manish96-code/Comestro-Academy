@@ -305,9 +305,12 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                                         {activeAssignment.submissions.map((sub) => (
                                                             <tr key={sub.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                                                                 <td className="py-3 px-4">
-                                                                    <div className="font-semibold text-slate-900 dark:text-white">
+                                                                    <Link
+                                                                        href={route('admin.students.show', sub.student?.id)}
+                                                                        className="font-semibold text-slate-900 dark:text-white hover:text-indigo-600 transition"
+                                                                    >
                                                                         {sub.student?.name || 'Student'}
-                                                                    </div>
+                                                                    </Link>
                                                                     <div className="text-[11px] text-slate-400">
                                                                         {sub.student?.email}
                                                                     </div>

@@ -11,21 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_assignments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('title');
-            $table->longText('description');
-            $table->string('attachment_path')->nullable();
-            $table->unsignedInteger('total_marks')->default(100);
-            $table->unsignedInteger('passing_marks')->default(40);
-            $table->dateTime('due_date')->nullable();
-            $table->boolean('is_published')->default(true);
-            $table->integer('sort_order')->default(0);
-            $table->timestamps();
-        });
-
         Schema::create('assignment_submissions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_assignment_id')->constrained('course_assignments')->cascadeOnDelete();
@@ -54,6 +39,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('assignment_submissions');
-        Schema::dropIfExists('course_assignments');
     }
 };

@@ -130,44 +130,46 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
 
                     {/* Assignments List */}
                     {assignments.data && assignments.data.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3.5">
                             {assignments.data.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between gap-4 transition hover:border-slate-300 dark:hover:border-slate-700"
+                                    className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs hover:shadow-xs"
                                 >
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                                    {/* Left Information Section */}
+                                    <div className="space-y-2 flex-1 min-w-0">
+                                        <div className="flex items-center gap-2.5 flex-wrap">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
                                                 {item.course?.title || 'Course'}
                                             </span>
 
                                             {item.pending_count > 0 ? (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                                                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                                                     {item.pending_count} Pending Review
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700">
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                    <CheckCircle2 className="h-3 w-3" />
                                                     All Reviewed
                                                 </span>
                                             )}
                                         </div>
 
-                                        <div className="space-y-1">
-                                            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
+                                        <div>
+                                            <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug">
                                                 {item.title}
                                             </h3>
-                                            <div className="flex items-center gap-2 text-xs text-slate-400 flex-wrap">
+                                            <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap mt-1">
                                                 {item.creator && (
                                                     <span className="flex items-center gap-1">
-                                                        <User className="h-3 w-3 text-slate-400" />
-                                                        <span>Created by {item.creator.name}</span>
+                                                        <User className="h-3.5 w-3.5 text-slate-400" />
+                                                        <span>Created by <strong className="text-slate-600 dark:text-slate-300 font-medium">{item.creator.name}</strong></span>
                                                     </span>
                                                 )}
                                                 {item.due_date && (
                                                     <span className="flex items-center gap-1 font-mono">
-                                                        <Clock className="h-3 w-3 text-slate-400" />
+                                                        <Clock className="h-3.5 w-3.5 text-slate-400" />
                                                         <span>Due {new Date(item.due_date).toLocaleDateString()}</span>
                                                     </span>
                                                 )}
@@ -175,38 +177,36 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                                         </div>
 
                                         {item.description && (
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed max-w-3xl">
                                                 {item.description}
                                             </p>
                                         )}
+                                    </div>
 
-                                        <div className="grid grid-cols-3 gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-center text-xs font-mono">
-                                            <div>
-                                                <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total Marks</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{item.total_marks}M</p>
+                                    {/* Right Action & Stats Section */}
+                                    <div className="flex items-center gap-4 shrink-0 flex-wrap sm:flex-nowrap pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800 justify-between lg:justify-end">
+                                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/40 p-2.5 px-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-center">
+                                            <div className="pr-3 border-r border-slate-200 dark:border-slate-700">
+                                                <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total</p>
+                                                <p className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{item.total_marks}M</p>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Passing</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{item.passing_marks}M</p>
+                                            <div className="pr-3 border-r border-slate-200 dark:border-slate-700">
+                                                <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Pass</p>
+                                                <p className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{item.passing_marks}M</p>
                                             </div>
                                             <div>
                                                 <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Submissions</p>
-                                                <p className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{item.submissions_count || 0}</p>
+                                                <p className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{item.submissions_count || 0}</p>
+                                                <p className="text-[9px] text-slate-400 font-sans font-normal mt-0.5">{item.graded_count || 0} Graded</p>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-400 font-mono">
-                                            {item.graded_count || 0} Graded
-                                        </span>
 
                                         <Link
                                             href={route('admin.courses.assignments.index', item.course_id)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
+                                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition shrink-0"
                                         >
                                             <span>Manage & Grade</span>
-                                            <ArrowRight className="h-3 w-3" />
+                                            <ArrowRight className="h-3.5 w-3.5" />
                                         </Link>
                                     </div>
                                 </div>

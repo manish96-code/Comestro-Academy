@@ -453,7 +453,7 @@ export default function CourseExamPage({ course, exam }) {
                                                 </button>
                                             </div>
 
-                                            <div className="space-y-2.5">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                                 {options.map((opt, idx) => {
                                                     const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
                                                     const letter = optionLetters[idx] || `${idx + 1}`;
@@ -634,8 +634,20 @@ export default function CourseExamPage({ course, exam }) {
                                             {submissionsList.map((sub) => (
                                                 <tr key={sub.id} className="hover:bg-slate-50/60 transition">
                                                     <td className="px-4 py-3 font-semibold text-slate-900">
-                                                        <p>{sub.user?.name || 'Unknown Student'}</p>
-                                                        <p className="text-[10px] text-slate-400 font-mono font-normal">{sub.user?.email}</p>
+                                                        {sub.user ? (
+                                                            <Link
+                                                                href={route('admin.students.show', sub.user.id)}
+                                                                className="group block"
+                                                            >
+                                                                <p className="font-semibold text-slate-900 group-hover:text-indigo-600 transition">{sub.user.name}</p>
+                                                                <p className="text-[10px] text-slate-400 font-mono font-normal group-hover:text-indigo-500/80 transition">{sub.user.email}</p>
+                                                            </Link>
+                                                        ) : (
+                                                            <>
+                                                                <p>Unknown Student</p>
+                                                                <p className="text-[10px] text-slate-400 font-mono font-normal">-</p>
+                                                            </>
+                                                        )}
                                                     </td>
                                                     <td className="px-4 py-3 font-mono font-bold text-slate-800">
                                                         {sub.score} / {sub.total_marks} marks

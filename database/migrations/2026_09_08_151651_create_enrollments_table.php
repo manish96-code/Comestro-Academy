@@ -15,6 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+            $table->foreignId('batch_id')
+                ->nullable()
+                ->after('course_id')
+                ->constrained('course_batches')
+                ->nullOnDelete();
             $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
             $table->timestamp('enrolled_at')->useCurrent();
             $table->timestamps();
