@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { FolderPlus, Edit3, ArrowLeft, Save, Tag, FolderTree, Trash2 } from 'lucide-react';
@@ -190,7 +190,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
 
             {/* CONFIRM DELETE MODAL */}
             {isEdit && (
-                <ConfirmDeleteModal
+                <ConfirmModal
                     isOpen={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={handleDelete}
@@ -202,6 +202,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                         </p>
                     }
                     confirmText="Yes, Delete Category"
+                    variant="danger"
                 />
             )}
         </AdminLayout>

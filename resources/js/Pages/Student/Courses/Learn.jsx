@@ -888,7 +888,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                                     ? 'bg-emerald-100 text-emerald-800'
                                                                                     : 'bg-rose-100 text-rose-800'
                                                                             }`}>
-                                                                                {sub.is_passed ? 'Passed' : 'Completed'}
+                                                                                {sub.is_passed ? 'Passed' : 'Failed'}
                                                                             </span>
                                                                         ) : isLocked ? (
                                                                             <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-amber-50 text-amber-700 border border-amber-200">

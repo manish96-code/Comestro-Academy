@@ -1,6 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
-import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -801,7 +801,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
             )}
 
             {/* CONFIRM DELETE / UNENROLL MODAL */}
-            <ConfirmDeleteModal
+            <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, enrollmentId: null, studentName: '', courseTitle: '' })}
                 onConfirm={handleDeleteEnrollment}
@@ -813,10 +813,11 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                     </p>
                 }
                 confirmText="Yes, Remove Enrollment"
+                variant="danger"
             />
 
             {/* CONFIRM DELETE COURSE MODAL */}
-            <ConfirmDeleteModal
+            <ConfirmModal
                 isOpen={deleteCourseModal.isOpen}
                 onClose={() => setDeleteCourseModal({ isOpen: false, courseId: null, courseTitle: '' })}
                 onConfirm={handleDeleteCourse}
@@ -829,6 +830,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                     </p>
                 }
                 confirmText="Yes, Delete Course"
+                variant="danger"
             />
         </AdminLayout>
     );

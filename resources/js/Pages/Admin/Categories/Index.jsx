@@ -1,6 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
-import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -243,7 +243,7 @@ export default function CategoryIndex({ categories, filters }) {
             </div>
 
             {/* CONFIRM DELETE MODAL */}
-            <ConfirmDeleteModal
+            <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: '' })}
                 onConfirm={handleDeleteCategory}
@@ -255,6 +255,7 @@ export default function CategoryIndex({ categories, filters }) {
                     </p>
                 }
                 confirmText="Yes, Delete Category"
+                variant="danger"
             />
         </AdminLayout>
     );

@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -584,7 +584,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                 </div>
             )}
 
-            <ConfirmDeleteModal
+            <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, enrollmentId: null, courseTitle: '' })}
                 onConfirm={handleDeleteEnrollment}
@@ -596,6 +596,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     </p>
                 }
                 confirmText="Yes, Remove Enrollment"
+                variant="danger"
             />
         </AdminLayout>
     );

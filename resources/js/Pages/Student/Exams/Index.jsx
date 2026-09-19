@@ -276,7 +276,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                                 {status === 'failed' && (
                                                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
                                                         <XCircle className="h-3.5 w-3.5" />
-                                                        Completed • {submission.percentage}%
+                                                        Failed • {submission.percentage}%
                                                     </span>
                                                 )}
 
