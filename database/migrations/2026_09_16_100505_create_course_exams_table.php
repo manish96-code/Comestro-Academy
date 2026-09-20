@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('duration_minutes')->default(30);
             $table->unsignedSmallInteger('marks_per_question')->default(1);
-            $table->unsignedTinyInteger('passing_percentage')->default(70);
+            $table->unsignedTinyInteger('passing_percentage')->default(60);
             $table->boolean('is_published')->default(true);
             $table->integer('sort_order')->default(0);
             $table->timestamps();

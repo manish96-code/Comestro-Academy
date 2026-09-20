@@ -19,7 +19,8 @@ import {
     UserCheck,
     FileCheck,
     Trash2,
-    HelpCircle
+    HelpCircle,
+    ArrowRight
 } from 'lucide-react';
 
 export default function AdminExamsIndex({ exams = { data: [] }, courses = [], stats = {}, filters = {} }) {
@@ -40,7 +41,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        handleFilter(search.trim() || undefined, courseId || undefined);
+        handleFilter(search, courseId);
     };
 
     const clearFilters = () => {
@@ -63,7 +64,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
         description: '',
         duration_minutes: 30,
         marks_per_question: 1,
-        passing_percentage: 70,
+        passing_percentage: 60,
         is_published: true,
     });
 
@@ -74,7 +75,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
             description: '',
             duration_minutes: 30,
             marks_per_question: 1,
-            passing_percentage: 70,
+            passing_percentage: 60,
             is_published: true,
         });
         setIsCreateModalOpen(true);
@@ -397,143 +398,233 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
             {/* Create Exam Modal */}
             {isCreateModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Award className="h-5 w-5 text-indigo-600" />
-                                <h2 className="text-base font-bold text-slate-900 dark:text-white">Create New Exam</h2>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in zoom-in-95 duration-150">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 bg-slate-50/70 dark:bg-slate-800/40">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center shrink-0">
+                                    <Award className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
+                                        Create Course Examination
+                                    </h2>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        Configure assessment parameters, timing, and passing criteria.
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setIsCreateModalOpen(false)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                                title="Close modal"
                             >
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateSubmit} className="p-6 space-y-4 text-xs">
-                            <div>
-                                <InputLabel htmlFor="create_course_id" value="Course *" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
-                                <select
-                                    id="create_course_id"
-                                    value={createData.course_id}
-                                    onChange={(e) => setCreateData('course_id', e.target.value)}
-                                    className="mt-1 block w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-600 focus:ring-indigo-500 font-medium"
-                                    required
-                                >
-                                    <option value="" disabled>Select a course</option>
-                                    {courses.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.title}
-                                        </option>
-                                    ))}
-                                </select>
+                        {/* Modal Form */}
+                        <form onSubmit={handleCreateSubmit} className="p-6 space-y-4.5 text-xs max-h-[80vh] overflow-y-auto">
+                            {/* Course Selection */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <InputLabel
+                                        htmlFor="create_course_id"
+                                        value="Associated Course *"
+                                        className="text-xs font-bold text-slate-800 dark:text-slate-200"
+                                    />
+                                    <span className="text-[11px] font-medium text-slate-400">
+                                        {courses.length} courses available
+                                    </span>
+                                </div>
+                                <div className="relative">
+                                    <select
+                                        id="create_course_id"
+                                        value={createData.course_id}
+                                        onChange={(e) => setCreateData('course_id', e.target.value)}
+                                        className="block w-full text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-white py-2.5 pl-3.5 pr-10 focus:border-indigo-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 transition shadow-2xs"
+                                    >
+                                        <option value="" disabled>Select course to attach exam...</option>
+                                        {courses.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <InputError message={createErrors.course_id} className="mt-1" />
                             </div>
 
-                            <div>
-                                <InputLabel htmlFor="create_title" value="Exam Title *" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
+                            {/* Exam Title */}
+                            <div className="space-y-1.5">
+                                <InputLabel
+                                    htmlFor="create_title"
+                                    value="Exam Title *"
+                                    className="text-xs font-bold text-slate-800 dark:text-slate-200"
+                                />
                                 <TextInput
                                     id="create_title"
                                     type="text"
                                     value={createData.title}
                                     onChange={(e) => setCreateData('title', e.target.value)}
-                                    className="mt-1 block w-full text-xs rounded-xl"
-                                    placeholder="e.g. Midterm Assessment: Core Concepts"
-                                    required
+                                    className="block w-full text-xs font-medium rounded-xl py-2.5 px-3.5 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                    placeholder="e.g. Final Certification Assessment: Architecture & Standards"
                                 />
                                 <InputError message={createErrors.title} className="mt-1" />
                             </div>
 
-                            <div>
-                                <InputLabel htmlFor="create_description" value="Description / Instructions" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
+                            {/* Description / Instructions */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <InputLabel
+                                        htmlFor="create_description"
+                                        value="Student Instructions / Summary"
+                                        className="text-xs font-bold text-slate-800 dark:text-slate-200"
+                                    />
+                                    <span className="text-[10px] text-slate-400 font-medium">Optional</span>
+                                </div>
                                 <textarea
                                     id="create_description"
                                     rows={2}
                                     value={createData.description}
                                     onChange={(e) => setCreateData('description', e.target.value)}
-                                    className="mt-1 block w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-600 focus:ring-indigo-500"
-                                    placeholder="Brief instructions for students taking this exam..."
+                                    className="block w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-400 shadow-2xs transition resize-none"
+                                    placeholder="Brief guidelines displayed to students prior to starting their attempt..."
                                 />
                                 <InputError message={createErrors.description} className="mt-1" />
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <InputLabel htmlFor="create_duration" value="Duration (mins)" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
-                                    <TextInput
-                                        id="create_duration"
-                                        type="number"
-                                        min="0"
-                                        max="360"
-                                        value={createData.duration_minutes}
-                                        onChange={(e) => setCreateData('duration_minutes', e.target.value)}
-                                        className="mt-1 block w-full text-xs rounded-xl"
-                                        required
+                            {/* Assessment Parameters */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                                {/* Duration */}
+                                <div className="space-y-1.5">
+                                    <InputLabel
+                                        htmlFor="create_duration"
+                                        value="Duration (Minutes) *"
+                                        className="text-xs font-bold text-slate-800 dark:text-slate-200"
                                     />
+                                    <div className="relative">
+                                        <TextInput
+                                            id="create_duration"
+                                            type="number"
+                                            min="0"
+                                            max="360"
+                                            value={createData.duration_minutes}
+                                            onChange={(e) => setCreateData('duration_minutes', e.target.value)}
+                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            placeholder="30"
+                                        />
+                                        <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
+                                            mins
+                                        </span>
+                                    </div>
                                     <InputError message={createErrors.duration_minutes} className="mt-1" />
                                 </div>
 
-                                <div>
-                                    <InputLabel htmlFor="create_marks" value="Marks / Question" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
-                                    <TextInput
-                                        id="create_marks"
-                                        type="number"
-                                        min="1"
-                                        max="50"
-                                        value={createData.marks_per_question}
-                                        onChange={(e) => setCreateData('marks_per_question', e.target.value)}
-                                        className="mt-1 block w-full text-xs rounded-xl"
-                                        required
+                                {/* Marks per Question */}
+                                <div className="space-y-1.5">
+                                    <InputLabel
+                                        htmlFor="create_marks"
+                                        value="Marks per Question *"
+                                        className="text-xs font-bold text-slate-800 dark:text-slate-200"
                                     />
+                                    <div className="relative">
+                                        <TextInput
+                                            id="create_marks"
+                                            type="number"
+                                            min="1"
+                                            max="50"
+                                            value={createData.marks_per_question}
+                                            onChange={(e) => setCreateData('marks_per_question', e.target.value)}
+                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            placeholder="1"
+                                        />
+                                        <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
+                                            marks
+                                        </span>
+                                    </div>
                                     <InputError message={createErrors.marks_per_question} className="mt-1" />
                                 </div>
 
-                                <div>
-                                    <InputLabel htmlFor="create_pass" value="Passing %" className="text-xs font-semibold text-slate-700 dark:text-slate-200" />
-                                    <TextInput
-                                        id="create_pass"
-                                        type="number"
-                                        min="1"
-                                        max="100"
-                                        value={createData.passing_percentage}
-                                        onChange={(e) => setCreateData('passing_percentage', e.target.value)}
-                                        className="mt-1 block w-full text-xs rounded-xl"
-                                        required
+                                {/* Passing Percentage */}
+                                <div className="space-y-1.5">
+                                    <InputLabel
+                                        htmlFor="create_pass"
+                                        value="Passing Percentage (%) *"
+                                        className="text-xs font-bold text-slate-800 dark:text-slate-200"
                                     />
+                                    <div className="relative">
+                                        <TextInput
+                                            id="create_pass"
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            value={createData.passing_percentage}
+                                            onChange={(e) => setCreateData('passing_percentage', e.target.value)}
+                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-8 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            placeholder="60"
+                                        />
+                                        <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
+                                            %
+                                        </span>
+                                    </div>
                                     <InputError message={createErrors.passing_percentage} className="mt-1" />
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 pt-2">
-                                <input
-                                    id="create_published"
-                                    type="checkbox"
-                                    checked={createData.is_published}
-                                    onChange={(e) => setCreateData('is_published', e.target.checked)}
-                                    className="rounded border-slate-300 text-indigo-600 shadow-xs focus:ring-indigo-500"
-                                />
-                                <label htmlFor="create_published" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                                    Publish immediately (students can attempt once eligible)
-                                </label>
+                            {/* Publish Immediately Interactive Switch Card */}
+                            <div
+                                onClick={() => setCreateData('is_published', !createData.is_published)}
+                                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                                    createData.is_published
+                                        ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800'
+                                        : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
+                                }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg shrink-0 transition ${
+                                        createData.is_published
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                                    }`}>
+                                        <FileCheck className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold text-slate-900 dark:text-white">
+                                            Publish Exam Immediately
+                                        </p>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                            Students who finish all lectures can attempt this exam.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                                    createData.is_published ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'
+                                }`}>
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition-transform ${
+                                        createData.is_published ? 'translate-x-6' : 'translate-x-1'
+                                    }`} />
+                                </div>
                             </div>
 
-                            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+                            {/* Actions & Footer */}
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
+                                    className="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={createProcessing}
-                                    className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
                                 >
-                                    {createProcessing ? 'Creating...' : 'Create & Configure'}
+                                    <span>{createProcessing ? 'Creating Exam...' : 'Create & Configure Questions'}</span>
+                                    <ArrowRight className="h-4 w-4" />
                                 </button>
                             </div>
                         </form>

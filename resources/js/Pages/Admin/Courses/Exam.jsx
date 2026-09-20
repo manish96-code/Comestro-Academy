@@ -35,7 +35,7 @@ export default function CourseExamPage({ course, exam }) {
         description: exam?.description || 'Complete all questions to verify your learning and earn your course certification.',
         duration_minutes: exam?.duration_minutes ?? 30,
         marks_per_question: exam?.marks_per_question ?? 1,
-        passing_percentage: exam?.passing_percentage ?? 70,
+        passing_percentage: exam?.passing_percentage ?? 60,
         is_published: exam?.is_published ?? true,
     });
 
@@ -77,13 +77,11 @@ export default function CourseExamPage({ course, exam }) {
         }));
         setOptions(next);
     };
-    const handleOptionCorrectChange = handleSelectCorrect;
 
     const handleAddOption = () => {
         if (options.length >= 6) return;
         setOptions([...options, { option_text: '', is_correct: false }]);
     };
-    const addOptionRow = handleAddOption;
 
     const handleRemoveOption = (idx) => {
         if (options.length <= 2) return;
@@ -93,7 +91,6 @@ export default function CourseExamPage({ course, exam }) {
         }
         setOptions(next);
     };
-    const removeOptionRow = handleRemoveOption;
 
     const handleStoreQuestion = (e) => {
         e.preventDefault();
