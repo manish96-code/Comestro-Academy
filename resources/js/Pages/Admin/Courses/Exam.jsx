@@ -77,11 +77,13 @@ export default function CourseExamPage({ course, exam }) {
         }));
         setOptions(next);
     };
+    const handleOptionCorrectChange = handleSelectCorrect;
 
     const handleAddOption = () => {
         if (options.length >= 6) return;
         setOptions([...options, { option_text: '', is_correct: false }]);
     };
+    const addOptionRow = handleAddOption;
 
     const handleRemoveOption = (idx) => {
         if (options.length <= 2) return;
@@ -91,6 +93,7 @@ export default function CourseExamPage({ course, exam }) {
         }
         setOptions(next);
     };
+    const removeOptionRow = handleRemoveOption;
 
     const handleStoreQuestion = (e) => {
         e.preventDefault();
@@ -456,7 +459,7 @@ export default function CourseExamPage({ course, exam }) {
                                                 </label>
                                                 <button
                                                     type="button"
-                                                    onClick={addOptionRow}
+                                                    onClick={handleAddOption}
                                                     className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition"
                                                 >
                                                     <Plus className="h-3.5 w-3.5" /> Add Option
@@ -480,7 +483,7 @@ export default function CourseExamPage({ course, exam }) {
                                                         >
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleOptionCorrectChange(idx)}
+                                                                onClick={() => handleSelectCorrect(idx)}
                                                                 title={isCorrect ? 'Marked as Correct Answer' : 'Click to mark as correct answer'}
                                                                 className={`h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 transition-all ${
                                                                     isCorrect
@@ -511,7 +514,7 @@ export default function CourseExamPage({ course, exam }) {
                                                             {options.length > 2 && (
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => removeOptionRow(idx)}
+                                                                    onClick={() => handleRemoveOption(idx)}
                                                                     className="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition shrink-0"
                                                                     title="Remove option"
                                                                 >

@@ -83,7 +83,7 @@ class CourseExamController extends Controller
     public function show(CourseExam $exam): Response
     {
         $exam->load([
-            'course:id,title,slug,course_type,status',
+            'course:id,title,slug,type,status',
             'questions' => fn ($q) => $q->orderBy('sort_order')->with([
                 'options' => fn ($oq) => $oq->orderBy('sort_order'),
             ]),

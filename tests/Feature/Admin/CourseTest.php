@@ -2,6 +2,7 @@
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseExam;
 use App\Models\User;
 use App\Services\ImageKitService;
 use Illuminate\Http\UploadedFile;
@@ -258,4 +259,35 @@ test('admin cannot delete a category that has courses', function () {
     $this->assertDatabaseHas('categories', [
         'id' => $category->id,
     ]);
+});
+
+test('admin can view course exam builder', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $category = Category::create([
+        'name' => 'Exam Category',
+        'slug' => 'exam-cat-'.uniqid(),
+        'status' => 'active',
+    ]);
+
+    $course = Course::create([
+        'category_id' => $category->id,
+        'title' => 'Exam Course',
+        'slug' => 'exam-course-'.uniqid(),
+        'price' => 1999,
+        'type' => 'recorded',
+        'status' => 'published',
+    ]);
+
+    $exam = CourseExam::create([
+        'course_id' => $course->id,
+        'title' => 'Final Exam',
+        'duration_minutes' => 60,
+        'marks_per_question' => 1,
+        'passing_percentage' => 70,
+        'is_published' => true,
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.exams.show', $exam->id));
+
+    $response->assertOk();
 });

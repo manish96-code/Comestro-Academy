@@ -167,11 +167,11 @@ export default function CourseContent({ course }) {
                                     {course.title}
                                 </h1>
                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${
-                                    course.course_type === 'live'
+                                    (course.type === 'live' || course.course_type === 'live')
                                         ? 'bg-rose-50 text-rose-700 border-rose-200'
                                         : 'bg-indigo-50 text-indigo-700 border-indigo-200'
                                 }`}>
-                                    {course.course_type === 'live' ? (
+                                    {(course.type === 'live' || course.course_type === 'live') ? (
                                         <>
                                             <Radio className="h-2.5 w-2.5 text-rose-500 animate-pulse" />
                                             Live Course
