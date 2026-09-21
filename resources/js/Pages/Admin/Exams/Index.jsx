@@ -3,6 +3,7 @@ import Pagination from '@/Components/Pagination';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -27,6 +28,12 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
     const [search, setSearch] = useState(filters.search || '');
     const [courseId, setCourseId] = useState(filters.course_id || '');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        examId: null,
+        examTitle: '',
+        isDeleting: false,
+    });
 
     const handleFilter = (newSearch, newCourseId) => {
         router.get(
@@ -96,13 +103,34 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
         });
     };
 
-    const handleDeleteExam = (exam) => {
-        if (!confirm(`Are you sure you want to delete the exam "${exam.title}"? All associated questions and student submissions will be permanently deleted.`)) {
-            return;
-        }
+    const openDeleteModal = (exam) => {
+        setDeleteModal({
+            isOpen: true,
+            examId: exam.id,
+            examTitle: exam.title,
+            isDeleting: false,
+        });
+    };
 
-        router.delete(route('admin.exams.destroy', exam.id), {
+    const confirmDeleteExam = () => {
+        if (!deleteModal.examId) return;
+
+        setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+
+        router.delete(route('admin.exams.destroy', deleteModal.examId), {
             preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setDeleteModal({
+                    isOpen: false,
+                    examId: null,
+                    examTitle: '',
+                    isDeleting: false,
+                });
+            },
+            onError: () => {
+                setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+            },
         });
     };
 
@@ -277,8 +305,6 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                         {examList.map((exam) => {
                                             const course = exam.course;
-                                            const marksPerQ = exam.marks_per_question ?? 1;
-                                            const totalMarks = (exam.questions_count ?? 0) * marksPerQ;
 
                                             return (
                                                 <tr key={exam.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
@@ -341,9 +367,6 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
                                                     <td className="px-4 py-3 font-mono font-semibold text-slate-700 dark:text-slate-300">
                                                         {exam.questions_count ?? 0}
-                                                        <span className="text-[10px] text-slate-400 font-normal ml-1">
-                                                            ({totalMarks} marks)
-                                                        </span>
                                                     </td>
 
                                                     <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-300">
@@ -371,8 +394,8 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleDeleteExam(exam)}
-                                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg transition"
+                                                                onClick={() => openDeleteModal(exam)}
+                                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg transition cursor-pointer"
                                                                 title="Delete Exam"
                                                             >
                                                                 <Trash2 className="h-3.5 w-3.5" />
@@ -542,7 +565,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                             placeholder="1"
                                         />
                                         <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
-                                            marks
+                                            pts
                                         </span>
                                     </div>
                                     <InputError message={createErrors.marks_per_question} className="mt-1" />
@@ -631,6 +654,23 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                     </div>
                 </div>
             )}
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, examId: null, examTitle: '', isDeleting: false })}
+                onConfirm={confirmDeleteExam}
+                processing={deleteModal.isDeleting}
+                title="Delete Exam?"
+                message={
+                    <p>
+                        Are you sure you want to delete the exam <span className="font-semibold text-slate-900 dark:text-white">"{deleteModal.examTitle}"</span>? All associated questions and student submissions will be permanently deleted.
+                    </p>
+                }
+                confirmText="Yes, Delete Exam"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </AdminLayout>
     );
 }

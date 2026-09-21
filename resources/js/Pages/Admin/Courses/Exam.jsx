@@ -2,6 +2,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -22,6 +23,11 @@ import {
 
 export default function CourseExamPage({ course, exam }) {
     const [activeTab, setActiveTab] = useState('questions'); // 'questions' | 'submissions'
+    const [deleteQuestionModal, setDeleteQuestionModal] = useState({
+        isOpen: false,
+        questionId: null,
+        isDeleting: false,
+    });
 
     // Form for Exam Settings
     const {
@@ -54,23 +60,29 @@ export default function CourseExamPage({ course, exam }) {
         { option_text: '', is_correct: false },
     ]);
 
+    const [optionsError, setOptionsError] = useState('');
+
     const {
         data: qData,
         setData: setQData,
         processing: qProcessing,
         errors: qErrors,
         reset: resetQuestion,
+        setError: setQError,
+        clearErrors: clearQErrors,
     } = useForm({
         question_text: '',
     });
 
     const handleOptionTextChange = (idx, value) => {
+        if (optionsError) setOptionsError('');
         const next = [...options];
         next[idx].option_text = value;
         setOptions(next);
     };
 
     const handleSelectCorrect = (idx) => {
+        if (optionsError) setOptionsError('');
         const next = options.map((opt, i) => ({
             ...opt,
             is_correct: i === idx,
@@ -94,21 +106,26 @@ export default function CourseExamPage({ course, exam }) {
 
     const handleStoreQuestion = (e) => {
         e.preventDefault();
+        clearQErrors();
+        setOptionsError('');
+
+        let hasError = false;
+
         if (!qData.question_text.trim()) {
-            alert('Please enter the question text.');
-            return;
+            setQError('question_text', 'Please enter the question text.');
+            hasError = true;
         }
 
         const validOptions = options.filter((o) => o.option_text.trim().length > 0);
         if (validOptions.length < 2) {
-            alert('Please provide at least 2 valid options.');
-            return;
+            setOptionsError('Please provide at least 2 valid options.');
+            hasError = true;
+        } else if (!validOptions.some((o) => o.is_correct)) {
+            setOptionsError('Please select the correct option.');
+            hasError = true;
         }
 
-        if (!validOptions.some((o) => o.is_correct)) {
-            alert('Please select the correct option.');
-            return;
-        }
+        if (hasError) return;
 
         router.post(
             route('admin.exams.questions.store', exam.id),
@@ -120,12 +137,21 @@ export default function CourseExamPage({ course, exam }) {
                 preserveScroll: true,
                 onSuccess: () => {
                     resetQuestion();
+                    setOptionsError('');
                     setOptions([
                         { option_text: '', is_correct: true },
                         { option_text: '', is_correct: false },
                         { option_text: '', is_correct: false },
                         { option_text: '', is_correct: false },
                     ]);
+                },
+                onError: (errs) => {
+                    if (errs.question_text) {
+                        setQError('question_text', errs.question_text);
+                    }
+                    if (errs.options) {
+                        setOptionsError(errs.options);
+                    }
                 },
             }
         );
@@ -134,9 +160,30 @@ export default function CourseExamPage({ course, exam }) {
     const handleAddQuestion = handleStoreQuestion;
 
     const handleDeleteQuestion = (questionId) => {
-        if (!confirm('Are you sure you want to delete this question?')) return;
-        router.delete(route('admin.exams.questions.destroy', [exam.id, questionId]), {
+        setDeleteQuestionModal({
+            isOpen: true,
+            questionId,
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteQuestion = () => {
+        if (!deleteQuestionModal.questionId) return;
+
+        setDeleteQuestionModal((prev) => ({ ...prev, isDeleting: true }));
+
+        router.delete(route('admin.exams.questions.destroy', [exam.id, deleteQuestionModal.questionId]), {
             preserveScroll: true,
+            onSuccess: () => {
+                setDeleteQuestionModal({
+                    isOpen: false,
+                    questionId: null,
+                    isDeleting: false,
+                });
+            },
+            onError: () => {
+                setDeleteQuestionModal((prev) => ({ ...prev, isDeleting: false }));
+            },
         });
     };
 
@@ -290,7 +337,6 @@ export default function CourseExamPage({ course, exam }) {
                                                 onChange={(e) => setSettingsData('title', e.target.value)}
                                                 className="mt-1 block w-full text-sm font-medium"
                                                 placeholder="e.g. Master Final Assessment"
-                                                required
                                             />
                                             <InputError message={settingsErrors.title} className="mt-1" />
                                         </div>
@@ -340,7 +386,6 @@ export default function CourseExamPage({ course, exam }) {
                                                     onChange={(e) => setSettingsData('marks_per_question', e.target.value)}
                                                     className="block w-full text-sm font-semibold font-mono pr-16"
                                                     placeholder="1"
-                                                    required
                                                 />
                                                 <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-semibold font-mono">
                                                     {Number(settingsData.marks_per_question) === 1 ? 'Mark' : 'Marks'}
@@ -363,7 +408,6 @@ export default function CourseExamPage({ course, exam }) {
                                                     value={settingsData.duration_minutes}
                                                     onChange={(e) => setSettingsData('duration_minutes', e.target.value)}
                                                     className="mt-1 block w-full text-sm font-mono"
-                                                    required
                                                 />
                                                 <p className="text-[10px] text-slate-400 mt-0.5">0 = Unlimited</p>
                                                 <InputError message={settingsErrors.duration_minutes} className="mt-1" />
@@ -379,7 +423,6 @@ export default function CourseExamPage({ course, exam }) {
                                                     value={settingsData.passing_percentage}
                                                     onChange={(e) => setSettingsData('passing_percentage', e.target.value)}
                                                     className="mt-1 block w-full text-sm font-mono"
-                                                    required
                                                 />
                                                 <p className="text-[10px] text-slate-400 mt-0.5">e.g. 70% to pass</p>
                                                 <InputError message={settingsErrors.passing_percentage} className="mt-1" />
@@ -437,10 +480,12 @@ export default function CourseExamPage({ course, exam }) {
                                                 id="question_text"
                                                 rows={2}
                                                 value={qData.question_text}
-                                                onChange={(e) => setQData('question_text', e.target.value)}
+                                                onChange={(e) => {
+                                                    setQData('question_text', e.target.value);
+                                                    if (qErrors.question_text) clearQErrors('question_text');
+                                                }}
                                                 className="mt-1 block w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 shadow-2xs focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-400"
                                                 placeholder="e.g. Which hook is used for managing side effects in React?"
-                                                required
                                             />
                                             <InputError message={qErrors.question_text} className="mt-1" />
                                         </div>
@@ -499,7 +544,6 @@ export default function CourseExamPage({ course, exam }) {
                                                                 className={`block w-full text-sm px-3 py-2 bg-transparent border-0 focus:ring-0 focus:outline-hidden placeholder:text-slate-400 font-medium ${
                                                                     isCorrect ? 'text-emerald-950 font-semibold' : 'text-slate-800'
                                                                 }`}
-                                                                required
                                                             />
 
                                                             {isCorrect && (
@@ -522,6 +566,7 @@ export default function CourseExamPage({ course, exam }) {
                                                     );
                                                 })}
                                             </div>
+                                            <InputError message={optionsError || qErrors.options} className="mt-1.5" />
                                         </div>
 
                                         <div className="flex justify-end pt-3">
@@ -697,6 +742,19 @@ export default function CourseExamPage({ course, exam }) {
                     )}
                 </div>
             </div>
+
+            {/* Confirm Delete Question Modal */}
+            <ConfirmModal
+                isOpen={deleteQuestionModal.isOpen}
+                onClose={() => setDeleteQuestionModal({ isOpen: false, questionId: null, isDeleting: false })}
+                onConfirm={confirmDeleteQuestion}
+                processing={deleteQuestionModal.isDeleting}
+                title="Delete Question?"
+                message="Are you sure you want to delete this question? This action cannot be undone."
+                confirmText="Yes, Delete Question"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </AdminLayout>
     );
 }

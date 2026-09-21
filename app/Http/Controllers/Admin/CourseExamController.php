@@ -120,10 +120,9 @@ class CourseExamController extends Controller
     // Delete an exam
     public function destroy(CourseExam $exam): RedirectResponse
     {
-        $courseId = $exam->course_id;
         $exam->delete();
 
-        return redirect()->route('admin.exams.index', ['course_id' => $courseId])->with('success', 'Exam deleted successfully.');
+        return back()->with('success', 'Exam deleted successfully.');
     }
 
     // Store a new question with options
