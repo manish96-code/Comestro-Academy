@@ -167,4 +167,65 @@ class CourseExamController extends Controller
 
         return back()->with('success', 'Exam question deleted successfully.');
     }
+
+    // Display individual student's exam submission review
+    public function showSubmission(CourseExam $exam, ExamSubmission $submission): Response
+    {
+        if ($submission->course_exam_id !== $exam->id) {
+            abort(404);
+        }
+
+        $exam->load([
+            'course:id,title,slug',
+            'questions' => fn ($q) => $q->orderBy('sort_order')->with([
+                'options' => fn ($oq) => $oq->orderBy('sort_order'),
+            ]),
+        ]);
+
+        $submission->load('user:id,name,email');
+
+        $marksPerQ = $exam->marks_per_question ?? 1;
+        $totalMarks = $exam->questions->sum(fn ($q) => $q->marks ?: $marksPerQ) ?: ($exam->questions->count() * $marksPerQ);
+
+        return Inertia::render('Admin/Exams/Submission', [
+            'course' => $exam->course,
+            'exam' => [
+                'id' => $exam->id,
+                'title' => $exam->title,
+                'description' => $exam->description,
+                'duration_minutes' => $exam->duration_minutes,
+                'marks_per_question' => $marksPerQ,
+                'passing_percentage' => $exam->passing_percentage,
+                'total_marks' => $totalMarks,
+            ],
+            'questions' => $exam->questions->map(function ($q) {
+                return [
+                    'id' => $q->id,
+                    'question_text' => $q->question_text,
+                    'question_type' => $q->question_type,
+                    'marks' => $q->marks,
+                    'explanation' => $q->explanation,
+                    'sort_order' => $q->sort_order,
+                    'options' => $q->options->map(function ($opt) {
+                        return [
+                            'id' => $opt->id,
+                            'option_text' => $opt->option_text,
+                            'is_correct' => (bool) $opt->is_correct,
+                            'sort_order' => $opt->sort_order,
+                        ];
+                    }),
+                ];
+            }),
+            'submission' => [
+                'id' => $submission->id,
+                'score' => $submission->score,
+                'total_marks' => $submission->total_marks,
+                'percentage' => $submission->percentage,
+                'is_passed' => $submission->is_passed,
+                'answers' => $submission->answers,
+                'submitted_at' => $submission->submitted_at?->format('M d, Y h:i A'),
+                'user' => $submission->user,
+            ],
+        ]);
+    }
 }

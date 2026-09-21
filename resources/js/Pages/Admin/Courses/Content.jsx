@@ -463,7 +463,6 @@ export default function CourseContent({ course }) {
                                             value={data.new_module_name}
                                             onChange={(e) => setData('new_module_name', e.target.value)}
                                             className="w-full text-xs sm:text-sm py-2 px-3"
-                                            required
                                         />
                                     </div>
                                 )}
@@ -481,7 +480,6 @@ export default function CourseContent({ course }) {
                                         onChange={(e) => setData('title', e.target.value)}
                                         placeholder="e.g. Introduction to Routing & Middleware"
                                         className="w-full text-xs sm:text-sm py-2 px-3 mt-1"
-                                        required
                                     />
                                     <InputError message={errors.title} />
                                 </div>

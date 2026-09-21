@@ -116,6 +116,53 @@ test('admin can add question with options and delete it', function () {
     $this->assertDatabaseMissing('exam_questions', ['id' => $question->id]);
 });
 
+test('admin can view student exam submission review page', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $student = User::factory()->create(['role' => 'student']);
+
+    $exam = CourseExam::create([
+        'course_id' => $this->course->id,
+        'title' => 'Test Assessment',
+        'duration_minutes' => 30,
+        'marks_per_question' => 1,
+        'passing_percentage' => 70,
+        'is_published' => true,
+    ]);
+
+    $question = ExamQuestion::create([
+        'course_exam_id' => $exam->id,
+        'question_text' => 'What is Laravel?',
+        'sort_order' => 1,
+    ]);
+
+    $submission = ExamSubmission::create([
+        'course_exam_id' => $exam->id,
+        'user_id' => $student->id,
+        'score' => 1,
+        'total_marks' => 1,
+        'percentage' => 100,
+        'is_passed' => true,
+        'answers' => [$question->id => 1],
+        'submitted_at' => now(),
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.exams.submissions.show', [
+        'exam' => $exam->id,
+        'submission' => $submission->id,
+    ]));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Admin/Exams/Submission')
+        ->has('course')
+        ->has('exam')
+        ->has('questions')
+        ->has('submission')
+        ->where('submission.id', $submission->id)
+        ->where('submission.user.id', $student->id)
+    );
+});
+
 test('student cannot access exam if course progress is under 100%', function () {
     $student = User::factory()->create(['role' => 'student']);
 

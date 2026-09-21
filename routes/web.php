@@ -121,6 +121,7 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::delete('/exams/{exam}', [AdminCourseExamController::class, 'destroy'])->name('exams.destroy');
     Route::post('/exams/{exam}/questions', [AdminCourseExamController::class, 'storeQuestion'])->name('exams.questions.store');
     Route::delete('/exams/{exam}/questions/{question}', [AdminCourseExamController::class, 'deleteQuestion'])->name('exams.questions.destroy');
+    Route::get('/exams/{exam}/submissions/{submission}', [AdminCourseExamController::class, 'showSubmission'])->name('exams.submissions.show');
 
     // Admin Course Assignments
     Route::get('/assignments', [AdminCourseAssignmentController::class, 'globalIndex'])->name('assignments.index');

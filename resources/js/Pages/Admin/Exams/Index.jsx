@@ -346,11 +346,10 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                                     </td>
 
                                                     <td className="px-4 py-3">
-                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${
-                                                            exam.is_published
+                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${exam.is_published
                                                                 ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                                                                 : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                                                        }`}>
+                                                            }`}>
                                                             {exam.is_published ? (
                                                                 <>
                                                                     <CheckCircle2 className="h-3 w-3 text-emerald-600" />
@@ -600,18 +599,16 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             {/* Publish Immediately Interactive Switch Card */}
                             <div
                                 onClick={() => setCreateData('is_published', !createData.is_published)}
-                                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                                    createData.is_published
+                                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${createData.is_published
                                         ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800'
                                         : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg shrink-0 transition ${
-                                        createData.is_published
+                                    <div className={`p-2 rounded-lg shrink-0 transition ${createData.is_published
                                             ? 'bg-indigo-600 text-white'
                                             : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-                                    }`}>
+                                        }`}>
                                         <FileCheck className="h-4 w-4" />
                                     </div>
                                     <div>
@@ -623,12 +620,10 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                         </p>
                                     </div>
                                 </div>
-                                <div className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-                                    createData.is_published ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'
-                                }`}>
-                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition-transform ${
-                                        createData.is_published ? 'translate-x-6' : 'translate-x-1'
-                                    }`} />
+                                <div className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${createData.is_published ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'
+                                    }`}>
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition-transform ${createData.is_published ? 'translate-x-6' : 'translate-x-1'
+                                        }`} />
                                 </div>
                             </div>
 
