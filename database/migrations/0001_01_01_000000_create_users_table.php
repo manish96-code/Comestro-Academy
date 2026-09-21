@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->index();
             $table->enum('role', ['student', 'instructor', 'admin'])->default('student');
             $table->string('profile_pic')->nullable();
             $table->string('phone')->nullable();
