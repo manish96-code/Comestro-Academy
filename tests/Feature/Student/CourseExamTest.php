@@ -53,6 +53,7 @@ test('admin can create and update exam settings', function () {
     $response->assertSessionHas('success');
     $this->assertDatabaseHas('course_exams', [
         'course_id' => $this->course->id,
+        'created_by' => $admin->id,
         'title' => 'Certification Exam',
         'duration_minutes' => 45,
         'marks_per_question' => 2,
@@ -60,6 +61,7 @@ test('admin can create and update exam settings', function () {
     ]);
 
     $exam = CourseExam::where('course_id', $this->course->id)->first();
+    expect($exam->creator->id)->toBe($admin->id);
     $updateResponse = $this->actingAs($admin)->post(route('admin.exams.settings.save', $exam->id), [
         'title' => 'Updated Certification Exam',
         'description' => 'Updated description',

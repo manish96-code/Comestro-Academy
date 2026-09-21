@@ -21,7 +21,8 @@ import {
     FileCheck,
     Trash2,
     HelpCircle,
-    ArrowRight
+    ArrowRight,
+    User,
 } from 'lucide-react';
 
 export default function AdminExamsIndex({ exams = { data: [] }, courses = [], stats = {}, filters = {} }) {
@@ -318,8 +319,14 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                                                 >
                                                                     {exam.title}
                                                                 </Link>
+                                                                {exam.creator && (
+                                                                    <p className="text-[10px] text-slate-500 flex items-center gap-1 font-normal mt-0.5">
+                                                                        <User className="h-3 w-3 text-slate-400 shrink-0" />
+                                                                        <span>Created by <strong className="text-slate-700 dark:text-slate-300 font-medium">{exam.creator.name}</strong></span>
+                                                                    </p>
+                                                                )}
                                                                 {exam.description && (
-                                                                    <p className="text-[10px] text-slate-400 line-clamp-1 font-normal">
+                                                                    <p className="text-[10px] text-slate-400 line-clamp-1 font-normal mt-0.5">
                                                                         {exam.description}
                                                                     </p>
                                                                 )}

@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     ArrowLeft,
     GraduationCap,
@@ -20,16 +20,44 @@ import {
     HelpCircle,
     UserCheck,
     Eye,
+    User,
 } from 'lucide-react';
 
-export default function CourseExamPage({ course, exam }) {
+export default function CourseExamPage({ course, exam, initialTab = 'questions' }) {
     const [activeTab, setActiveTab] = useState(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-            if (params.get('tab') === 'submissions') return 'submissions';
+            const tabParam = params.get('tab');
+            if (tabParam === 'submissions' || tabParam === 'questions') return tabParam;
         }
-        return 'questions';
+        return initialTab || 'questions';
     });
+
+    // Keep activeTab synced with URL so refreshing the page preserves the tab
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (activeTab === 'submissions') {
+                params.set('tab', 'submissions');
+            } else {
+                params.delete('tab');
+            }
+            const queryStr = params.toString();
+            const newUrl = queryStr ? `${window.location.pathname}?${queryStr}` : window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, [activeTab]);
+
+    // Listen to browser forward/back buttons
+    useEffect(() => {
+        const onPopState = () => {
+            const params = new URLSearchParams(window.location.search);
+            setActiveTab(params.get('tab') === 'submissions' ? 'submissions' : 'questions');
+        };
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
+    }, []);
+
     const [deleteQuestionModal, setDeleteQuestionModal] = useState({
         isOpen: false,
         questionId: null,
@@ -223,9 +251,15 @@ export default function CourseExamPage({ course, exam }) {
                                     {exam?.is_published ? 'Published' : 'Draft / Unpublished'}
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-500 font-mono mt-0.5">
-                                {course.title} • Students unlock this exam upon 100% lecture completion
-                            </p>
+                            <div className="flex items-center gap-2.5 text-xs text-slate-500 font-medium mt-1 flex-wrap">
+                                <span>{course.title} • Students unlock this exam upon 100% lecture completion</span>
+                                {exam?.creator && (
+                                    <span className="inline-flex items-center gap-1 text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md text-[11px] font-medium shadow-2xs">
+                                        <User className="h-3 w-3 text-slate-400" />
+                                        <span>Created by <strong className="text-slate-800 font-semibold">{exam.creator.name}</strong></span>
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -280,7 +314,11 @@ export default function CourseExamPage({ course, exam }) {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
+                        <div
+                            onClick={() => setActiveTab('submissions')}
+                            className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs cursor-pointer hover:border-indigo-300 hover:shadow-2xs transition"
+                            title="Click to view Student Results"
+                        >
                             <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
                                 <UserCheck className="h-5 w-5" />
                             </div>

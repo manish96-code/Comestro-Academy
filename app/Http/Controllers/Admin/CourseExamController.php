@@ -20,6 +20,7 @@ class CourseExamController extends Controller
         $query = CourseExam::query()->with([
             'course:id,title,slug,thumbnail,category_id',
             'course.category:id,name',
+            'creator:id,name,email',
         ])->withCount(['questions', 'submissions']);
 
         if ($request->filled('search')) {
@@ -72,6 +73,7 @@ class CourseExamController extends Controller
             'sort_order' => ['nullable', 'integer'],
         ]);
 
+        $validated['created_by'] = $request->user()?->id;
         $validated['sort_order'] = $validated['sort_order'] ?? (($course->exams()->max('sort_order') ?? 0) + 1);
 
         $exam = $course->exams()->create($validated);
@@ -80,10 +82,11 @@ class CourseExamController extends Controller
     }
 
     // Display Course Exam Management & Builder
-    public function show(CourseExam $exam): Response
+    public function show(Request $request, CourseExam $exam): Response
     {
         $exam->load([
             'course:id,title,slug,type,status',
+            'creator:id,name,email',
             'questions' => fn ($q) => $q->orderBy('sort_order')->with([
                 'options' => fn ($oq) => $oq->orderBy('sort_order'),
             ]),
@@ -93,6 +96,7 @@ class CourseExamController extends Controller
         return Inertia::render('Admin/Courses/Exam', [
             'course' => $exam->course,
             'exam' => $exam,
+            'initialTab' => $request->query('tab', 'questions'),
         ]);
     }
 

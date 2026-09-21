@@ -31,6 +31,7 @@ class CourseExamSeeder extends Seeder
                 ],
                 [
                     'description' => 'Comprehensive evaluation testing your knowledge on Eloquent ORM, Inertia v2 deferred props, authentication, and REST API architecture.',
+                    'created_by' => $admin?->id,
                     'duration_minutes' => 30,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
@@ -158,6 +159,7 @@ class CourseExamSeeder extends Seeder
                 ],
                 [
                     'description' => 'Midterm quiz covering Laravel routing, controllers, middleware, and request validation.',
+                    'created_by' => $admin?->id,
                     'duration_minutes' => 15,
                     'marks_per_question' => 1,
                     'passing_percentage' => 60,
@@ -209,6 +211,7 @@ class CourseExamSeeder extends Seeder
                 ],
                 [
                     'description' => 'Test your proficiency in Server Components, Server Actions, TypeScript strict types, and App Router caching.',
+                    'created_by' => $admin?->id,
                     'duration_minutes' => 25,
                     'marks_per_question' => 1,
                     'passing_percentage' => 60,
@@ -300,6 +303,7 @@ class CourseExamSeeder extends Seeder
                 ],
                 [
                     'description' => 'Test your core understanding of semantic HTML5, modern flexbox & grid CSS layout systems, and modern ES6+ JavaScript.',
+                    'created_by' => $admin?->id,
                     'duration_minutes' => 20,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
@@ -380,6 +384,7 @@ class CourseExamSeeder extends Seeder
                 ],
                 [
                     'description' => 'Verify your command over Docker multi-stage builds, Kubernetes Pod deployments, and CI/CD pipelines.',
+                    'created_by' => $admin?->id,
                     'duration_minutes' => 30,
                     'marks_per_question' => 2,
                     'passing_percentage' => 70,
