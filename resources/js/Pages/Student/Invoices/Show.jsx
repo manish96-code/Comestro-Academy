@@ -237,8 +237,14 @@ export default function InvoiceShow({ invoice, enrollmentId }) {
                                 </div>
                                 {invoice.course.discount_price !== null && invoice.course.discount_price < invoice.course.original_price && (
                                     <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                                        <span>Discount:</span>
+                                        <span>Course Discount:</span>
                                         <span className="font-mono">-₹{(Number(invoice.course.original_price) - Number(invoice.course.discount_price)).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {invoice.course.coupon_code && invoice.course.coupon_discount && (
+                                    <div className="flex justify-between text-indigo-600 dark:text-indigo-400 font-medium">
+                                        <span>Coupon Applied ({invoice.course.coupon_code}):</span>
+                                        <span className="font-mono">-₹{Number(invoice.course.coupon_discount).toFixed(2)}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between text-slate-500 dark:text-slate-400">

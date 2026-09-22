@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\CouponService;
 use App\Services\RazorpayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,7 @@ use Throwable;
 class PaymentController extends Controller
 {
     //  Create a Razorpay order for enrolling in a paid course, or directly enroll if free.
-    public function createOrder(Request $request, Course $course, RazorpayService $razorpay): JsonResponse
+    public function createOrder(Request $request, Course $course, RazorpayService $razorpay, CouponService $couponService): JsonResponse
     {
         $user = $request->user();
 
@@ -53,20 +54,37 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'batch_id' => $batchRules,
+            'coupon_code' => ['nullable', 'string', 'max:50'],
         ], [
             'batch_id.required' => 'Please select a batch timing to enroll in this live cohort.',
             'batch_id.exists' => 'The selected batch timing is invalid or no longer available.',
         ]);
 
         $batchId = $validated['batch_id'] ?? null;
+        $couponCode = $validated['coupon_code'] ?? null;
 
-        // Determine effective payable price
+        // Determine effective base price
         $price = (float) $course->price;
         $discountPrice = $course->discount_price !== null ? (float) $course->discount_price : null;
+        $effectivePrice = ($discountPrice !== null && $discountPrice < $price) ? $discountPrice : $price;
 
-        $payableAmount = ($discountPrice !== null && $discountPrice < $price) ? $discountPrice : $price;
+        $coupon = null;
+        $couponDiscount = 0.00;
+        $payableAmount = $effectivePrice;
 
-        // If the course is free (₹0), enroll immediately without payment
+        if ($couponCode) {
+            $couponResult = $couponService->validate($couponCode, $course, $user);
+            if (! $couponResult['valid']) {
+                return response()->json([
+                    'message' => $couponResult['message'],
+                ], 422);
+            }
+            $coupon = $couponResult['coupon'];
+            $couponDiscount = $couponResult['discount_amount'];
+            $payableAmount = $couponResult['payable_amount'];
+        }
+
+        // If the payable amount is free (₹0), enroll immediately without payment
         if ($payableAmount <= 0) {
             $enrollment = Enrollment::firstOrCreate(
                 ['user_id' => $user->id, 'course_id' => $course->id],
@@ -77,7 +95,11 @@ class PaymentController extends Controller
                 $enrollment->update(['batch_id' => $batchId]);
             }
 
-            Invoice::createSnapshot($enrollment);
+            if ($coupon && $couponDiscount > 0) {
+                $couponService->recordUsage($coupon, $user, $course, $couponDiscount, $enrollment);
+            }
+
+            Invoice::createSnapshot($enrollment, null, $coupon, $couponDiscount);
 
             StudentEnrolledEvent::dispatchSafely($enrollment);
 
@@ -103,6 +125,7 @@ class PaymentController extends Controller
                     'course_title' => mb_substr($course->title, 0, 40),
                     'user_id' => (string) $user->id,
                     'batch_id' => (string) ($batchId ?? ''),
+                    'coupon_code' => (string) ($coupon?->code ?? ''),
                 ]
             );
 
@@ -123,6 +146,7 @@ class PaymentController extends Controller
                 'amount' => $order['amount'],
                 'currency' => 'INR',
                 'batch_id' => $batchId,
+                'coupon_code' => $coupon?->code,
                 'course' => [
                     'id' => $course->id,
                     'title' => $course->title,
@@ -145,7 +169,7 @@ class PaymentController extends Controller
     /**
      * Verify payment signature from Razorpay and activate course enrollment.
      */
-    public function verifyPayment(Request $request, Course $course, RazorpayService $razorpay): JsonResponse|RedirectResponse
+    public function verifyPayment(Request $request, Course $course, RazorpayService $razorpay, CouponService $couponService): JsonResponse|RedirectResponse
     {
         $user = $request->user();
 
@@ -158,12 +182,14 @@ class PaymentController extends Controller
             'razorpay_payment_id' => ['required', 'string'],
             'razorpay_signature' => ['required', 'string'],
             'batch_id' => ['nullable', 'integer'],
+            'coupon_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         $orderId = $validated['razorpay_order_id'];
         $paymentId = $validated['razorpay_payment_id'];
         $signature = $validated['razorpay_signature'];
         $batchId = $validated['batch_id'] ?? null;
+        $couponCode = $validated['coupon_code'] ?? null;
 
         // Retrieve recorded pending payment
         $payment = Payment::where('razorpay_order_id', $orderId)
@@ -222,7 +248,21 @@ class PaymentController extends Controller
             $enrollment->update(['batch_id' => $batchId]);
         }
 
-        Invoice::createSnapshot($enrollment, $payment);
+        $coupon = null;
+        $couponDiscount = 0.00;
+        if ($couponCode) {
+            $couponResult = $couponService->validate($couponCode, $course, $user);
+            if ($couponResult['valid']) {
+                $coupon = $couponResult['coupon'];
+                $couponDiscount = $couponResult['discount_amount'];
+            }
+        }
+
+        if ($coupon && $couponDiscount > 0) {
+            $couponService->recordUsage($coupon, $user, $course, $couponDiscount, $enrollment, $payment);
+        }
+
+        Invoice::createSnapshot($enrollment, $payment, $coupon, $couponDiscount);
 
         StudentEnrolledEvent::dispatchSafely($enrollment);
 

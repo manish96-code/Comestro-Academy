@@ -69,6 +69,13 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    // Coupons relationship
+    public function coupons(): BelongsToMany
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_courses')
+            ->withTimestamps();
+    }
+
     // Payments relationship
     public function payments(): HasMany
     {

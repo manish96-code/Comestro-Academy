@@ -67,7 +67,7 @@ class Invoice extends Model
         return $this->belongsTo(Payment::class);
     }
 
-    public static function createSnapshot(Enrollment $enrollment, ?Payment $payment = null): self
+    public static function createSnapshot(Enrollment $enrollment, ?Payment $payment = null, ?Coupon $coupon = null, float $couponDiscount = 0.00): self
     {
         $existing = self::where('enrollment_id', $enrollment->id)->first();
         if ($existing) {
@@ -89,6 +89,14 @@ class Invoice extends Model
                 ->first();
         }
 
+        if (! $coupon) {
+            $usage = CouponUsage::where('enrollment_id', $enrollment->id)->first();
+            if ($usage) {
+                $coupon = $usage->coupon;
+                $couponDiscount = (float) $usage->discount_amount;
+            }
+        }
+
         $user = $enrollment->user;
         $course = $enrollment->course;
         $batch = $enrollment->batch;
@@ -102,7 +110,11 @@ class Invoice extends Model
         $discountPrice = $course?->discount_price !== null ? (float) $course->discount_price : null;
         $effectivePrice = ($discountPrice !== null && $discountPrice < $originalPrice) ? $discountPrice : $originalPrice;
 
-        $paidAmount = $payment ? (float) $payment->amount : ($effectivePrice <= 0 ? 0.00 : 0.00);
+        $paidAmount = $payment ? (float) $payment->amount : 0.00;
+
+        $paymentMethod = $payment
+            ? 'Razorpay Secure Payment'
+            : ($coupon ? "Coupon Promotion ({$coupon->code})" : 'Complimentary / Free Enrollment');
 
         return self::create([
             'invoice_number' => $invoiceNumber,
@@ -137,13 +149,15 @@ class Invoice extends Model
                 ] : null,
                 'original_price' => $originalPrice,
                 'discount_price' => $discountPrice,
+                'coupon_code' => $coupon?->code,
+                'coupon_discount' => $couponDiscount > 0 ? $couponDiscount : null,
             ],
 
             // 3. Payment & Financial details
             'amount' => $paidAmount,
             'currency' => $payment?->currency ?? 'INR',
-            'payment_method' => $payment ? 'Razorpay Secure Payment' : 'Complimentary / Free Enrollment',
-            'transaction_id' => $payment?->razorpay_payment_id ?? 'FREE-ADM-'.str_pad((string) $enrollment->id, 6, '0', STR_PAD_LEFT),
+            'payment_method' => $paymentMethod,
+            'transaction_id' => $payment?->razorpay_payment_id ?? ($coupon ? 'COUPON-'.$coupon->code.'-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT) : 'FREE-ADM-'.str_pad((string) $enrollment->id, 6, '0', STR_PAD_LEFT)),
             'order_id' => $payment?->razorpay_order_id,
             'status' => 'PAID',
             'paid_at' => $payment?->created_at ?? $enrolledDate,

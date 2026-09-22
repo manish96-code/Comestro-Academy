@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\CourseAssignmentController as AdminCourseAssignmentController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseExamController as AdminCourseExamController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Student\CouponController as StudentCouponController;
 use App\Http\Controllers\Student\CourseAssignmentController as StudentCourseAssignmentController;
 use App\Http\Controllers\Student\CourseExamController as StudentCourseExamController;
 use App\Http\Controllers\Student\InvoiceController;
@@ -130,6 +132,15 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'update'])->name('courses.assignments.update');
     Route::delete('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'destroy'])->name('courses.assignments.destroy');
     Route::post('/assignments/submissions/{submission}/grade', [AdminCourseAssignmentController::class, 'grade'])->name('assignments.submissions.grade');
+
+    // Admin Coupons & Promotions
+    Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+    Route::get('/coupons/create', [AdminCouponController::class, 'create'])->name('coupons.create');
+    Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+    Route::get('/coupons/{coupon}/edit', [AdminCouponController::class, 'edit'])->name('coupons.edit');
+    Route::match(['patch', 'put'], '/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
+    Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
+    Route::patch('/coupons/{coupon}/toggle-status', [AdminCouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
 });
 
 // Public Course Catalog & Detail Page
@@ -170,8 +181,9 @@ Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifica
     Route::delete('/clear', [NotificationController::class, 'clear'])->name('clear');
 });
 
-// Razorpay Course Enrollment Payment Routes
+// Razorpay Course Enrollment Payment Routes & Coupon Validation
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/courses/{course}/apply-coupon', [StudentCouponController::class, 'apply'])->name('courses.apply-coupon');
     Route::post('/courses/{course}/payment/create-order', [PaymentController::class, 'createOrder'])->name('courses.payment.create-order');
     Route::post('/courses/{course}/payment/verify', [PaymentController::class, 'verifyPayment'])->name('courses.payment.verify');
 });

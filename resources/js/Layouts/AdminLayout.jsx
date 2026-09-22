@@ -21,7 +21,8 @@ import {
     ShieldCheck,
     UserCheck,
     Award,
-    ClipboardList
+    ClipboardList,
+    Ticket
 } from 'lucide-react';
 
 export default function AdminLayout({ header, children }) {
@@ -76,6 +77,12 @@ export default function AdminLayout({ header, children }) {
                     href: route('admin.categories.index', undefined, false),
                     active: route().current('admin.categories.*'),
                     icon: FolderTree,
+                },
+                {
+                    name: 'Coupons & Discounts',
+                    href: route('admin.coupons.index', undefined, false),
+                    active: route().current('admin.coupons.*'),
+                    icon: Ticket,
                 },
                 {
                     name: 'Live Class Control',

@@ -107,4 +107,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(CourseAssignment::class, 'created_by');
     }
+
+    public function couponUsages(): HasMany
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
 }

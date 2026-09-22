@@ -33,7 +33,8 @@ import {
     Compass,
     FileText,
     Radio,
-    Calendar
+    Calendar,
+    Ticket
 } from 'lucide-react';
 
 const getCourseImage = (c) => {
@@ -106,6 +107,55 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     const [openModules, setOpenModules] = useState({ 0: true, 1: true });
     const [openFaq, setOpenFaq] = useState({ 0: true });
 
+    // Coupon states
+    const [couponCodeInput, setCouponCodeInput] = useState('');
+    const [applyingCoupon, setApplyingCoupon] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [couponError, setCouponError] = useState('');
+
+    const handleApplyCoupon = async (e) => {
+        e?.preventDefault();
+        if (!user) {
+            toast.error('Please log in or create an account to apply discount coupons.');
+            router.visit(route('login'));
+            return;
+        }
+
+        const trimmed = couponCodeInput.trim().toUpperCase();
+        if (!trimmed) {
+            setCouponError('Please enter a coupon code.');
+            return;
+        }
+
+        setApplyingCoupon(true);
+        setCouponError('');
+
+        try {
+            const { data } = await axios.post(route('courses.apply-coupon', course.id), {
+                code: trimmed,
+            });
+
+            if (data && data.valid) {
+                setAppliedCoupon(data);
+                toast.success(`Coupon '${data.coupon?.code || trimmed}' applied!`);
+            }
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Invalid or inapplicable coupon code.';
+            setCouponError(msg);
+            setAppliedCoupon(null);
+            toast.error(msg);
+        } finally {
+            setApplyingCoupon(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponCodeInput('');
+        setCouponError('');
+        toast('Coupon removed.', { icon: 'ℹ️' });
+    };
+
     useEffect(() => {
         if (flash?.success) {
             toast.success(flash.success);
@@ -174,6 +224,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         try {
             const { data } = await axios.post(route('courses.payment.create-order', course.id), {
                 batch_id: selectedBatchId,
+                coupon_code: appliedCoupon ? appliedCoupon.coupon?.code : undefined,
             });
 
             if (data.free) {
@@ -205,6 +256,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                     course_id: String(data.course.id),
                     user_id: String(user.id),
                     batch_id: String(selectedBatchId || ''),
+                    coupon_code: String(appliedCoupon ? appliedCoupon.coupon?.code : ''),
                 },
                 theme: {
                     color: '#2563eb',
@@ -223,6 +275,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
                             batch_id: selectedBatchId,
+                            coupon_code: appliedCoupon ? appliedCoupon.coupon?.code : undefined,
                         },
                         {
                             preserveScroll: true,
@@ -730,27 +783,99 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         Cohort Tuition
                                     </div>
                                     <div className="flex items-baseline gap-2 mt-0.5">
-                                        <span className={`text-2xl font-bold tracking-tight ${
-                                            isDark ? 'text-white' : 'text-slate-900'
-                                        }`}>
-                                            {formattedPrice}
-                                        </span>
-                                        {formattedOriginalPrice && (
-                                            <span className={`text-xs line-through ${
-                                                isDark ? 'text-slate-500' : 'text-slate-400'
-                                            }`}>
-                                                {formattedOriginalPrice}
-                                            </span>
-                                        )}
-                                        {discountPercent && (
-                                            <span className={`text-xs font-semibold ${
-                                                isDark ? 'text-emerald-400' : 'text-emerald-600'
-                                            }`}>
-                                                {discountPercent}% off
-                                            </span>
+                                        {appliedCoupon ? (
+                                            <>
+                                                <span className={`text-2xl font-bold tracking-tight ${
+                                                    isDark ? 'text-emerald-400' : 'text-emerald-600'
+                                                }`}>
+                                                    {appliedCoupon.payable_amount <= 0 ? 'FREE' : appliedCoupon.formatted_payable}
+                                                </span>
+                                                <span className={`text-xs line-through ${
+                                                    isDark ? 'text-slate-500' : 'text-slate-400'
+                                                }`}>
+                                                    {formattedPrice}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className={`text-2xl font-bold tracking-tight ${
+                                                    isDark ? 'text-white' : 'text-slate-900'
+                                                }`}>
+                                                    {formattedPrice}
+                                                </span>
+                                                {formattedOriginalPrice && (
+                                                    <span className={`text-xs line-through ${
+                                                        isDark ? 'text-slate-500' : 'text-slate-400'
+                                                    }`}>
+                                                        {formattedOriginalPrice}
+                                                    </span>
+                                                )}
+                                                {discountPercent && (
+                                                    <span className={`text-xs font-semibold ${
+                                                        isDark ? 'text-emerald-400' : 'text-emerald-600'
+                                                    }`}>
+                                                        {discountPercent}% off
+                                                    </span>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>
+
+                                {/* Coupon Code Application Area */}
+                                {!isEnrolled && (
+                                    <div className="space-y-1.5 max-w-sm">
+                                        {appliedCoupon ? (
+                                            <div className="flex items-center justify-between p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">
+                                                <div className="flex items-center gap-1.5 font-mono text-emerald-800 dark:text-emerald-300">
+                                                    <Ticket className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                    <span className="font-bold tracking-wider">{appliedCoupon.coupon?.code}</span>
+                                                    <span className="text-[11px] font-sans font-semibold">(-{appliedCoupon.formatted_discount})</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemoveCoupon}
+                                                    className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-200 cursor-pointer"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <form onSubmit={handleApplyCoupon} className="flex items-center gap-1.5">
+                                                    <input
+                                                        type="text"
+                                                        value={couponCodeInput}
+                                                        onChange={(e) => {
+                                                            setCouponCodeInput(e.target.value.toUpperCase());
+                                                            if (couponError) setCouponError('');
+                                                        }}
+                                                        placeholder="Have a coupon code?"
+                                                        className={`w-full py-1.5 px-3 text-xs font-mono uppercase font-medium rounded-md border transition shadow-2xs ${
+                                                            couponError
+                                                                ? 'border-rose-400 focus:border-rose-500'
+                                                                : isDark
+                                                                ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500 focus:border-indigo-500'
+                                                                : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-indigo-600'
+                                                        }`}
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        disabled={applyingCoupon || !couponCodeInput.trim()}
+                                                        className="px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 disabled:opacity-50 transition shrink-0 cursor-pointer"
+                                                    >
+                                                        {applyingCoupon ? 'Checking...' : 'Apply'}
+                                                    </button>
+                                                </form>
+                                                {couponError && (
+                                                    <p className="text-[11px] text-rose-500 dark:text-rose-400 font-medium mt-1">
+                                                        {couponError}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Enrolled Batch Info (if already enrolled) */}
                                 {isEnrolled && course.enrolled_batch && (

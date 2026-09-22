@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import ConfirmModal from '@/Components/ConfirmModal';
 import SearchBar from '@/Components/SearchBar';
+import FilterSelect from '@/Components/FilterSelect';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -232,21 +233,16 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             />
 
                             <div className="flex items-center gap-2">
-                                <select
+                                <FilterSelect
                                     value={courseId}
+                                    size="md"
                                     onChange={(e) => {
                                         setCourseId(e.target.value);
                                         handleFilter(search || undefined, e.target.value || undefined);
                                     }}
-                                    className="px-3 py-2 text-xs rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-500 font-medium"
-                                >
-                                    <option value="">All Courses</option>
-                                    {courses.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.title}
-                                        </option>
-                                    ))}
-                                </select>
+                                    placeholder="All Courses"
+                                    options={courses}
+                                />
 
                                 {(search || courseId) && (
                                     <button

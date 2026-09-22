@@ -1,5 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import SearchBar from '@/Components/SearchBar';
+import FilterSelect from '@/Components/FilterSelect';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -111,21 +112,15 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                         />
 
                         <div className="flex items-center gap-2">
-                            <select
+                            <FilterSelect
                                 value={courseId}
                                 onChange={(e) => {
                                     setCourseId(e.target.value);
                                     handleFilter(search, e.target.value);
                                 }}
-                                className="text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-1.5 px-3 focus:outline-none focus:border-indigo-500"
-                            >
-                                <option value="">All Courses</option>
-                                {courses.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.title}
-                                    </option>
-                                ))}
-                            </select>
+                                placeholder="All Courses"
+                                options={courses}
+                            />
                         </div>
                     </div>
 

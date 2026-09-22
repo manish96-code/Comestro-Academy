@@ -2,6 +2,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
 import SearchBar from '@/Components/SearchBar';
+import FilterSelect from '@/Components/FilterSelect';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -243,30 +244,26 @@ export default function CourseIndex({ courses, categories = [], students = [], f
 
                         <div className="flex flex-wrap items-center gap-2">
                             {/* Category Filter */}
-                            <select
+                            <FilterSelect
                                 value={categoryId}
                                 onChange={handleCategoryChange}
-                                className="text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
-                            >
-                                <option value="">All Categories</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.name}
-                                    </option>
-                                ))}
-                            </select>
+                                placeholder="All Categories"
+                                options={categories}
+                                valueKey="id"
+                                labelKey="name"
+                            />
 
                             {/* Status Filter */}
-                            <select
+                            <FilterSelect
                                 value={status}
                                 onChange={handleStatusChange}
-                                className="text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
-                            >
-                                <option value="">All Statuses</option>
-                                <option value="published">Published</option>
-                                <option value="draft">Draft</option>
-                                <option value="archived">Archived</option>
-                            </select>
+                                placeholder="All Statuses"
+                                options={[
+                                    { value: 'published', label: 'Published' },
+                                    { value: 'draft', label: 'Draft' },
+                                    { value: 'archived', label: 'Archived' },
+                                ]}
+                            />
 
                             {hasActiveFilters && (
                                 <button

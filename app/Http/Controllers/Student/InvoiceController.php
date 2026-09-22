@@ -109,6 +109,8 @@ class InvoiceController extends Controller
                 'instructor_name' => $courseDetails['instructor_name'] ?? 'Comestro Faculty Team',
                 'original_price' => (float) ($courseDetails['original_price'] ?? 0),
                 'discount_price' => isset($courseDetails['discount_price']) && $courseDetails['discount_price'] !== null ? (float) $courseDetails['discount_price'] : null,
+                'coupon_code' => $courseDetails['coupon_code'] ?? null,
+                'coupon_discount' => isset($courseDetails['coupon_discount']) ? (float) $courseDetails['coupon_discount'] : null,
             ],
 
             'academy' => [
