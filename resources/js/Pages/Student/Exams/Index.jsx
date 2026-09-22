@@ -1,4 +1,5 @@
 import StudentLayout from '@/Layouts/StudentLayout';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
 import {
@@ -10,7 +11,6 @@ import {
     Lock,
     Unlock,
     ArrowRight,
-    Search,
     BookOpen,
     Play,
     AlertCircle,
@@ -229,16 +229,13 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                         </div>
 
                         {/* Search Input */}
-                        <div className="relative w-full md:w-72">
-                            <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search assessment..."
-                                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                            />
-                        </div>
+                        <SearchBar
+                            containerClassName="relative w-full md:w-72"
+                            placeholder="Search assessment..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onClear={() => setSearchQuery('')}
+                        />
                     </div>
 
                     {/* Exams Grid / List */}

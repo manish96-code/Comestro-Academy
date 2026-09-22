@@ -1,9 +1,9 @@
 import AdminLayout from '@/Layouts/AdminLayout';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     ClipboardList,
-    Search,
     BookOpen,
     Clock,
     Award,
@@ -95,19 +95,20 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
 
                     {/* Filter Bar */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-3">
-                        <div className="relative flex-1 max-w-sm">
-                            <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => {
-                                    setSearch(e.target.value);
-                                    handleFilter(e.target.value, courseId);
-                                }}
-                                placeholder="Search by assignment or course title..."
-                                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                            />
-                        </div>
+                        <SearchBar
+                            onSubmit={(e) => handleFilter(search, courseId)}
+                            containerClassName="max-w-sm"
+                            placeholder="Search by assignment or course title..."
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                handleFilter(e.target.value, courseId);
+                            }}
+                            onClear={() => {
+                                setSearch('');
+                                handleFilter('', courseId);
+                            }}
+                        />
 
                         <div className="flex items-center gap-2">
                             <select

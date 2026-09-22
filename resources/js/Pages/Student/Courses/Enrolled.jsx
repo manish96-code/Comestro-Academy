@@ -1,4 +1,5 @@
 import StudentLayout from '@/Layouts/StudentLayout';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
 import {
@@ -14,7 +15,6 @@ import {
     FileText,
     Award,
     Sparkles,
-    Search,
     Layers,
     Video
 } from 'lucide-react';
@@ -201,16 +201,14 @@ export default function EnrolledCourses({ enrollments }) {
                             </div>
 
                             {/* Search Input */}
-                            <div className="relative sm:w-64">
-                                <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Filter courses..."
-                                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 pl-8 pr-3 py-1.5 bg-slate-50/60 dark:bg-slate-900/80 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-0 transition"
-                                />
-                            </div>
+                            <SearchBar
+                                containerClassName="relative sm:w-64"
+                                inputClassName="rounded-xl"
+                                placeholder="Filter courses..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onClear={() => setSearchQuery('')}
+                            />
                         </div>
                     )}
 

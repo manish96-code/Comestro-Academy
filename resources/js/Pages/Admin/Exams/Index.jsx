@@ -4,10 +4,10 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import ConfirmModal from '@/Components/ConfirmModal';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    Search,
     GraduationCap,
     Clock,
     Award,
@@ -217,28 +217,19 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                     {/* Filters Bar */}
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs">
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                            <form onSubmit={handleSearchSubmit} className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <input
-                                    type="text"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Search by exam title or course title..."
-                                    className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500"
-                                />
-                                {search && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setSearch('');
-                                            handleFilter('', courseId || undefined);
-                                        }}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                    >
-                                        <X className="h-3.5 w-3.5" />
-                                    </button>
-                                )}
-                            </form>
+                            <SearchBar
+                                onSubmit={handleSearchSubmit}
+                                size="md"
+                                inputClassName="rounded-xl"
+                                placeholder="Search by exam title or course title..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onClear={() => {
+                                    setSearch('');
+                                    handleFilter('', courseId || undefined);
+                                }}
+                                containerClassName="relative flex-1"
+                            />
 
                             <div className="flex items-center gap-2">
                                 <select

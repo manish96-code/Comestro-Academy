@@ -1,17 +1,16 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    Search,
     Edit3,
     Plus,
     Tag,
     Layers,
     FolderTree,
     Sparkles,
-    RotateCcw,
     Trash2
 } from 'lucide-react';
 
@@ -101,36 +100,15 @@ export default function CategoryIndex({ categories, filters }) {
 
                     {/* Filter & Search Toolbar */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
-                        <form onSubmit={handleSearch} className="flex items-center gap-2.5 w-full sm:w-auto flex-1 max-w-lg">
-                            <div className="relative flex-1">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="h-3.5 w-3.5 text-slate-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Search by category name, slug, description..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full text-xs pl-9 pr-3.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0 shadow-xs"
-                            >
-                                Search
-                            </button>
-                            {filters?.search && (
-                                <button
-                                    type="button"
-                                    onClick={handleReset}
-                                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
-                                    title="Reset search"
-                                >
-                                    <RotateCcw className="h-4 w-4" />
-                                </button>
-                            )}
-                        </form>
+                        <SearchBar
+                            onSubmit={handleSearch}
+                            placeholder="Search by category name, slug, description..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onClear={handleReset}
+                            onReset={filters?.search ? handleReset : undefined}
+                            containerClassName="w-full sm:w-auto flex-1 max-w-lg"
+                        />
 
                         <div className="text-xs text-slate-500 font-mono flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
                             <Tag className="h-3.5 w-3.5 text-slate-400" />

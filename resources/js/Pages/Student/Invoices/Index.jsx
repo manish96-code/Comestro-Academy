@@ -1,4 +1,5 @@
 import StudentLayout from '@/Layouts/StudentLayout';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link } from '@inertiajs/react';
 import {
     FileText,
@@ -9,7 +10,6 @@ import {
     Calendar,
     BookOpen,
     ExternalLink,
-    Search,
     ShieldCheck
 } from 'lucide-react';
 import { useState } from 'react';
@@ -121,16 +121,13 @@ export default function InvoiceIndex({ enrollments, stats }) {
                                 </p>
                             </div>
 
-                            <div className="relative w-full sm:w-64">
-                                <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search by course or invoice #..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                                />
-                            </div>
+                            <SearchBar
+                                containerClassName="relative w-full sm:w-64"
+                                placeholder="Search by course or invoice #..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onClear={() => setSearchQuery('')}
+                            />
                         </div>
 
                         {filteredEnrollments.length > 0 ? (

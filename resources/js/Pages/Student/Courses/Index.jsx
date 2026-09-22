@@ -1,6 +1,7 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import StudentLayout from '@/Layouts/StudentLayout';
 import AdminLayout from '@/Layouts/AdminLayout';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
@@ -148,37 +149,21 @@ export default function CoursesIndex({ courses, categories, filters }) {
                 isDark ? 'bg-[#0c101c] border-slate-800/80 shadow-xl' : 'bg-white border-slate-200/90 shadow-2xs'
             } space-y-4`}>
                 <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search courses by technology, title, or architecture..."
-                            className={`w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border transition ${
-                                isDark
-                                    ? 'bg-[#080c14] border-slate-700 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-                                    : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
-                            }`}
-                        />
-                        {search && (
-                            <button
-                                type="button"
-                                onClick={() => setSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-                    >
-                        <Search className="h-4 w-4" />
-                        <span>Filter Tracks</span>
-                    </button>
+                    <SearchBar
+                        size="lg"
+                        placeholder="Search courses by technology, title, or architecture..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onClear={() => setSearch('')}
+                        buttonText="Filter Tracks"
+                        buttonIcon={Search}
+                        buttonClassName="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl"
+                        inputClassName={`rounded-xl ${
+                            isDark
+                                ? 'bg-[#080c14] border-slate-700 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                                : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
+                        }`}
+                    />
 
                     {(search || categoryId) && (
                         <button

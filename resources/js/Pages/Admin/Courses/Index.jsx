@@ -1,6 +1,7 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
+import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
@@ -232,26 +233,13 @@ export default function CourseIndex({ courses, categories = [], students = [], f
 
                     {/* Header Filter Bar */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-xl bg-white p-3.5 sm:p-4 border border-slate-200 shadow-2xs">
-                        <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center gap-2 max-w-md">
-                            <div className="relative flex-1">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="h-3.5 w-3.5 text-slate-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Search courses, slugs..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full text-xs pl-9 pr-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0 shadow-2xs"
-                            >
-                                Search
-                            </button>
-                        </form>
+                        <SearchBar
+                            onSubmit={handleSearchSubmit}
+                            placeholder="Search courses, slugs..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            containerClassName="flex-1 max-w-md"
+                        />
 
                         <div className="flex flex-wrap items-center gap-2">
                             {/* Category Filter */}
@@ -592,16 +580,12 @@ export default function CourseIndex({ courses, categories = [], students = [], f
 
                         {/* Top Controls: Search + Enroll Student Toggle */}
                         <div className="py-3.5 flex items-center justify-between gap-3 shrink-0">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                                <input
-                                    type="text"
-                                    value={studentModalSearch}
-                                    onChange={(e) => setStudentModalSearch(e.target.value)}
-                                    placeholder="Search enrolled students by name, email..."
-                                    className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-                                />
-                            </div>
+                            <SearchBar
+                                placeholder="Search enrolled students by name, email..."
+                                value={studentModalSearch}
+                                onChange={(e) => setStudentModalSearch(e.target.value)}
+                                onClear={() => setStudentModalSearch('')}
+                            />
 
                             <button
                                 type="button"
