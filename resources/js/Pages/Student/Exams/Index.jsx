@@ -73,7 +73,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                     <Link
                         href={route('student.courses.enrolled')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-xl shadow-2xs transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-md shadow-2xs transition"
                     >
                         <BookOpen className="h-3.5 w-3.5 text-slate-500" />
                         <span>My Courses</span>
@@ -84,13 +84,13 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
             <Head title="Course Exams - Student Portal" />
 
             {/* Main Outer Container with Proper Padding & Max Width */}
-            <div className="py-6 sm:py-8">
+            <div className="py-6 sm:py-8 bg-slate-50 dark:bg-slate-950 min-h-screen">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Overview Header Banner - Flat & Clean */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
                         <div className="space-y-1.5 max-w-2xl">
-                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold font-mono uppercase tracking-wider">
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold font-mono uppercase tracking-wider">
                                 <Sparkles className="h-3.5 w-3.5" />
                                 Certification Center
                             </div>
@@ -104,11 +104,11 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                         {/* Quick Stats */}
                         <div className="flex items-center gap-3 shrink-0">
-                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
+                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
                                 <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.passed || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Certificates</p>
                             </div>
-                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
+                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
                                 <p className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400">{stats.ready || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Ready to Take</p>
                             </div>
@@ -117,9 +117,9 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                     {/* Top Metrics Cards */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
                                     <FileCheck className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -129,9 +129,9 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
                                     <Unlock className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -141,9 +141,9 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
                                     <Award className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -153,9 +153,9 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 transition">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
+                                <div className="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
                                     <Lock className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -169,60 +169,60 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                     {/* Filter and Search Bar */}
                     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                         {/* Filter Tabs */}
-                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto">
+                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('all')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'all'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                             >
                                 <span>All Assessments</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'all' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${filterTab === 'all' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
                                     {exams.length}
                                 </span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('ready')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'ready'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                             >
                                 <span>Ready to Attempt</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'ready' ? 'bg-indigo-700 text-white' : 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${filterTab === 'ready' ? 'bg-indigo-700 text-white' : 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600'}`}>
                                     {stats.ready || 0}
                                 </span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('passed')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'passed'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                             >
                                 <span>Passed & Certified</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'passed' ? 'bg-indigo-700 text-white' : 'bg-amber-50 dark:bg-amber-950 text-amber-600'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${filterTab === 'passed' ? 'bg-indigo-700 text-white' : 'bg-amber-50 dark:bg-amber-950 text-amber-600'}`}>
                                     {stats.passed || 0}
                                 </span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('locked')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'locked'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                             >
                                 <span>Locked</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${filterTab === 'locked' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${filterTab === 'locked' ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
                                     {stats.locked || 0}
                                 </span>
                             </button>
@@ -247,38 +247,38 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                 return (
                                     <div
                                         key={exam.id}
-                                        className="group bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 transition hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between gap-5 relative"
+                                        className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs transition hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between gap-5 relative"
                                     >
                                         <div className="space-y-3.5">
                                             {/* Top Tag & Status Row */}
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                                                <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                                     {course.category?.name || 'Course Assessment'}
                                                 </span>
 
                                                 {status === 'ready' && (
-                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                                                         Ready to Attempt
                                                     </span>
                                                 )}
 
                                                 {status === 'passed' && (
-                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                                                         Passed • {submission.percentage}%
                                                     </span>
                                                 )}
 
                                                 {status === 'failed' && (
-                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
-                                                        <XCircle className="h-3.5 w-3.5" />
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                                                        <XCircle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
                                                         Failed • {submission.percentage}%
                                                     </span>
                                                 )}
 
                                                 {status === 'locked' && (
-                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                                                         <Lock className="h-3 w-3" />
                                                         Locked ({progress.progress_percentage}%)
                                                     </span>
@@ -304,7 +304,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             )}
 
                                             {/* 4-Item Clean Specifications Grid */}
-                                            <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-[11px] font-mono">
+                                            <div className="grid grid-cols-4 gap-2 p-2.5 rounded-md bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-[11px] font-mono">
                                                 <div>
                                                     <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold tracking-wider">Duration</p>
                                                     <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1">
@@ -337,7 +337,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                                             {/* Status Details / Progress Bars */}
                                             {status === 'locked' && (
-                                                <div className="space-y-2 p-3 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 text-xs">
+                                                <div className="space-y-2 p-3 rounded-md bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 text-xs">
                                                     <div className="flex items-center justify-between text-[11px]">
                                                         <span className="text-amber-900 dark:text-amber-200 font-semibold flex items-center gap-1.5">
                                                             <Lock className="h-3 w-3 text-amber-600" />
@@ -361,7 +361,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             )}
 
                                             {(status === 'passed' || status === 'failed') && submission && (
-                                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-xs">
+                                                <div className="p-3 rounded-md bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-xs">
                                                     <div>
                                                         <p className="text-[10px] text-slate-400 uppercase font-semibold">Your Score</p>
                                                         <p className="font-mono font-bold text-slate-900 dark:text-white text-sm mt-0.5">
@@ -378,7 +378,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             )}
 
                                             {status === 'ready' && (
-                                                <div className="p-3 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                                                <div className="p-3 rounded-md bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
                                                     <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                                                     <div className="leading-snug">
                                                         <p className="font-semibold text-emerald-900 dark:text-emerald-200">All lectures completed</p>
@@ -398,7 +398,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                                             document.documentElement.requestFullscreen().catch(() => {});
                                                         }
                                                     }}
-                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer"
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition cursor-pointer"
                                                 >
                                                     <span>Attempt Examination</span>
                                                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
@@ -408,7 +408,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             {(status === 'passed' || status === 'failed') && (
                                                 <Link
                                                     href={route('student.exams.show', exam.id)}
-                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition"
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold shadow-2xs transition"
                                                 >
                                                     <span>Review Answers & Results</span>
                                                     <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
@@ -418,7 +418,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                                             {status === 'locked' && (
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
-                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition"
+                                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold shadow-2xs transition"
                                                 >
                                                     <Play className="h-3 w-3 fill-current" />
                                                     <span>Continue Course Lectures</span>
@@ -430,8 +430,8 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             })}
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-12 text-center space-y-3">
-                            <div className="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3 shadow-2xs">
+                            <div className="h-12 w-12 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
                                 <GraduationCap className="h-6 w-6" />
                             </div>
                             <div className="space-y-1">
@@ -447,7 +447,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             <div className="pt-2">
                                 <Link
                                     href={route('student.courses.enrolled')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-2xs transition"
                                 >
                                     <BookOpen className="h-3.5 w-3.5" />
                                     <span>Browse Enrolled Courses</span>

@@ -97,15 +97,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 document.documentElement.style.colorScheme = 'light';
             }
             localStorage.setItem('theme', theme);
-        } else {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
         }
-        return () => {
-            if (user) {
-                document.documentElement.classList.remove('dark');
-            }
-        };
     }, [theme, user]);
 
     const [enrolling, setEnrolling] = useState(false);
@@ -817,7 +809,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     {isEnrolled ? (
                                         <Link
                                             href={route('student.courses.learn', course.id)}
-                                            className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 transition"
+                                            className="px-5 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-2 transition"
                                         >
                                             <Play className="h-3.5 w-3.5 fill-current" />
                                             <span>Enter Classroom →</span>
@@ -827,7 +819,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                             type="button"
                                             onClick={handleEnroll}
                                             disabled={enrolling}
-                                            className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
+                                            className="px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
                                         >
                                             <span>{enrolling ? 'Connecting Gateway...' : 'Enroll in This Cohort'}</span>
                                             <ArrowRight className="h-3.5 w-3.5" />
@@ -837,7 +829,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     <button
                                         type="button"
                                         onClick={handleShare}
-                                        className={`p-2.5 rounded-lg border transition ${
+                                        className={`p-2.5 rounded-md border transition ${
                                             isDark
                                                 ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
                                                 : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -860,7 +852,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
 
                         {/* Right Column: Workstation Video Preview Card */}
                         <div className="lg:col-span-5">
-                            <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-950">
+                            <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-950">
                                 {/* Window Header Bar */}
                                 <div className="flex items-center justify-between px-3.5 py-2 bg-slate-950 border-b border-slate-800">
                                     <div className="flex items-center gap-1.5">
@@ -1170,12 +1162,12 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             Meet Your Instructor
                         </h2>
 
-                        <div className={`rounded-xl border p-4 sm:p-5 ${
+                        <div className={`rounded-lg border p-4 sm:p-5 ${
                             isDark ? 'bg-[#0c101c] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
                         }`}>
                             <div className="flex flex-col sm:flex-row items-start gap-4">
                                 {/* Instructor Photo */}
-                                <div className={`relative h-20 w-20 sm:h-24 sm:w-24 rounded-lg overflow-hidden border shrink-0 flex items-center justify-center ${
+                                <div className={`relative h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border shrink-0 flex items-center justify-center ${
                                     isDark ? 'border-slate-700 bg-slate-900' : 'border-slate-200 bg-slate-100'
                                 }`}>
                                     {instructorPhoto ? (
@@ -1342,7 +1334,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             {/* 8. Conversion CTA Section */}
             <section className="py-6 sm:py-8">
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                    <div className={`rounded-xl border p-6 sm:p-8 text-center space-y-3 ${
+                    <div className={`rounded-lg border p-6 sm:p-8 text-center space-y-3 ${
                         isDark ? 'bg-[#0c101c] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
                     }`}>
                         <div className="text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-sky-400">
@@ -1362,7 +1354,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         {!isEnrolled && isLiveCourse && availableBatches.length > 0 && (
                             <div className="flex items-center justify-center gap-2 text-xs pt-0.5">
                                 <span className="text-slate-500">Selected Live Batch:</span>
-                                <span className="font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-2 py-0.5">
+                                <span className="font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-2 py-0.5">
                                     {availableBatches.find((b) => b.id === selectedBatchId)?.time_slot || availableBatches[0]?.time_slot}
                                 </span>
                             </div>
@@ -1372,7 +1364,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             {isEnrolled ? (
                                 <Link
                                     href={route('student.courses.learn', course.id)}
-                                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition"
+                                    className="px-6 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition"
                                 >
                                     <Play className="h-3.5 w-3.5 fill-current" />
                                     <span>Go to Classroom →</span>
@@ -1382,7 +1374,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                     type="button"
                                     onClick={handleEnroll}
                                     disabled={enrolling}
-                                    className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
+                                    className="px-6 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition disabled:opacity-60 cursor-pointer"
                                 >
                                     <span>{enrolling ? 'Connecting Gateway...' : `Enroll Now for ${formattedPrice}`}</span>
                                     <ArrowRight className="h-3.5 w-3.5" />
@@ -1506,7 +1498,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                 {isEnrolled ? (
                     <Link
                         href={route('student.courses.learn', course.id)}
-                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md"
+                        className="px-5 py-2.5 rounded-md bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md"
                     >
                         <Play className="h-3.5 w-3.5 fill-current" />
                         <span>Classroom</span>
@@ -1516,7 +1508,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         type="button"
                         onClick={handleEnroll}
                         disabled={enrolling}
-                        className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-60"
+                        className="px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-60"
                     >
                         <span>{enrolling ? 'Connecting...' : 'Enroll Now'}</span>
                         <ArrowRight className="h-3.5 w-3.5" />
@@ -1529,7 +1521,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             {/* Video Preview Modal */}
             {previewModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in duration-150">
-                    <div className={`relative w-full max-w-2xl rounded-2xl border shadow-2xl p-6 space-y-4 ${
+                    <div className={`relative w-full max-w-2xl rounded-lg border shadow-2xl p-6 space-y-4 ${
                         isDark ? 'bg-[#0c101c] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
                     }`}>
                         <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
@@ -1544,13 +1536,13 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             <button
                                 type="button"
                                 onClick={() => setPreviewModalOpen(false)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-white"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-white"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
 
-                        <div className="aspect-video w-full rounded-xl bg-slate-950 overflow-hidden relative flex items-center justify-center">
+                        <div className="aspect-video w-full rounded-md bg-slate-950 overflow-hidden relative flex items-center justify-center">
                             <img
                                 src={getCourseImage(course)}
                                 alt={course.title}
@@ -1578,7 +1570,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             {isEnrolled ? (
                                 <Link
                                     href={route('student.courses.learn', course.id)}
-                                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+                                    className="px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
                                 >
                                     <Play className="h-3.5 w-3.5 fill-current" />
                                     <span>Go to Classroom →</span>
@@ -1590,7 +1582,7 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                                         setPreviewModalOpen(false);
                                         handleEnroll();
                                     }}
-                                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+                                    className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
                                 >
                                     <span>Enroll in Cohort</span>
                                     <ArrowRight className="h-3.5 w-3.5" />
@@ -1608,13 +1600,13 @@ export default function CourseShow({ course, relatedCourses = [] }) {
         return (
             <StudentLayout
                 header={
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Link href={route('courses.index')} className="hover:text-indigo-600 transition flex items-center gap-1 font-medium">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                        <Link href={route('courses.index')} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-1 font-medium">
                             <Compass className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Browse Courses</span>
                         </Link>
-                        <span className="hidden sm:inline">/</span>
-                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-gray-800 font-semibold">{course.title}</span>
+                        <span className="hidden sm:inline text-slate-300 dark:text-slate-600">/</span>
+                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-slate-800 dark:text-slate-200 font-semibold">{course.title}</span>
                     </div>
                 }
             >

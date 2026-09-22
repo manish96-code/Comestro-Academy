@@ -149,7 +149,7 @@ export default function StudentLayout({ header, children }) {
                                     key={item.name}
                                     href={item.href}
                                     onClick={onItemClick}
-                                    className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
+                                    className={`relative flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold transition-all duration-150 ${
                                         item.active
                                             ? 'bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-100/90 dark:border-indigo-800/60 shadow-2xs'
                                             : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
@@ -199,7 +199,7 @@ export default function StudentLayout({ header, children }) {
                 
                 {/* Brand Header */}
                 <div className="h-16 flex items-center px-5 border-b border-slate-200/70 dark:border-slate-800 space-x-3 bg-white dark:bg-[#0c101c] transition-colors duration-200">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
+                    <div className="h-9 w-9 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 dark:shadow-none shrink-0">
                         <GraduationCap className="h-5 w-5" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -223,13 +223,13 @@ export default function StudentLayout({ header, children }) {
                 </div>
 
                 {/* Sidebar Motivational Learning Goal Widget */}
-                <div className="p-3.5 mx-3 mb-2 rounded-xl bg-gradient-to-br from-indigo-50/90 to-violet-50/40 dark:from-indigo-950/30 dark:to-violet-950/20 border border-indigo-100/80 dark:border-indigo-900/40 shadow-2xs space-y-2 transition-colors duration-200">
+                <div className="p-3.5 mx-3 mb-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950 dark:text-indigo-200">
                             <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                             <span>Learning Track</span>
                         </div>
-                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800">
+                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-800 font-mono">
                             Active
                         </span>
                     </div>
@@ -240,14 +240,14 @@ export default function StudentLayout({ header, children }) {
 
                 {/* Bottom User Profile Card */}
                 <div className="p-3 border-t border-slate-200/70 dark:border-slate-800 bg-white dark:bg-[#0c101c] transition-colors duration-200">
-                    <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition group">
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition group">
                         <Link
                             href={route('student.profile')}
                             className="flex items-center space-x-2.5 overflow-hidden flex-1 min-w-0"
                             title="View Profile"
                         >
                             <div className="relative shrink-0">
-                                <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs">
+                                <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs">
                                     {user?.profile_pic ? (
                                         <img src={user.profile_pic} alt={user.name} className="h-full w-full object-cover" />
                                     ) : (
@@ -269,7 +269,7 @@ export default function StudentLayout({ header, children }) {
                             href={route('logout')}
                             method="post"
                             as="button"
-                            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition shrink-0 ml-1 cursor-pointer"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-md transition shrink-0 ml-1 cursor-pointer"
                             title="Log Out"
                         >
                             <LogOut className="h-4 w-4" />
@@ -289,14 +289,14 @@ export default function StudentLayout({ header, children }) {
                     <div className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-[#0c101c] text-slate-800 dark:text-slate-200 z-50 flex flex-col p-4 shadow-2xl border-r border-slate-200 dark:border-slate-800">
                         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="flex items-center space-x-2">
-                                <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                                <div className="h-8 w-8 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-xs">
                                     <GraduationCap className="h-5 w-5" />
                                 </div>
                                 <span className="font-bold text-sm text-slate-900 dark:text-white">Student Portal</span>
                             </div>
                             <button
                                 onClick={() => setSidebarOpen(false)}
-                                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                                className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -311,7 +311,7 @@ export default function StudentLayout({ header, children }) {
                                 href={route('logout')}
                                 method="post"
                                 as="button"
-                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition cursor-pointer"
+                                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-md transition cursor-pointer"
                             >
                                 <LogOut className="h-4 w-4" />
                                 <span>Log Out</span>
@@ -331,7 +331,7 @@ export default function StudentLayout({ header, children }) {
                     <div className="flex items-center space-x-3">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            className="lg:hidden p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
@@ -346,7 +346,7 @@ export default function StudentLayout({ header, children }) {
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="p-2 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-2xs"
+                            className="p-2 rounded-md border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-2xs"
                             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
                             aria-label="Toggle Theme"
                         >
@@ -361,8 +361,8 @@ export default function StudentLayout({ header, children }) {
 
                         <Dropdown>
                             <Dropdown.Trigger>
-                                <button className="flex items-center space-x-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 py-1.5 px-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs transition cursor-pointer">
-                                    <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs shrink-0">
+                                <button className="flex items-center space-x-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 py-1.5 px-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs transition cursor-pointer">
+                                    <div className="h-7 w-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shadow-2xs shrink-0">
                                         {user?.profile_pic ? (
                                             <img src={user.profile_pic} alt={user.name} className="h-full w-full object-cover" />
                                         ) : (
@@ -373,7 +373,7 @@ export default function StudentLayout({ header, children }) {
                                     <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                                 </button>
                             </Dropdown.Trigger>
-                            <Dropdown.Content contentClasses="py-1.5 bg-white dark:bg-[#0c101c] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl ring-0 divide-y divide-slate-100 dark:divide-slate-800 w-52">
+                            <Dropdown.Content contentClasses="py-1.5 bg-white dark:bg-[#0c101c] border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl ring-0 divide-y divide-slate-100 dark:divide-slate-800 w-52">
                                 <div className="px-4 py-2.5 bg-slate-50/70 dark:bg-slate-900/70">
                                     <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name}</p>
                                     <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate mt-0.5">{user?.email}</p>

@@ -99,21 +99,21 @@ export default function StudentProfile({ student }) {
         switch (status) {
             case 'active':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
                         <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-500"></span>
                         Active Student
                     </span>
                 );
             case 'suspended':
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60">
                         <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-rose-500"></span>
                         Suspended
                     </span>
                 );
             default:
                 return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
                         <span className="w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-500"></span>
                         Inactive
                     </span>
@@ -125,10 +125,10 @@ export default function StudentProfile({ student }) {
         <StudentLayout
             header={
                 <div>
-                    <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                    <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
                         My Student Profile
                     </h1>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                         Manage your personal credentials, education, college background, and portfolio links
                     </p>
                 </div>
@@ -136,13 +136,13 @@ export default function StudentProfile({ student }) {
         >
             <Head title="My Profile" />
 
-            <div className="py-6 bg-gray-50">
+            <div className="py-6 bg-slate-50 dark:bg-slate-950 min-h-screen">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
                     
                     {/* Summary card */}
-                    <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="rounded-lg bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="flex items-center space-x-4">
-                            <div className="h-16 w-16 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl border border-indigo-700 shrink-0 shadow-xs overflow-hidden">
+                            <div className="h-16 w-16 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl border border-indigo-700 shrink-0 shadow-2xs overflow-hidden">
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}
@@ -157,12 +157,12 @@ export default function StudentProfile({ student }) {
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center space-x-2">
-                                    <h2 className="text-lg font-bold text-gray-900">{student?.name}</h2>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">{student?.name}</h2>
                                     {getStatusBadge(student?.status)}
                                 </div>
-                                <p className="text-xs text-gray-500">Student ID: #{student?.id}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Student ID: #{student?.id}</p>
                                 {(student?.qualification || student?.college_name) && (
-                                    <p className="text-xs text-indigo-600 font-medium flex items-center gap-1.5 pt-0.5">
+                                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1.5 pt-0.5">
                                         <GraduationCap className="h-3.5 w-3.5 shrink-0" />
                                         <span>
                                             {student?.qualification}
@@ -174,13 +174,13 @@ export default function StudentProfile({ student }) {
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:items-end text-[11px] text-gray-500 gap-1.5 shrink-0">
+                        <div className="flex flex-col sm:items-end text-[11px] text-slate-500 dark:text-slate-400 gap-1.5 shrink-0">
                             <span className="flex items-center gap-1.5">
-                                <Calendar className="h-3.5 w-3.5 text-gray-400" />
+                                <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                                 Enrolled Since: {student?.created_at ? new Date(student.created_at).toLocaleDateString() : 'N/A'}
                             </span>
                             <span className="flex items-center gap-1.5">
-                                <Clock className="h-3.5 w-3.5 text-gray-400" />
+                                <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                                 Last Login: {student?.last_login_at ? new Date(student.last_login_at).toLocaleString() : 'Never'}
                             </span>
                         </div>
@@ -190,14 +190,14 @@ export default function StudentProfile({ student }) {
                     <form onSubmit={submitProfile} className="space-y-6">
                         
                         {/* Basic information */}
-                        <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-5">
-                            <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                        <div className="rounded-lg bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+                            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-md">
                                     <User className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900">Basic Information</h3>
-                                    <p className="text-xs text-gray-500">Update your primary identity and communication contact</p>
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Basic Information</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Update your primary identity and communication contact</p>
                                 </div>
                             </div>
 
@@ -206,7 +206,7 @@ export default function StudentProfile({ student }) {
                                 <InputLabel value="Profile Picture" />
                                 <div className="mt-2 flex items-center gap-4">
                                     <div className="relative">
-                                        <div className="h-16 w-16 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl border border-indigo-700 shrink-0 shadow-xs overflow-hidden">
+                                        <div className="h-16 w-16 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xl border border-indigo-700 shrink-0 shadow-2xs overflow-hidden">
                                             {previewUrl ? (
                                                 <img
                                                     src={previewUrl}
@@ -233,23 +233,23 @@ export default function StudentProfile({ student }) {
                                             <button
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg shadow-2xs transition"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-md shadow-2xs transition"
                                             >
-                                                <Upload className="h-3.5 w-3.5 text-indigo-600" />
+                                                <Upload className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                                                 <span>{previewUrl ? 'Change Photo' : 'Upload Photo'}</span>
                                             </button>
                                             {previewUrl && (
                                                 <button
                                                     type="button"
                                                     onClick={handleRemovePhoto}
-                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-md transition"
                                                 >
                                                     <Trash2 className="h-3 w-3" />
                                                     <span>Remove</span>
                                                 </button>
                                             )}
                                         </div>
-                                        <p className="text-[11px] text-gray-500">
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
                                             JPG, PNG or WEBP (Max 5MB)
                                         </p>
                                         <InputError message={profileForm.errors.profile_pic} />
@@ -277,10 +277,10 @@ export default function StudentProfile({ student }) {
                                         type="email"
                                         readOnly
                                         disabled
-                                        className="w-full text-xs sm:text-sm py-2 px-3.5 mt-1 bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed select-none"
+                                        className="w-full text-xs sm:text-sm py-2 px-3.5 mt-1 bg-slate-100 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 cursor-not-allowed select-none"
                                         value={student?.email || ''}
                                     />
-                                    <p className="text-[11px] text-gray-400 mt-1">
+                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                                         Cannot be changed
                                     </p>
                                 </div>
@@ -302,14 +302,14 @@ export default function StudentProfile({ student }) {
                         </div>
 
                         {/* Education background */}
-                        <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-5">
-                            <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                        <div className="rounded-lg bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+                            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-md">
                                     <GraduationCap className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900">Education & College Background</h3>
-                                    <p className="text-xs text-gray-500">Your degree, college/university, and location details</p>
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Education & College Background</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Your degree, college/university, and location details</p>
                                 </div>
                             </div>
 
@@ -365,14 +365,14 @@ export default function StudentProfile({ student }) {
                         </div>
 
                         {/* Section 3: Professional Links & Bio */}
-                        <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs space-y-5">
-                            <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                        <div className="rounded-lg bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+                            <div className="flex items-center space-x-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-md">
                                     <Globe className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900">Professional Links & Bio</h3>
-                                    <p className="text-xs text-gray-500">Showcase your portfolio, GitHub, and professional networks</p>
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Professional Links & Bio</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Showcase your portfolio, GitHub, and professional networks</p>
                                 </div>
                             </div>
 
@@ -409,7 +409,7 @@ export default function StudentProfile({ student }) {
                                 <textarea
                                     id="bio"
                                     rows={3}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2.5 px-3.5 shadow-xs transition mt-1"
+                                    className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2.5 px-3.5 shadow-2xs transition mt-1"
                                     value={profileForm.data.bio}
                                     onChange={(e) => profileForm.setData('bio', e.target.value)}
                                     placeholder="Brief summary about your learning journey and tech career aspirations..."
@@ -417,10 +417,10 @@ export default function StudentProfile({ student }) {
                                 <InputError className="mt-1.5" message={profileForm.errors.bio} />
                             </div>
 
-                            <div className="flex items-center justify-end pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
                                 <PrimaryButton
                                     disabled={profileForm.processing}
-                                    className="px-6 py-2.5 text-xs font-semibold shadow-xs"
+                                    className="px-6 py-2.5 text-xs font-semibold shadow-2xs"
                                 >
                                     <Save className="h-3.5 w-3.5 mr-1.5" />
                                     <span>{profileForm.processing ? 'Saving...' : 'Save Profile Changes'}</span>
@@ -430,14 +430,14 @@ export default function StudentProfile({ student }) {
                     </form>
 
                     {/* Section 4: Security & Password Update */}
-                    <div className="rounded-lg bg-white p-6 border border-gray-200 shadow-xs">
-                        <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-gray-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <div className="rounded-lg bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                        <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-md">
                                 <Lock className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-gray-900">Security & Password</h3>
-                                <p className="text-xs text-gray-500">Ensure your account uses a strong, secure password</p>
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Security & Password</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Ensure your account uses a strong, secure password</p>
                             </div>
                         </div>
 
@@ -486,10 +486,10 @@ export default function StudentProfile({ student }) {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-end pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
                                 <PrimaryButton
                                     disabled={passwordForm.processing}
-                                    className="px-5 py-2 text-xs font-semibold shadow-xs"
+                                    className="px-5 py-2 text-xs font-semibold shadow-2xs"
                                 >
                                     <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
                                     <span>{passwordForm.processing ? 'Updating...' : 'Update Password'}</span>

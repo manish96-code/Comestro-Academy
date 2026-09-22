@@ -52,7 +52,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                     <div className="flex items-center gap-3">
                         <Link
                             href={route('student.assignments.index')}
-                            className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
+                            className="p-2 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-2xs transition"
                             title="Back to Assignments"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -64,23 +64,23 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                 </h1>
                                 {submission ? (
                                     submission.status === 'reviewed' ? (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
                                             <CheckCircle2 className="h-3 w-3" />
                                             Graded: {submission.marks_obtained}/{assignment.total_marks}
                                         </span>
                                     ) : submission.status === 'resubmit' ? (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800">
                                             <AlertCircle className="h-3 w-3" />
                                             Revision Requested
                                         </span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
                                             <Clock className="h-3 w-3" />
                                             Under Review
                                         </span>
                                     )
                                 ) : (
-                                    <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                                    <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
                                         Pending Submission
                                     </span>
                                 )}
@@ -95,22 +95,22 @@ export default function StudentAssignmentShow({ assignment, submission }) {
         >
             <Head title={`${assignment.title} - ${assignment.course?.title}`} />
 
-            <div className="py-6 sm:py-8">
+            <div className="py-6 sm:py-8 bg-slate-50 dark:bg-slate-950 min-h-screen">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Evaluation Result Banner (when graded) */}
                     {submission && submission.status === 'reviewed' && (
-                        <div className={`p-5 sm:p-6 rounded-xl border transition ${
+                        <div className={`p-5 sm:p-6 rounded-lg border shadow-2xs transition ${
                             submission.is_passed
                                 ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-100'
                                 : 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800 text-rose-950 dark:text-rose-100'
                         }`}>
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3.5">
-                                    <div className={`p-2.5 rounded-lg border shrink-0 ${
+                                    <div className={`p-2.5 rounded-md border shrink-0 ${
                                         submission.is_passed
-                                            ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border-emerald-200'
-                                            : 'bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 border-rose-200'
+                                            ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                                            : 'bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
                                     }`}>
                                         {submission.is_passed ? (
                                             <Award className="h-6 w-6" />
@@ -123,10 +123,10 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                             <h2 className="text-base sm:text-lg font-bold">
                                                 {submission.is_passed ? 'Assignment Passed & Approved' : 'Evaluation Completed'}
                                             </h2>
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono border ${
+                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
                                                 submission.is_passed
-                                                    ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 border-emerald-300'
-                                                    : 'bg-rose-100 dark:bg-rose-900 text-rose-800 border-rose-300'
+                                                    ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700'
+                                                    : 'bg-rose-100 dark:bg-rose-900 text-rose-800 dark:text-rose-200 border-rose-300 dark:border-rose-700'
                                             }`}>
                                                 {submission.is_passed ? 'Approved' : 'Needs Work'}
                                             </span>
@@ -162,13 +162,13 @@ export default function StudentAssignmentShow({ assignment, submission }) {
 
                     {/* Resubmission requested banner */}
                     {submission && submission.status === 'resubmit' && (
-                        <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200 space-y-2">
+                        <div className="p-4 rounded-lg border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200 space-y-2 shadow-2xs">
                             <div className="flex items-center gap-2 font-bold text-xs">
-                                <AlertCircle className="h-4 w-4 text-rose-600" />
+                                <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" />
                                 <span>Revision Requested by Instructor</span>
                             </div>
                             {submission.feedback && (
-                                <p className="text-xs leading-relaxed text-rose-800 dark:text-rose-300 bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-rose-200/80 dark:border-rose-900/40">
+                                <p className="text-xs leading-relaxed text-rose-800 dark:text-rose-300 bg-white/60 dark:bg-slate-900/60 p-3 rounded-md border border-rose-200/80 dark:border-rose-900/40">
                                     <span className="font-semibold">Instructor Notes: </span> {submission.feedback}
                                 </p>
                             )}
@@ -179,7 +179,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                     )}
 
                     {/* Task Overview Card */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 space-y-4 shadow-2xs">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div>
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
@@ -205,13 +205,13 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                             <h3 className="text-xs font-bold uppercase text-slate-400 font-mono tracking-wider">
                                 Instructions & Deliverables
                             </h3>
-                            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-slate-50 dark:bg-slate-800/40 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-slate-50 dark:bg-slate-800/40 p-4 rounded-md border border-slate-100 dark:border-slate-800">
                                 {assignment.description}
                             </div>
                         </div>
 
                         {/* Specifications Badges */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-xs font-mono">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-md bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-xs font-mono">
                             <div>
                                 <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total Marks</p>
                                 <p className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{assignment.total_marks} Marks</p>
@@ -234,9 +234,9 @@ export default function StudentAssignmentShow({ assignment, submission }) {
 
                         {/* Download Starter File (if provided) */}
                         {assignment.attachment_path && (
-                            <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs">
+                            <div className="flex items-center justify-between p-3 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs">
                                 <div className="flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-indigo-600 shrink-0" />
+                                    <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                                     <div>
                                         <p className="font-semibold text-slate-900 dark:text-white">Starter Resource / Prompt File</p>
                                         <p className="text-[10px] text-slate-400">Download the reference material provided by your instructor</p>
@@ -246,7 +246,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                     href={assignment.attachment_path}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-semibold text-xs transition"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-semibold text-xs transition"
                                 >
                                     <Download className="h-3.5 w-3.5" />
                                     <span>Download</span>
@@ -257,7 +257,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
 
                     {/* Active Submission Summary (if already submitted) */}
                     {submission && (
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-3">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 space-y-3 shadow-2xs">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xs font-bold uppercase text-slate-400 font-mono tracking-wider">
                                     Your Submitted Solution
@@ -265,7 +265,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                 <div className="text-[11px] font-mono text-slate-500 flex items-center gap-2">
                                     <span>Submitted: {submission.submitted_at}</span>
                                     {submission.is_late && (
-                                        <span className="text-amber-600 dark:text-amber-400 font-bold uppercase text-[9px] px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/60 border border-amber-200">
+                                        <span className="text-amber-600 dark:text-amber-400 font-bold uppercase text-[9px] px-1.5 py-0.2 rounded-md bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800">
                                             Submitted Late
                                         </span>
                                     )}
@@ -278,7 +278,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                         href={submission.file_url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 transition"
+                                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 transition"
                                     >
                                         <FileText className="h-4 w-4 text-rose-500" />
                                         <span>{submission.file_name || 'Solution Document.pdf'}</span>
@@ -290,7 +290,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                         href={submission.github_url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 transition"
+                                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-300 transition"
                                     >
                                         <FolderGit2 className="h-4 w-4 text-slate-700 dark:text-slate-300" />
                                         <span>View GitHub Repository</span>
@@ -300,7 +300,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                             </div>
 
                             {submission.submission_text && (
-                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
+                                <div className="p-3 rounded-md bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
                                     <span className="font-semibold text-slate-700 dark:text-slate-200">Your Notes: </span>
                                     {submission.submission_text}
                                 </div>
@@ -309,7 +309,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                     )}
 
                     {/* Submission / Resubmission Form */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 space-y-4 shadow-2xs">
                         <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
                             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                 {submission ? 'Update or Resubmit Your Solution' : 'Submit Your Solution'}
@@ -321,7 +321,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
 
                         {/* Late Notice */}
                         {assignment.is_overdue && (
-                            <div className="p-3 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                            <div className="p-3 rounded-md bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
                                 <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
                                 <div>
                                     <span className="font-semibold">Notice: The due date has passed. </span>
@@ -338,7 +338,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                 </label>
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-600 rounded-xl p-5 text-center cursor-pointer transition bg-slate-50/50 dark:bg-slate-800/30"
+                                    className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-600 rounded-md p-5 text-center cursor-pointer transition bg-slate-50/50 dark:bg-slate-800/30"
                                 >
                                     <input
                                         ref={fileInputRef}
@@ -348,7 +348,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                         className="hidden"
                                     />
                                     <div className="flex flex-col items-center justify-center gap-1.5">
-                                        <div className="p-2 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600">
+                                        <div className="p-2 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
                                             <Upload className="h-4 w-4" />
                                         </div>
                                         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -380,7 +380,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                         value={data.github_url}
                                         onChange={(e) => setData('github_url', e.target.value)}
                                         placeholder="https://github.com/your-username/assignment-repo"
-                                        className="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
+                                        className="w-full pl-9 pr-3 py-2 text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-mono shadow-2xs"
                                     />
                                 </div>
                                 {errors.github_url && (
@@ -398,7 +398,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                     value={data.submission_text}
                                     onChange={(e) => setData('submission_text', e.target.value)}
                                     placeholder="Add any context, setup instructions, or notes for your instructor..."
-                                    className="w-full text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                                    className="w-full text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 shadow-2xs"
                                 />
                             </div>
 
@@ -406,7 +406,7 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold transition"
+                                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold shadow-2xs transition"
                                 >
                                     <Send className="h-3.5 w-3.5" />
                                     <span>{processing ? 'Submitting...' : submission ? 'Submit Revision' : 'Submit Assignment'}</span>

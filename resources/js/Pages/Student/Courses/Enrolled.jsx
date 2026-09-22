@@ -78,7 +78,7 @@ export default function EnrolledCourses({ enrollments }) {
                             <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
                                 My Enrolled Courses
                             </h1>
-                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 font-mono">
+                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 font-mono">
                                 <Sparkles className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
                                 {metrics.total} {metrics.total === 1 ? 'Track' : 'Tracks'}
                             </span>
@@ -91,7 +91,7 @@ export default function EnrolledCourses({ enrollments }) {
                     <div className="flex items-center gap-2">
                         <Link
                             href={route('courses.index')}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-2xs transition"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-2xs transition"
                         >
                             <Compass className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                             <span>Browse Catalog</span>
@@ -109,8 +109,8 @@ export default function EnrolledCourses({ enrollments }) {
                     {/* Metric Quick-Stats Ribbon */}
                     {allData.length > 0 && (
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                            <div className="p-4 rounded-2xl bg-white dark:bg-[#0c101c] border border-slate-200/90 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
-                                <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-center shrink-0">
+                            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
+                                <div className="h-10 w-10 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-center shrink-0">
                                     <BookOpen className="h-5 w-5" />
                                 </div>
                                 <div className="min-w-0">
@@ -123,8 +123,8 @@ export default function EnrolledCourses({ enrollments }) {
                                 </div>
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-white dark:bg-[#0c101c] border border-slate-200/90 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
-                                <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40 flex items-center justify-center shrink-0">
+                            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
+                                <div className="h-10 w-10 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40 flex items-center justify-center shrink-0">
                                     <Play className="h-5 w-5 fill-current ml-0.5" />
                                 </div>
                                 <div className="min-w-0">
@@ -137,8 +137,8 @@ export default function EnrolledCourses({ enrollments }) {
                                 </div>
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-white dark:bg-[#0c101c] border border-slate-200/90 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
-                                <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40 flex items-center justify-center shrink-0">
+                            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
+                                <div className="h-10 w-10 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40 flex items-center justify-center shrink-0">
                                     <CheckCircle2 className="h-5 w-5" />
                                 </div>
                                 <div className="min-w-0">
@@ -151,8 +151,8 @@ export default function EnrolledCourses({ enrollments }) {
                                 </div>
                             </div>
 
-                            <div className="p-4 rounded-2xl bg-white dark:bg-[#0c101c] border border-slate-200/90 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
-                                <div className="h-10 w-10 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-900/40 flex items-center justify-center shrink-0">
+                            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
+                                <div className="h-10 w-10 rounded-md bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-900/40 flex items-center justify-center shrink-0">
                                     <Video className="h-5 w-5" />
                                 </div>
                                 <div className="min-w-0">
@@ -169,7 +169,7 @@ export default function EnrolledCourses({ enrollments }) {
 
                     {/* Filter Tabs & Search Bar */}
                     {allData.length > 0 && (
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#0c101c] p-2.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
                             {/* Filter Tabs */}
                             <div className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
                                 {[
@@ -182,10 +182,10 @@ export default function EnrolledCourses({ enrollments }) {
                                         key={tab.key}
                                         type="button"
                                         onClick={() => setFilterTab(tab.key)}
-                                        className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                                        className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
                                             filterTab === tab.key
                                                 ? 'bg-indigo-600 text-white shadow-2xs'
-                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/80'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                         }`}
                                     >
                                         <span>{tab.label}</span>
@@ -203,7 +203,7 @@ export default function EnrolledCourses({ enrollments }) {
                             {/* Search Input */}
                             <SearchBar
                                 containerClassName="relative sm:w-64"
-                                inputClassName="rounded-xl"
+                                inputClassName="rounded-md"
                                 placeholder="Filter courses..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -235,7 +235,7 @@ export default function EnrolledCourses({ enrollments }) {
                                 return (
                                     <div
                                         key={enrollment.id}
-                                        className="bg-white dark:bg-[#0c101c] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-200 flex flex-col justify-between overflow-hidden group"
+                                        className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-200 flex flex-col justify-between overflow-hidden group"
                                     >
                                         <div>
                                             {/* Thumbnail Header with Floating Badges */}
@@ -251,7 +251,7 @@ export default function EnrolledCourses({ enrollments }) {
                                                     />
                                                 ) : (
                                                     <div className="flex flex-col items-center justify-center text-center space-y-1 p-4">
-                                                        <div className="p-3 bg-white/10 text-white rounded-2xl border border-white/20 backdrop-blur-md shadow-xs">
+                                                        <div className="p-3 bg-white/10 text-white rounded-md border border-white/20 backdrop-blur-md shadow-xs">
                                                             <Terminal className="h-7 w-7 text-indigo-400" />
                                                         </div>
                                                         <span className="text-[10px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-1">
@@ -265,19 +265,19 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 {/* Floating Badges */}
                                                 <div className="absolute top-3 left-3 z-10">
-                                                    <span className="px-2.5 py-1 text-[10px] font-bold uppercase font-mono rounded-lg bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-xs">
+                                                    <span className="px-2.5 py-1 text-[10px] font-bold uppercase font-mono rounded-md bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-xs">
                                                         {course.category?.name || 'Engineering'}
                                                     </span>
                                                 </div>
 
                                                 <div className="absolute top-3 right-3 z-10">
                                                     {isCompleted ? (
-                                                        <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-lg bg-emerald-500/90 backdrop-blur-md text-white border border-emerald-400/40 shadow-xs flex items-center gap-1">
+                                                        <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-emerald-600 text-white border border-emerald-500/40 shadow-xs flex items-center gap-1">
                                                             <CheckCircle2 className="h-3 w-3" />
                                                             Completed
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-lg bg-indigo-600/90 backdrop-blur-md text-white border border-indigo-400/40 shadow-xs flex items-center gap-1">
+                                                        <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-md bg-indigo-600 text-white border border-indigo-500/40 shadow-xs flex items-center gap-1">
                                                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                                             Active
                                                         </span>
@@ -286,7 +286,7 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 {/* Type Indicator Pill on Bottom Left of Image */}
                                                 <div className="absolute bottom-3 left-3 z-10">
-                                                    <span className="text-[10px] font-semibold text-slate-200 bg-slate-900/60 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10">
+                                                    <span className="text-[10px] font-semibold text-slate-200 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10">
                                                         {course.type === 'live' ? 'Live Interactive Cohort' : 'Self-Paced Recorded'}
                                                     </span>
                                                 </div>
@@ -307,7 +307,7 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 {/* Enrolled Live Batch Timing Banner */}
                                                 {enrollment.batch && (
-                                                    <div className="p-2 rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-100 dark:border-blue-900/50 flex items-center justify-between text-xs">
+                                                    <div className="p-2 rounded-md bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 flex items-center justify-between text-xs">
                                                         <span className="flex items-center gap-1.5 font-bold text-blue-800 dark:text-blue-300">
                                                             <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                                                             <span>Batch: {enrollment.batch.time_slot}</span>
@@ -347,12 +347,12 @@ export default function EnrolledCourses({ enrollments }) {
                                                             {progressPct}%
                                                         </span>
                                                     </div>
-                                                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                                                         <div
-                                                            className={`h-2 rounded-full transition-all duration-500 ${
+                                                            className={`h-1.5 rounded-full transition-all duration-500 ${
                                                                 isCompleted
-                                                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                                                                    : 'bg-gradient-to-r from-indigo-500 to-indigo-600'
+                                                                    ? 'bg-emerald-600'
+                                                                    : 'bg-indigo-600'
                                                             }`}
                                                             style={{ width: `${progressPct}%` }}
                                                         />
@@ -372,12 +372,12 @@ export default function EnrolledCourses({ enrollments }) {
                                         </div>
 
                                         {/* Footer Actions */}
-                                        <div className="p-4 pt-0 bg-white dark:bg-[#0c101c]">
-                                            <div className="p-2 bg-slate-50/80 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                                        <div className="p-4 pt-0 bg-white dark:bg-slate-900">
+                                            <div className="p-2 bg-slate-50 dark:bg-slate-800/60 rounded-md border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                                                 <div className="flex items-center gap-1">
                                                     <Link
                                                         href={route('courses.show', course.slug || course.id)}
-                                                        className="px-2 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800"
+                                                        className="px-2 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1 rounded-md hover:bg-slate-200/60 dark:hover:bg-slate-800"
                                                         title="Course Syllabus"
                                                     >
                                                         <BookOpen className="h-3.5 w-3.5 text-slate-400" />
@@ -386,7 +386,7 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                     <Link
                                                         href={route('student.invoices.show', enrollment.id)}
-                                                        className="px-2 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition flex items-center gap-1 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
+                                                        className="px-2 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition flex items-center gap-1 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
                                                         title="View Tax Invoice & Receipt"
                                                     >
                                                         <FileText className="h-3.5 w-3.5 text-indigo-500" />
@@ -396,10 +396,10 @@ export default function EnrolledCourses({ enrollments }) {
 
                                                 <Link
                                                     href={route('student.courses.learn', course.id)}
-                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-xl shadow-2xs transition inline-flex items-center gap-1.5 text-white ${
+                                                    className={`px-3.5 py-1.5 font-semibold text-xs rounded-md shadow-2xs transition inline-flex items-center gap-1.5 text-white ${
                                                         isCompleted
-                                                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500'
-                                                            : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500'
+                                                            ? 'bg-emerald-600 hover:bg-emerald-700'
+                                                            : 'bg-indigo-600 hover:bg-indigo-700'
                                                     }`}
                                                 >
                                                     <Play className="h-3 w-3 fill-current" />
@@ -420,8 +420,8 @@ export default function EnrolledCourses({ enrollments }) {
                         </div>
                     ) : (
                         /* Modern Empty State */
-                        <div className="bg-white dark:bg-[#0c101c] rounded-2xl border border-slate-200/90 dark:border-slate-800 p-12 text-center space-y-4 shadow-2xs">
-                            <div className="mx-auto h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-12 text-center space-y-4 shadow-2xs">
+                            <div className="mx-auto h-12 w-12 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
                                 <Terminal className="h-6 w-6" />
                             </div>
                             <div className="space-y-1 max-w-sm mx-auto">
@@ -442,14 +442,14 @@ export default function EnrolledCourses({ enrollments }) {
                                             setSearchQuery('');
                                             setFilterTab('all');
                                         }}
-                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer"
+                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-md shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer"
                                     >
                                         <span>Reset Filters</span>
                                     </button>
                                 ) : (
                                     <Link
                                         href={route('courses.index')}
-                                        className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs rounded-xl shadow-2xs transition inline-flex items-center gap-1.5"
+                                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-md shadow-2xs transition inline-flex items-center gap-1.5"
                                     >
                                         <Compass className="h-4 w-4" />
                                         <span>Explore Courses Catalog</span>
@@ -467,7 +467,7 @@ export default function EnrolledCourses({ enrollments }) {
                                     key={index}
                                     href={link.url || '#'}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
-                                    className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
+                                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
                                         link.active
                                             ? 'bg-indigo-600 text-white shadow-2xs'
                                             : !link.url

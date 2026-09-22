@@ -331,22 +331,22 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                 <div className="space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="min-w-0">
-                            <div className="flex items-center gap-2 text-xs text-gray-500 font-mono mb-1">
-                                <Link href={route('student.courses.enrolled')} className="hover:text-indigo-600 transition">
+                            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-mono mb-1">
+                                <Link href={route('student.courses.enrolled')} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                                     My Enrolled Courses
                                 </Link>
                                 <span>/</span>
-                                <span className="truncate max-w-xs sm:max-w-md text-gray-700 font-medium">
+                                <span className="truncate max-w-xs sm:max-w-md text-slate-700 dark:text-slate-300 font-medium">
                                     {course.title}
                                 </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-2.5">
-                                <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate">
+                                <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">
                                     {course.title}
                                 </h1>
                                 {enrollment?.batch && (
-                                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs font-mono">
-                                        <Clock className="h-3 w-3 text-slate-500" />
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs font-mono">
+                                        <Clock className="h-3 w-3 text-slate-500 dark:text-slate-400" />
                                         Batch: {enrollment.batch.time_slot} ({enrollment.batch.batch_name})
                                     </span>
                                 )}
@@ -356,25 +356,25 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                     {/* Course progress bar */}
                     {allLessons.length > 0 && (
-                        <div className="pt-2 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                             <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold text-gray-700">Course Progress:</span>
-                                <div className="w-36 sm:w-64 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Course Progress:</span>
+                                <div className="w-36 sm:w-64 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                                     <div
-                                        className={`h-2 rounded-full transition-all duration-300 ${
-                                            progressPct === 100 ? 'bg-emerald-500' : 'bg-indigo-600'
+                                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                                            progressPct === 100 ? 'bg-emerald-600' : 'bg-indigo-600'
                                         }`}
                                         style={{ width: `${progressPct}%` }}
                                     />
                                 </div>
-                                <span className="text-xs font-extrabold font-mono text-indigo-600">
+                                <span className="text-xs font-extrabold font-mono text-indigo-600 dark:text-indigo-400">
                                     {progressPct}%
                                 </span>
                             </div>
-                            <div className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
+                            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
                                 <CheckCircle2 className={`h-3.5 w-3.5 ${progressPct === 100 ? 'text-emerald-500' : 'text-indigo-500'}`} />
                                 <span>
-                                    <strong className="text-gray-800">{completedCount}</strong> of <strong className="text-gray-800">{allLessons.length}</strong> lessons completed
+                                    <strong className="text-slate-800 dark:text-slate-200">{completedCount}</strong> of <strong className="text-slate-800 dark:text-slate-200">{allLessons.length}</strong> lessons completed
                                 </span>
                             </div>
                         </div>
@@ -392,15 +392,15 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                         <div className="lg:col-span-8 space-y-6">
 
                             {/* Video player */}
-                            <div className="bg-black rounded-2xl overflow-hidden shadow-xl border border-slate-800">
+                            <div className="bg-black rounded-lg overflow-hidden shadow-2xs border border-slate-800">
                                 {!isLessonUnlocked(activeLesson?.id) ? (
                                     /* Locked Lecture Screen */
-                                    <div className="py-16 px-6 text-center space-y-4 bg-slate-900 rounded-2xl border border-slate-800 text-white shadow-xl">
-                                        <div className="h-14 w-14 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-lg">
+                                    <div className="py-16 px-6 text-center space-y-4 bg-slate-900 rounded-lg border border-slate-800 text-white shadow-2xs">
+                                        <div className="h-14 w-14 mx-auto rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-xs">
                                             <Lock className="h-7 w-7" />
                                         </div>
                                         <div className="max-w-md mx-auto space-y-1.5">
-                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wider font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
                                                 <Lock className="h-3 w-3" /> Lecture Locked
                                             </span>
                                             <h3 className="text-base font-bold text-white">
@@ -415,7 +415,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         <button
                                             type="button"
                                             onClick={() => setActiveLessonId(resolveDefaultLessonId())}
-                                            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition"
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition"
                                         >
                                             <Play className="h-3.5 w-3.5 fill-current" />
                                             <span>Go to Current Lecture</span>
@@ -465,15 +465,15 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                     </div>
                                 ) : (
                                     /* Reading / notes lecture */
-                                    <div className="py-14 px-6 text-center space-y-4 bg-white rounded-2xl border border-gray-200 text-gray-800 shadow-2xs">
-                                        <div className="h-14 w-14 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                                    <div className="py-14 px-6 text-center space-y-4 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 shadow-2xs">
+                                        <div className="h-14 w-14 mx-auto rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
                                             <BookOpen className="h-7 w-7" />
                                         </div>
                                         <div className="max-w-md mx-auto space-y-1">
-                                            <h3 className="text-base font-bold text-gray-900">
+                                            <h3 className="text-base font-bold text-slate-900 dark:text-white">
                                                 Reading & Study Notes Lecture
                                             </h3>
-                                            <p className="text-xs text-gray-500 leading-relaxed">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                                                 This lecture is structured around reading materials and downloadable study notes. Review the summary and study guides below.
                                             </p>
                                         </div>
@@ -481,7 +481,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                             <button
                                                 type="button"
                                                 onClick={() => setActiveTab('notes')}
-                                                className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition"
+                                                className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition"
                                             >
                                                 <Download className="h-3.5 w-3.5" />
                                                 <span>View Attached Notes ({activeResources.length})</span>
@@ -493,19 +493,19 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                             {/* Auto-advance banner */}
                             {autoAdvanceTimer !== null && (
-                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-4 rounded-xl shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 p-4 rounded-md shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm font-mono shrink-0 shadow-2xs">
+                                        <div className="h-9 w-9 rounded-md bg-emerald-600 text-white flex items-center justify-center font-bold text-sm font-mono shrink-0 shadow-2xs">
                                             {autoAdvanceTimer}s
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
-                                                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                                                <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                                 <span>Lecture Completed! Next lecture will begin shortly.</span>
                                             </div>
                                             {allLessons[activeIndex + 1] && (
-                                                <p className="text-xs text-emerald-700 truncate font-medium mt-0.5">
-                                                    Up next: <span className="font-semibold text-emerald-900">{allLessons[activeIndex + 1].title}</span>
+                                                <p className="text-xs text-emerald-700 dark:text-emerald-400 truncate font-medium mt-0.5">
+                                                    Up next: <span className="font-semibold text-emerald-900 dark:text-emerald-200">{allLessons[activeIndex + 1].title}</span>
                                                 </p>
                                             )}
                                         </div>
@@ -515,7 +515,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         <button
                                             type="button"
                                             onClick={() => setAutoAdvanceTimer(null)}
-                                            className="px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-950 bg-white border border-emerald-200 rounded-lg transition"
+                                            className="px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:text-emerald-950 dark:hover:text-white bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 rounded-md transition"
                                         >
                                             Stay Here
                                         </button>
@@ -525,7 +525,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 handleNext();
                                                 setAutoAdvanceTimer(null);
                                             }}
-                                            className="px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition inline-flex items-center gap-1"
+                                            className="px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md shadow-2xs transition inline-flex items-center gap-1"
                                         >
                                             <span>Play Next</span>
                                             <ChevronRight className="h-3.5 w-3.5" />
@@ -535,26 +535,26 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                             )}
 
                             {/* Lesson title & controls */}
-                            <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-xs space-y-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-[11px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                                            <span className="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">
                                                 {activeLesson?.moduleTitle || 'General Module'}
                                             </span>
                                             {activeLesson?.duration && (
-                                                <span className="text-[11px] font-mono text-gray-500 flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded-md">
+                                                <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
                                                     <Clock className="h-3 w-3" />
                                                     <span>{activeLesson.duration}</span>
                                                 </span>
                                             )}
                                             {!isLessonUnlocked(activeLesson?.id) && (
-                                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 font-mono">
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800 font-mono">
                                                     <Lock className="h-3 w-3" /> Locked
                                                 </span>
                                             )}
                                         </div>
-                                        <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 leading-tight">
+                                        <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
                                             {activeLesson ? activeLesson.title : 'Select a Lecture'}
                                         </h2>
                                     </div>
@@ -566,12 +566,12 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 type="button"
                                                 disabled={isToggling || !isLessonUnlocked(activeLesson.id)}
                                                 onClick={(e) => handleToggleComplete(activeLesson.id, e)}
-                                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg shadow-2xs transition ${
+                                                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md shadow-2xs transition ${
                                                     !isLessonUnlocked(activeLesson.id)
-                                                        ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed opacity-75'
+                                                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed opacity-75'
                                                         : isLessonCompleted(activeLesson.id)
                                                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                                                        : 'bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300'
+                                                        : 'bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700'
                                                 }`}
                                                 title={
                                                     !isLessonUnlocked(activeLesson.id)
@@ -582,7 +582,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 }
                                             >
                                                 {!isLessonUnlocked(activeLesson.id) ? (
-                                                    <Lock className="h-4 w-4 text-gray-400" />
+                                                    <Lock className="h-4 w-4 text-slate-400" />
                                                 ) : (
                                                     <CheckCircle2 className="h-4 w-4" />
                                                 )}
@@ -600,7 +600,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                             type="button"
                                             disabled={activeIndex <= 0}
                                             onClick={handlePrev}
-                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg shadow-2xs hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
                                         >
                                             <ChevronLeft className="h-4 w-4" />
                                             <span>Previous</span>
@@ -619,7 +619,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                     ? 'Complete this lecture to unlock next lecture'
                                                     : 'Next Lecture'
                                             }
-                                            className="inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                            className="inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed transition"
                                         >
                                             <span>Next Lecture</span>
                                             {activeIndex < allLessons.length - 1 &&
@@ -633,14 +633,14 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 </div>
 
                                 {/* Tabs navigation */}
-                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
                                     <button
                                         type="button"
                                         onClick={() => setActiveTab('notes')}
-                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition inline-flex items-center gap-1.5 ${
                                             activeTab === 'notes'
-                                                ? 'bg-indigo-600 text-white shadow-xs'
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                ? 'bg-indigo-600 text-white shadow-2xs'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                         }`}
                                     >
                                         <Download className="h-3.5 w-3.5" />
@@ -650,10 +650,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                     <button
                                         type="button"
                                         onClick={() => setActiveTab('overview')}
-                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition inline-flex items-center gap-1.5 ${
                                             activeTab === 'overview'
-                                                ? 'bg-indigo-600 text-white shadow-xs'
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                ? 'bg-indigo-600 text-white shadow-2xs'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                         }`}
                                     >
                                         <BookOpen className="h-3.5 w-3.5" />
@@ -664,10 +664,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('live')}
-                                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition inline-flex items-center gap-1.5 ${
                                                 activeTab === 'live'
-                                                    ? 'bg-indigo-600 text-white shadow-xs'
-                                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                    ? 'bg-indigo-600 text-white shadow-2xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                             }`}
                                         >
                                             <Radio className="h-3.5 w-3.5" />
@@ -679,10 +679,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('exam')}
-                                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition inline-flex items-center gap-1.5 ${
                                                 activeTab === 'exam'
-                                                    ? 'bg-indigo-600 text-white shadow-xs'
-                                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                    ? 'bg-indigo-600 text-white shadow-2xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                             }`}
                                         >
                                             <GraduationCap className="h-3.5 w-3.5" />
@@ -699,10 +699,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('assignments')}
-                                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5 ${
+                                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition inline-flex items-center gap-1.5 ${
                                                 activeTab === 'assignments'
-                                                    ? 'bg-indigo-600 text-white shadow-xs'
-                                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                                    ? 'bg-indigo-600 text-white shadow-2xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                                             }`}
                                         >
                                             <ClipboardList className="h-3.5 w-3.5" />
@@ -715,8 +715,8 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 {activeTab === 'notes' && (
                                     <div className="space-y-4 pt-1">
                                         {!isLessonUnlocked(activeLesson?.id) ? (
-                                            <div className="p-6 text-center text-xs text-gray-500 border border-dashed border-gray-200 rounded-xl flex items-center justify-center gap-2">
-                                                <Lock className="h-4 w-4 text-gray-400" />
+                                            <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-md flex items-center justify-center gap-2">
+                                                <Lock className="h-4 w-4 text-slate-400" />
                                                 <span>Complete the previous lecture to unlock study notes and attachments.</span>
                                             </div>
                                         ) : activeResources.length > 0 ? (
@@ -724,18 +724,18 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 {activeResources.map((res) => (
                                                     <div
                                                         key={res.id}
-                                                        className="p-3.5 rounded-xl border border-gray-200 bg-slate-50/70 hover:bg-white hover:border-indigo-300 hover:shadow-xs transition flex items-center justify-between gap-3"
+                                                        className="p-3.5 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-xs transition flex items-center justify-between gap-3"
                                                     >
                                                         <div className="flex items-center gap-3 min-w-0">
-                                                            <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-2xs shrink-0">
+                                                            <div className="p-2 bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-700 shadow-2xs shrink-0">
                                                                 {getResourceIcon(res.resource_type)}
                                                             </div>
                                                             <div className="min-w-0">
-                                                                <h4 className="text-xs font-bold text-gray-900 truncate">
+                                                                <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                                                                     {res.title}
                                                                 </h4>
-                                                                <div className="flex items-center gap-2 text-[10px] text-gray-500 font-mono mt-0.5">
-                                                                    <span className="uppercase font-semibold text-gray-600">
+                                                                <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                                                                    <span className="uppercase font-semibold text-slate-600 dark:text-slate-300">
                                                                         {res.resource_type || 'PDF'}
                                                                     </span>
                                                                     {res.formatted_file_size && (
@@ -752,7 +752,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                             href={res.file_url}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition shrink-0"
+                                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition shrink-0"
                                                         >
                                                             <Download className="h-3.5 w-3.5" />
                                                             <span>Download</span>
@@ -761,7 +761,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="p-6 text-center text-xs text-gray-500 border border-dashed border-gray-200 rounded-xl">
+                                            <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-md">
                                                 No downloadable PDF or source files attached for this lecture.
                                             </div>
                                         )}
@@ -772,15 +772,15 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 {activeTab === 'overview' && (
                                     <div className="space-y-3 pt-1">
                                         {!isLessonUnlocked(activeLesson?.id) ? (
-                                            <p className="text-xs text-gray-400 italic">
+                                            <p className="text-xs text-slate-400 italic">
                                                 Overview is locked. Complete the previous lecture to view description.
                                             </p>
                                         ) : activeLesson?.description ? (
-                                            <div className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line bg-gray-50/70 p-4 rounded-xl border border-gray-100">
+                                            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-slate-50/70 dark:bg-slate-800/60 p-4 rounded-md border border-slate-100 dark:border-slate-800">
                                                 {activeLesson.description}
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-gray-400 italic">
+                                            <p className="text-xs text-slate-400 italic">
                                                 No supplementary notes or written summary provided for this lecture.
                                             </p>
                                         )}
@@ -793,18 +793,18 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         {course.live_classes.map((cls) => (
                                             <div
                                                 key={cls.id}
-                                                className="p-4 rounded-xl border border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                                                className="p-4 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
                                             >
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-50 text-rose-700 border border-rose-200">
+                                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
                                                             {cls.status}
                                                         </span>
-                                                        <h4 className="text-xs sm:text-sm font-bold text-gray-900">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                                                             {cls.title}
                                                         </h4>
                                                     </div>
-                                                    <p className="text-xs text-gray-500">
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
                                                         {new Date(cls.start_time).toLocaleString()}
                                                     </p>
                                                 </div>
@@ -814,7 +814,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                         href={cls.meeting_link}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition self-start sm:self-auto shrink-0"
+                                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition self-start sm:self-auto shrink-0"
                                                     >
                                                         <span>Join Live Class</span>
                                                         <ExternalLink className="h-3.5 w-3.5" />
@@ -829,20 +829,20 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 {activeTab === 'exam' && courseExams.length > 0 && (
                                     <div className="pt-2 space-y-4">
                                         {!progress?.is_completed && !isAdminOrInstructor && (
-                                            <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5">
-                                                <div className="h-10 w-10 rounded-xl bg-amber-100 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+                                            <div className="p-4 bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/50 rounded-md flex flex-col sm:flex-row items-center gap-3.5">
+                                                <div className="h-10 w-10 rounded-md bg-amber-100 dark:bg-amber-900/60 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                                                     <Lock className="h-5 w-5" />
                                                 </div>
                                                 <div className="flex-1 text-center sm:text-left">
                                                     <div className="flex items-center justify-center sm:justify-start gap-2">
-                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 font-mono">
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-mono">
                                                             Exams Locked
                                                         </span>
-                                                        <span className="text-xs font-semibold text-gray-700">
+                                                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                                             {completedCount} of {allLessons.length} lectures completed ({progressPct}% progress)
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 mt-0.5">
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                                         Complete 100% of all lectures in this course to unlock your examinations.
                                                     </p>
                                                 </div>
@@ -857,16 +857,16 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                 return (
                                                     <div
                                                         key={examItem.id}
-                                                        className="p-5 bg-white border border-gray-200 rounded-2xl shadow-xs space-y-4 transition hover:border-gray-300"
+                                                        className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-2xs space-y-4 transition hover:border-slate-300 dark:hover:border-slate-700"
                                                     >
                                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                             <div className="flex items-start sm:items-center gap-3.5">
-                                                                <div className={`p-3 rounded-xl shrink-0 ${
+                                                                <div className={`p-3 rounded-md shrink-0 ${
                                                                     sub?.is_passed
-                                                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                                                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                                                                         : isLocked
-                                                                        ? 'bg-amber-50 text-amber-600 border border-amber-200'
-                                                                        : 'bg-indigo-50 text-indigo-600 border border-indigo-200'
+                                                                        ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                                                                        : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800'
                                                                 }`}>
                                                                     {sub?.is_passed ? (
                                                                         <CheckCircle2 className="h-5 w-5" />
@@ -879,29 +879,29 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                                                                 <div>
                                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                                        <h3 className="text-sm font-bold text-gray-900">
+                                                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                                                             {examItem.title}
                                                                         </h3>
                                                                         {sub ? (
-                                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
+                                                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono ${
                                                                                 sub.is_passed
-                                                                                    ? 'bg-emerald-100 text-emerald-800'
-                                                                                    : 'bg-rose-100 text-rose-800'
+                                                                                    ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                                                                                    : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
                                                                             }`}>
                                                                                 {sub.is_passed ? 'Passed' : 'Failed'}
                                                                             </span>
                                                                         ) : isLocked ? (
-                                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-amber-50 text-amber-700 border border-amber-200">
+                                                                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                                                                                 Locked
                                                                             </span>
                                                                         ) : (
-                                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                                                                 Ready to Attempt
                                                                             </span>
                                                                         )}
                                                                     </div>
                                                                     {examItem.description && (
-                                                                        <p className="text-xs text-gray-500 mt-1">
+                                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                                                             {examItem.description}
                                                                         </p>
                                                                     )}
@@ -912,13 +912,13 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                 {sub ? (
                                                                     <>
                                                                         <div className="text-right">
-                                                                            <p className="text-[10px] text-gray-400 font-semibold uppercase">Your Score</p>
-                                                                            <p className="text-base font-black font-mono text-gray-900">{sub.percentage}%</p>
-                                                                            <p className="text-[10px] text-gray-400 font-mono">{sub.score} / {sub.total_marks} marks</p>
+                                                                            <p className="text-[10px] text-slate-400 font-semibold uppercase">Your Score</p>
+                                                                            <p className="text-base font-black font-mono text-slate-900 dark:text-white">{sub.percentage}%</p>
+                                                                            <p className="text-[10px] text-slate-400 font-mono">{sub.score} / {sub.total_marks} marks</p>
                                                                         </div>
                                                                         <Link
                                                                             href={route('student.exams.show', examItem.id)}
-                                                                            className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded-xl transition inline-flex items-center gap-1.5"
+                                                                            className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-md transition inline-flex items-center gap-1.5"
                                                                         >
                                                                             <span>Review Answers</span>
                                                                             <ChevronRight className="h-3.5 w-3.5" />
@@ -928,7 +928,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                     <button
                                                                         type="button"
                                                                         disabled
-                                                                        className="px-4 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 cursor-not-allowed"
+                                                                        className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-semibold rounded-md inline-flex items-center gap-1.5 cursor-not-allowed"
                                                                     >
                                                                         <Lock className="h-3.5 w-3.5" />
                                                                         <span>Locked</span>
@@ -936,7 +936,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                 ) : (
                                                                     <Link
                                                                         href={route('student.exams.show', examItem.id)}
-                                                                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                                                                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition"
                                                                     >
                                                                         <Play className="h-3.5 w-3.5 fill-current" />
                                                                         <span>Start Exam</span>
@@ -945,20 +945,22 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                             </div>
                                                         </div>
 
-                                                        <div className="grid grid-cols-3 gap-2.5 pt-3 border-t border-gray-100 text-center">
-                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
-                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Questions</p>
-                                                                <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">{examItem.questions_count ?? 0}</p>
+                                                        <div className="grid grid-cols-3 gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
+                                                            <div className="bg-slate-50/70 dark:bg-slate-800/60 p-2 rounded-md border border-slate-100 dark:border-slate-800">
+                                                                <p className="text-[10px] font-semibold text-slate-400 uppercase">Questions</p>
+                                                                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-0.5">
+                                                                    {examItem.questions_count || (examItem.questions ? examItem.questions.length : 0)}
+                                                                </p>
                                                             </div>
-                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
-                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Time Limit</p>
-                                                                <p className="text-xs font-bold text-gray-800 font-mono mt-0.5">
+                                                            <div className="bg-slate-50/70 dark:bg-slate-800/60 p-2 rounded-md border border-slate-100 dark:border-slate-800">
+                                                                <p className="text-[10px] font-semibold text-slate-400 uppercase">Duration</p>
+                                                                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-0.5">
                                                                     {examItem.duration_minutes > 0 ? `${examItem.duration_minutes} Mins` : 'Untimed'}
                                                                 </p>
                                                             </div>
-                                                            <div className="bg-gray-50/70 p-2 rounded-xl border border-gray-100">
-                                                                <p className="text-[10px] font-semibold text-gray-400 uppercase">Passing Score</p>
-                                                                <p className="text-xs font-bold text-emerald-600 font-mono mt-0.5">{examItem.passing_percentage}%</p>
+                                                            <div className="bg-slate-50/70 dark:bg-slate-800/60 p-2 rounded-md border border-slate-100 dark:border-slate-800">
+                                                                <p className="text-[10px] font-semibold text-slate-400 uppercase">Passing Score</p>
+                                                                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">{examItem.passing_percentage}%</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -974,38 +976,38 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         {assignments.map((asgn) => (
                                             <div
                                                 key={asgn.id}
-                                                className="p-4 bg-white border border-gray-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-gray-300"
+                                                className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs"
                                             >
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="text-xs sm:text-sm font-bold text-gray-900">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                                                             {asgn.title}
                                                         </h4>
                                                         {asgn.submission ? (
                                                             asgn.submission.status === 'reviewed' ? (
-                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                                                     <CheckCircle2 className="h-3 w-3" />
                                                                     Score: {asgn.submission.marks_obtained}/{asgn.total_marks}M
                                                                 </span>
                                                             ) : asgn.submission.status === 'resubmit' ? (
-                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-50 text-rose-700 border border-rose-200">
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
                                                                     <AlertCircle className="h-3 w-3" /> Revision Needed
                                                                 </span>
                                                             ) : (
-                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                                                                     <Clock className="h-3 w-3" /> Under Review
                                                                 </span>
                                                             )
                                                         ) : (
-                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 text-amber-700 border border-amber-200">
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                                                                 Pending Submission
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-gray-500 line-clamp-1">
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                                                         {asgn.description}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-400 font-mono">
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                                                         {asgn.total_marks} Marks • {asgn.due_date ? `Due ${new Date(asgn.due_date).toLocaleDateString()}` : 'No deadline'}
                                                         {asgn.creator && ` • Assigned by ${asgn.creator.name}`}
                                                     </p>
@@ -1013,7 +1015,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                                                 <Link
                                                     href={route('student.assignments.show', asgn.id)}
-                                                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition shrink-0"
+                                                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition shrink-0"
                                                 >
                                                     <span>{asgn.submission?.status === 'reviewed' ? 'View Feedback' : 'Open & Submit'}</span>
                                                     <ChevronRight className="h-3.5 w-3.5" />
@@ -1027,21 +1029,21 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                         {/* Sidebar: course playlist */}
                         <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-20">
-                            <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+                            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
 
                                 {/* Playlist header */}
-                                <div className="p-4 bg-white border-b border-gray-200 space-y-2.5">
+                                <div className="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h3 className="text-xs font-bold text-gray-900 flex items-center gap-2">
-                                                <FolderCheck className="h-4 w-4 text-indigo-600" />
+                                            <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                                <FolderCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                                 <span>Course Curriculum</span>
                                             </h3>
-                                            <p className="text-[11px] text-gray-500 font-mono">
+                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                                                 {allLessons.length} {allLessons.length === 1 ? 'Lecture' : 'Lectures'} · {modules.length} Modules
                                             </p>
                                         </div>
-                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                             {progressPct}% Done
                                         </span>
                                     </div>
@@ -1049,15 +1051,15 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                     {/* Sidebar progress bar */}
                                     {allLessons.length > 0 && (
                                         <div className="space-y-1 pt-1">
-                                            <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                            <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                                                 <div
                                                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                                                        progressPct === 100 ? 'bg-emerald-500' : 'bg-indigo-600'
+                                                        progressPct === 100 ? 'bg-emerald-600' : 'bg-indigo-600'
                                                     }`}
                                                     style={{ width: `${progressPct}%` }}
                                                 />
                                             </div>
-                                            <div className="flex items-center justify-between text-[10px] text-gray-400 font-mono">
+                                            <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                                                 <span>{completedCount}/{allLessons.length} Completed</span>
                                                 <span>{progressPct}%</span>
                                             </div>
@@ -1066,33 +1068,33 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                 </div>
 
                                 {/* Modules list */}
-                                <div className="divide-y divide-gray-100 max-h-[calc(100vh-280px)] overflow-y-auto">
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[calc(100vh-280px)] overflow-y-auto">
                                     {modules.map((mod, mIdx) => {
                                         const isOpen = !!openModules[mod.id];
                                         const modLessons = mod.lessons || [];
 
                                         return (
-                                            <div key={mod.id} className="bg-white">
+                                            <div key={mod.id} className="bg-white dark:bg-slate-900">
                                                 {/* Module header */}
                                                 <button
                                                     type="button"
                                                     onClick={() => toggleModule(mod.id)}
-                                                    className="w-full px-4 py-3 bg-gray-50/80 hover:bg-gray-100 transition flex items-center justify-between text-left"
+                                                    className="w-full px-4 py-3 bg-slate-50/80 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-between text-left"
                                                 >
                                                     <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                                                        <span className="h-5 w-5 rounded bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 font-mono">
+                                                        <span className="h-5 w-5 rounded-md bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 font-mono">
                                                             {mIdx + 1}
                                                         </span>
-                                                        <span className="text-xs font-bold text-gray-900 truncate">
+                                                        <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
                                                             {mod.title}
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center gap-2 shrink-0">
-                                                        <span className="text-[10px] font-semibold text-gray-400 font-mono">
+                                                        <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">
                                                             {modLessons.length}
                                                         </span>
                                                         <ChevronDown
-                                                            className={`h-3.5 w-3.5 text-gray-400 transition-transform ${
+                                                            className={`h-3.5 w-3.5 text-slate-400 dark:text-slate-500 transition-transform ${
                                                                 isOpen ? 'rotate-180' : ''
                                                             }`}
                                                         />
@@ -1101,7 +1103,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                                                 {/* Lessons list */}
                                                 {isOpen && (
-                                                    <div className="divide-y divide-gray-50 bg-white">
+                                                    <div className="divide-y divide-slate-50 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
                                                         {modLessons.map((lesson, lIdx) => {
                                                             const isUnlocked = isLessonUnlocked(lesson.id);
                                                             const isActive = lesson.id === activeLesson?.id;
@@ -1112,12 +1114,12 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                     key={lesson.id}
                                                                     className={`w-full px-4 py-3 text-left transition flex items-start justify-between gap-3 group ${
                                                                         !isUnlocked
-                                                                            ? 'bg-gray-50/50 opacity-60 cursor-not-allowed select-none'
+                                                                            ? 'bg-slate-50/50 dark:bg-slate-900/40 opacity-60 cursor-not-allowed select-none'
                                                                             : isActive
-                                                                            ? 'bg-indigo-50/90 text-indigo-900 border-l-4 border-indigo-600 font-semibold'
+                                                                            ? 'bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 border-l-4 border-indigo-600 font-semibold'
                                                                             : isCompleted
-                                                                            ? 'bg-emerald-50/20 hover:bg-emerald-50/40 text-gray-700'
-                                                                            : 'hover:bg-slate-50 text-gray-700'
+                                                                            ? 'bg-emerald-50/20 dark:bg-emerald-950/20 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-300'
+                                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
                                                                     }`}
                                                                 >
                                                                     <button
@@ -1129,14 +1131,14 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                         }`}
                                                                     >
                                                                         <div
-                                                                            className={`mt-0.5 p-1 rounded shrink-0 ${
+                                                                            className={`mt-0.5 p-1 rounded-md shrink-0 ${
                                                                                 !isUnlocked
-                                                                                    ? 'bg-gray-200/80 text-gray-400'
+                                                                                    ? 'bg-slate-200/80 dark:bg-slate-800 text-slate-400'
                                                                                     : isActive
                                                                                     ? 'bg-indigo-600 text-white'
                                                                                     : isCompleted
-                                                                                    ? 'bg-emerald-100 text-emerald-700'
-                                                                                    : 'text-gray-400'
+                                                                                    ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
+                                                                                    : 'text-slate-400 dark:text-slate-500'
                                                                             }`}
                                                                         >
                                                                             {!isUnlocked ? (
@@ -1152,24 +1154,24 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                                 <span
                                                                                     className={`text-xs line-clamp-2 leading-snug ${
                                                                                         !isUnlocked
-                                                                                            ? 'text-gray-400 font-medium'
+                                                                                            ? 'text-slate-400 font-medium'
                                                                                             : isActive
-                                                                                            ? 'font-bold text-indigo-950'
+                                                                                            ? 'font-bold text-indigo-950 dark:text-indigo-200'
                                                                                             : isCompleted
-                                                                                            ? 'font-medium text-gray-800'
-                                                                                            : 'font-medium text-gray-700'
+                                                                                            ? 'font-medium text-slate-800 dark:text-slate-200'
+                                                                                            : 'font-medium text-slate-700 dark:text-slate-300'
                                                                                     }`}
                                                                                 >
                                                                                     {lesson.title}
                                                                                 </span>
                                                                                 {!isUnlocked && (
-                                                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-semibold font-mono bg-gray-200/70 text-gray-500 shrink-0">
+                                                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md text-[9px] font-semibold font-mono bg-slate-200/70 dark:bg-slate-800 text-slate-500 dark:text-slate-400 shrink-0">
                                                                                         <Lock className="h-2 w-2" /> Locked
                                                                                     </span>
                                                                                 )}
                                                                             </div>
                                                                             {lesson.duration && (
-                                                                                <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1">
+                                                                                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono flex items-center gap-1">
                                                                                     <Clock className="h-2.5 w-2.5" />
                                                                                     <span>{lesson.duration}</span>
                                                                                 </span>
@@ -1192,19 +1194,19 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                             onClick={(e) => isUnlocked && handleToggleComplete(lesson.id, e)}
                                                                             className={`p-1 rounded-md transition ${
                                                                                 !isUnlocked
-                                                                                    ? 'text-gray-300 cursor-not-allowed opacity-40'
+                                                                                    ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
                                                                                     : isCompleted
-                                                                                    ? 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100'
-                                                                                    : 'text-gray-300 hover:text-emerald-600 hover:bg-gray-100'
+                                                                                    ? 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 dark:hover:bg-emerald-950/60'
+                                                                                    : 'text-slate-300 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800'
                                                                             }`}
                                                                         >
                                                                             <CheckCircle2
                                                                                 className={`h-4 w-4 ${
                                                                                     !isUnlocked
-                                                                                        ? 'text-gray-300'
+                                                                                        ? 'text-slate-300 dark:text-slate-600'
                                                                                         : isCompleted
-                                                                                        ? 'text-emerald-600 fill-emerald-100'
-                                                                                        : 'text-gray-300 group-hover:text-gray-400'
+                                                                                        ? 'text-emerald-600 fill-emerald-100 dark:fill-emerald-950/40'
+                                                                                        : 'text-slate-300 dark:text-slate-600 group-hover:text-slate-400'
                                                                                 }`}
                                                                             />
                                                                         </button>
@@ -1216,10 +1218,10 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                                                                         ? 'Locked study materials'
                                                                                         : `${lesson.resources.length} study material(s) attached`
                                                                                 }
-                                                                                className={`p-1 rounded shrink-0 ${
+                                                                                className={`p-1 rounded-md shrink-0 ${
                                                                                     !isUnlocked
-                                                                                        ? 'text-gray-300 bg-gray-100 cursor-not-allowed'
-                                                                                        : 'text-emerald-600 bg-emerald-50'
+                                                                                        ? 'text-slate-300 dark:text-slate-600 bg-slate-100 dark:bg-slate-800 cursor-not-allowed'
+                                                                                        : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40'
                                                                                 }`}
                                                                             >
                                                                                 <Download className="h-3 w-3" />
@@ -1239,18 +1241,18 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                             {/* Instructor card */}
                             {course.instructor && (
-                                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-2xs">
-                                    <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3 shadow-2xs">
+                                    <div className="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                                         {course.instructor.user?.name ? course.instructor.user.name.charAt(0).toUpperCase() : 'M'}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">
                                             Mentor & Instructor
                                         </p>
-                                        <h4 className="text-xs font-bold text-gray-900 truncate">
+                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                                             {course.instructor.user?.name || 'Academy Mentor'}
                                         </h4>
-                                        <p className="text-[11px] text-indigo-600 truncate">
+                                        <p className="text-[11px] text-indigo-600 dark:text-indigo-400 truncate">
                                             {course.instructor.designation || 'Software Instructor'}
                                         </p>
                                     </div>

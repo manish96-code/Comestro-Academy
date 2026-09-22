@@ -143,10 +143,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
     // Shared Catalog Content (Search, Categories, Course Cards, Pagination)
     const catalogContent = (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Filter & Search Bar */}
-            <div className={`rounded-2xl border p-4 sm:p-6 transition-all ${
-                isDark ? 'bg-[#0c101c] border-slate-800/80 shadow-xl' : 'bg-white border-slate-200/90 shadow-2xs'
+            <div className={`rounded-lg border p-4 sm:p-5 transition-all ${
+                isDark ? 'bg-slate-900 border-slate-800 shadow-2xs' : 'bg-white border-slate-200 shadow-2xs'
             } space-y-4`}>
                 <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
                     <SearchBar
@@ -157,11 +157,11 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         onClear={() => setSearch('')}
                         buttonText="Filter Tracks"
                         buttonIcon={Search}
-                        buttonClassName="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl"
-                        inputClassName={`rounded-xl ${
+                        buttonClassName="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+                        inputClassName={`rounded-md ${
                             isDark
-                                ? 'bg-[#080c14] border-slate-700 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-                                : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
+                                ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600'
                         }`}
                     />
 
@@ -169,7 +169,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         <button
                             type="button"
                             onClick={clearFilters}
-                            className={`px-4 py-2.5 font-semibold text-xs rounded-xl border transition flex items-center justify-center gap-1.5 shrink-0 ${
+                            className={`px-4 py-2.5 font-semibold text-xs rounded-md border transition flex items-center justify-center gap-1.5 shrink-0 ${
                                 isDark
                                     ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
                                     : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
@@ -190,11 +190,11 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         </span>
                         <button
                             onClick={() => handleCategoryClick('')}
-                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition shrink-0 cursor-pointer ${
+                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition shrink-0 cursor-pointer ${
                                 !categoryId
-                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    ? 'bg-indigo-600 text-white shadow-2xs'
                                     : isDark
-                                        ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 border border-slate-700/60'
+                                        ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                             }`}
                         >
@@ -204,11 +204,11 @@ export default function CoursesIndex({ courses, categories, filters }) {
                             <button
                                 key={category.id}
                                 onClick={() => handleCategoryClick(category.id)}
-                                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition shrink-0 cursor-pointer ${
+                                className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition shrink-0 cursor-pointer ${
                                     categoryId === String(category.id)
-                                        ? 'bg-blue-600 text-white shadow-sm'
+                                        ? 'bg-indigo-600 text-white shadow-2xs'
                                         : isDark
-                                            ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 border border-slate-700/60'
+                                            ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                                 }`}
                             >
@@ -231,10 +231,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                         return (
                             <div
                                 key={course.id}
-                                className={`rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
+                                className={`rounded-lg border transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
                                     isDark
-                                        ? 'bg-[#0c101c] border-slate-800/80 hover:border-slate-700 hover:bg-[#0f1526]'
-                                        : 'bg-white border-slate-200/90 hover:border-slate-300 shadow-2xs'
+                                        ? 'bg-slate-900 border-slate-800 hover:border-indigo-700 shadow-2xs'
+                                        : 'bg-white border-slate-200 hover:border-indigo-300 shadow-2xs'
                                 }`}
                             >
                                 <div>
@@ -257,7 +257,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
                                         {/* Badges Over Thumbnail */}
                                         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                                            <span className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-md bg-blue-600 text-white shadow-xs">
+                                            <span className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-md bg-indigo-600 text-white shadow-xs">
                                                 {course.category?.name || 'Engineering'}
                                             </span>
                                             {course.type === 'live' ? (
@@ -279,7 +279,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                         {/* Enrolled Badge */}
                                         {isEnrolled && (
                                             <div className="absolute top-3 right-3 z-10">
-                                                <span className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md bg-emerald-500 text-white shadow-md flex items-center gap-1">
+                                                <span className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md bg-emerald-600 text-white shadow-xs flex items-center gap-1">
                                                     <CheckCircle2 className="h-3.5 w-3.5" />
                                                     Enrolled
                                                 </span>
@@ -288,11 +288,11 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
                                         {/* Bottom duration & rating strip over thumbnail */}
                                         <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs text-slate-300 font-medium z-10">
-                                            <span className="flex items-center gap-1 bg-slate-950/70 px-2 py-0.5 rounded backdrop-blur-xs">
-                                                <Clock className="h-3.5 w-3.5 text-blue-400" />
+                                            <span className="flex items-center gap-1 bg-slate-950/80 px-2 py-0.5 rounded-md backdrop-blur-xs border border-white/10">
+                                                <Clock className="h-3.5 w-3.5 text-indigo-400" />
                                                 <span>{course.duration || '10 Weeks'}</span>
                                             </span>
-                                            <span className="flex items-center gap-1 bg-slate-950/70 px-2 py-0.5 rounded backdrop-blur-xs text-amber-400">
+                                            <span className="flex items-center gap-1 bg-slate-950/80 px-2 py-0.5 rounded-md backdrop-blur-xs text-amber-400 border border-white/10">
                                                 <Star className="h-3.5 w-3.5 fill-current" />
                                                 <span className="text-white font-semibold font-mono">4.99</span>
                                             </span>
@@ -301,7 +301,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
                                     {/* Course Details */}
                                     <div className="p-5 space-y-3">
-                                        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
+                                        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                             <Link href={route('courses.show', course.slug || course.id)}>
                                                 {course.title}
                                             </Link>
@@ -312,9 +312,9 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                         </p>
 
                                         {/* Faculty row */}
-                                        <div className="pt-3 flex items-center gap-3 border-t border-slate-100 dark:border-slate-800/80">
+                                        <div className="pt-3 flex items-center gap-3 border-t border-slate-100 dark:border-slate-800">
                                             {instructorPhoto ? (
-                                                <div className="relative h-9 w-9 rounded-lg overflow-hidden border border-blue-500/40 shrink-0 bg-slate-900">
+                                                <div className="relative h-9 w-9 rounded-full overflow-hidden border border-indigo-500/40 shrink-0 bg-slate-900">
                                                     <img
                                                         src={instructorPhoto}
                                                         alt={getInstructorName(instructorUser)}
@@ -322,7 +322,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                                     />
                                                 </div>
                                             ) : (
-                                                <div className="h-9 w-9 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold font-mono text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-700">
+                                                <div className="h-9 w-9 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold font-mono text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-700">
                                                     {getInstructorName(instructorUser).split(' ').map(n => n[0]).join('').slice(0, 2)}
                                                 </div>
                                             )}
@@ -331,7 +331,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                                 <div className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                                                     {getInstructorName(instructorUser)}
                                                 </div>
-                                                <div className="text-[11px] text-blue-600 dark:text-sky-400 truncate">
+                                                <div className="text-[11px] text-indigo-600 dark:text-indigo-400 truncate">
                                                     {isLaravel ? 'Laravel Framework Contributor (530M+)' : (course.instructor?.designation || 'Senior Faculty Lead')}
                                                 </div>
                                             </div>
@@ -341,8 +341,8 @@ export default function CoursesIndex({ courses, categories, filters }) {
 
                                 {/* Footer: Pricing & Action Button */}
                                 <div className="p-5 pt-0">
-                                    <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${
-                                        isDark ? 'bg-[#080c14] border-slate-800' : 'bg-slate-50 border-slate-100'
+                                    <div className={`p-3 rounded-md border flex items-center justify-between gap-3 ${
+                                        isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-100'
                                     }`}>
                                         <div>
                                             <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
@@ -371,7 +371,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                         {isEnrolled ? (
                                             <Link
                                                 href={route('student.courses.learn', course.id)}
-                                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+                                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-md shadow-2xs transition flex items-center gap-1.5"
                                             >
                                                 <span>Classroom</span>
                                                 <ArrowRight className="h-3.5 w-3.5" />
@@ -379,7 +379,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                                         ) : (
                                             <Link
                                                 href={route('courses.show', course.slug || course.id)}
-                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-md shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
                                             >
                                                 <span>View Syllabus</span>
                                                 <ArrowRight className="h-3.5 w-3.5" />
@@ -393,10 +393,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                 </div>
             ) : (
                 /* Empty State */
-                <div className={`rounded-2xl border p-12 text-center space-y-4 ${
-                    isDark ? 'bg-[#0c101c] border-slate-800' : 'bg-white border-slate-200'
+                <div className={`rounded-lg border p-12 text-center space-y-4 shadow-2xs ${
+                    isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
                 }`}>
-                    <div className="mx-auto h-12 w-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                    <div className="mx-auto h-12 w-12 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
                         <Compass className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
@@ -407,7 +407,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
                     </div>
                     <button
                         onClick={clearFilters}
-                        className="px-5 py-2.5 bg-blue-600 text-white font-semibold text-xs rounded-xl hover:bg-blue-500 transition inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        className="px-5 py-2.5 bg-indigo-600 text-white font-semibold text-xs rounded-md hover:bg-indigo-700 transition inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
                     >
                         <span>View All Cohorts</span>
                     </button>
@@ -422,9 +422,9 @@ export default function CoursesIndex({ courses, categories, filters }) {
                             key={index}
                             href={link.url || '#'}
                             dangerouslySetInnerHTML={{ __html: link.label }}
-                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition ${
+                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition ${
                                 link.active
-                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    ? 'bg-indigo-600 text-white shadow-2xs'
                                     : !link.url
                                         ? 'text-slate-500 opacity-40 cursor-not-allowed'
                                         : isDark
@@ -445,10 +445,10 @@ export default function CoursesIndex({ courses, categories, filters }) {
                 header={
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
                                 Explore Courses
                             </h1>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                 Discover industry-standard courses taught by official framework contributors
                             </p>
                         </div>
@@ -457,7 +457,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
             >
                 <Head title="Explore Courses - Student Portal" />
 
-                <div className="py-6 bg-gray-50 min-h-[calc(100vh-140px)]">
+                <div className="py-6 min-h-[calc(100vh-140px)]">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         {catalogContent}
                     </div>
