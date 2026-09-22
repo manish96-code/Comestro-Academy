@@ -54,7 +54,7 @@ export default function ConfirmModal({
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-            <div className="relative bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150 text-center">
+            <div className="relative bg-white dark:bg-slate-900 rounded-lg max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150 text-center">
                 {/* Icon */}
                 <div className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full mb-3 border ${currentVariant.iconBg}`}>
                     <IconComponent className="h-6 w-6" />
@@ -76,7 +76,7 @@ export default function ConfirmModal({
                         type="button"
                         onClick={onClose}
                         disabled={processing}
-                        className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition disabled:opacity-50 cursor-pointer"
+                        className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md transition disabled:opacity-50 cursor-pointer"
                     >
                         {cancelText}
                     </button>
@@ -84,7 +84,7 @@ export default function ConfirmModal({
                         type="button"
                         onClick={onConfirm}
                         disabled={processing}
-                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition disabled:opacity-50 cursor-pointer ${currentVariant.confirmBtn}`}
+                        className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-md transition disabled:opacity-50 cursor-pointer ${currentVariant.confirmBtn}`}
                     >
                         {processing ? 'Processing...' : confirmText}
                     </button>

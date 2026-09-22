@@ -124,7 +124,7 @@ export default function AdminLayout({ header, children }) {
                                         if (item.onClick) item.onClick(e);
                                         if (onItemClick) onItemClick(e);
                                     }}
-                                    className={`group flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                                    className={`group flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-all ${
                                         item.active
                                             ? 'bg-indigo-50/90 text-indigo-700 font-semibold border-l-2 border-indigo-600 shadow-2xs'
                                             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -140,7 +140,7 @@ export default function AdminLayout({ header, children }) {
                                     </div>
                                     {item.badge && (
                                         <span
-                                            className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded ${
+                                            className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-md ${
                                                 item.badge === 'Live'
                                                     ? 'bg-rose-50 text-rose-600 border border-rose-200'
                                                     : 'bg-slate-100 text-slate-500'
@@ -165,7 +165,7 @@ export default function AdminLayout({ header, children }) {
                 {/* Brand Header */}
                 <div className="h-14 flex items-center justify-between px-5 border-b border-slate-200/80 bg-white">
                     <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0">
+                        <div className="h-8 w-8 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-2xs shrink-0">
                             <Code className="h-4 w-4" />
                         </div>
                         <div className="truncate">
@@ -177,7 +177,7 @@ export default function AdminLayout({ header, children }) {
                             </span>
                         </div>
                     </div>
-                    <span className="font-mono text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                    <span className="font-mono text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200">
                         v2.0
                     </span>
                 </div>
@@ -192,7 +192,7 @@ export default function AdminLayout({ header, children }) {
                     <Link
                         href={route('courses.index')}
                         target="_blank"
-                        className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 hover:bg-indigo-50/60 border border-slate-200/80 hover:border-indigo-200 text-slate-600 hover:text-indigo-700 text-xs font-medium transition group"
+                        className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 hover:bg-indigo-50/60 border border-slate-200/80 hover:border-indigo-200 text-slate-600 hover:text-indigo-700 text-xs font-medium transition group"
                     >
                         <div className="flex items-center gap-2">
                             <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-600" />
@@ -210,10 +210,10 @@ export default function AdminLayout({ header, children }) {
                                 <img
                                     src={user.profile_pic}
                                     alt={user.name}
-                                    className="h-8 w-8 rounded-md object-cover border border-slate-200 shrink-0"
+                                    className="h-8 w-8 rounded-full object-cover border border-slate-200 shrink-0"
                                 />
                             ) : (
-                                <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
+                                <div className="h-8 w-8 rounded-full bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
                                     {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
                                 </div>
                             )}
@@ -251,7 +251,7 @@ export default function AdminLayout({ header, children }) {
                         {/* Mobile Header */}
                         <div className="h-14 flex items-center justify-between px-5 border-b border-slate-200">
                             <div className="flex items-center gap-2.5">
-                                <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                                <div className="h-8 w-8 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
                                     <Code className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -266,7 +266,7 @@ export default function AdminLayout({ header, children }) {
                             <button
                                 type="button"
                                 onClick={() => setSidebarOpen(false)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -285,10 +285,10 @@ export default function AdminLayout({ header, children }) {
                                         <img
                                             src={user.profile_pic}
                                             alt={user.name}
-                                            className="h-8 w-8 rounded-md object-cover border border-slate-200 shrink-0"
+                                            className="h-8 w-8 rounded-full object-cover border border-slate-200 shrink-0"
                                         />
                                     ) : (
-                                        <div className="h-8 w-8 rounded-md bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
+                                        <div className="h-8 w-8 rounded-full bg-indigo-600/10 text-indigo-700 border border-indigo-200/60 flex items-center justify-center font-bold text-xs shrink-0">
                                             {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
                                         </div>
                                     )}
@@ -324,7 +324,7 @@ export default function AdminLayout({ header, children }) {
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer"
+                            className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
@@ -339,7 +339,7 @@ export default function AdminLayout({ header, children }) {
                         <Link
                             href={route('courses.index')}
                             target="_blank"
-                            className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-lg transition"
+                            className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-md transition"
                         >
                             <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
                             <span>Live Portal</span>
@@ -354,16 +354,16 @@ export default function AdminLayout({ header, children }) {
                                 <Dropdown.Trigger>
                                     <button
                                         type="button"
-                                        className="flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100/80 transition cursor-pointer"
+                                        className="flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900 p-1 rounded-md hover:bg-slate-100/80 transition cursor-pointer"
                                     >
                                         {user?.profile_pic ? (
                                             <img
                                                 src={user.profile_pic}
                                                 alt={user.name}
-                                                className="h-7 w-7 rounded-md object-cover border border-slate-200 shadow-2xs shrink-0"
+                                                className="h-7 w-7 rounded-full object-cover border border-slate-200 shadow-2xs shrink-0"
                                             />
                                         ) : (
-                                            <div className="h-7 w-7 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                                            <div className="h-7 w-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                                                 {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
                                             </div>
                                         )}

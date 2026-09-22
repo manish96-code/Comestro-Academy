@@ -349,16 +349,16 @@ export default function CourseCreate({ course = null, categories = [], instructo
 
                             {/* If Edit Mode: Top Summary Pill */}
                             {isEdit && (
-                                <div className="rounded-xl bg-white p-4 border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="rounded-lg bg-white p-4 border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0">
                                         {course.thumbnail ? (
                                             <img
                                                 src={course.thumbnail}
                                                 alt={course.title}
-                                                className="h-12 w-16 rounded-lg object-cover border border-slate-200 shrink-0"
+                                                className="h-12 w-16 rounded-md object-cover border border-slate-200 shrink-0"
                                             />
                                         ) : (
-                                            <div className="h-12 w-16 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0">
+                                            <div className="h-12 w-16 rounded-md bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0">
                                                 <BookOpen className="h-5 w-5" />
                                             </div>
                                         )}
@@ -366,12 +366,12 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             <div className="flex items-center gap-1.5 flex-wrap">
                                                 <h2 className="text-sm font-bold text-slate-900 truncate max-w-md">{course.title}</h2>
                                                 {course.type === 'live' ? (
-                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                                                         <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                                                         <span>Live</span>
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                                         <Video className="h-2.5 w-2.5 text-slate-500" />
                                                         <span>Recorded</span>
                                                     </span>
@@ -384,7 +384,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                     <div className="flex items-center gap-2 shrink-0">
                                         <Link
                                             href={route('admin.courses.content', course.id)}
-                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200 transition"
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-md border border-sky-200 transition cursor-pointer"
                                         >
                                             <Video className="h-3.5 w-3.5" />
                                             <span>Manage Lectures</span>
@@ -393,7 +393,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                         <button
                                             type="button"
                                             onClick={() => setShowDeleteModal(true)}
-                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition"
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-md border border-rose-200 transition cursor-pointer"
                                         >
                                             <Trash2 className="h-3.5 w-3.5" />
                                             <span>Delete Course</span>
@@ -403,9 +403,9 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             )}
 
                             {/* Section 1: Course Information */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                                    <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                    <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md">
                                         <BookPlus className="h-4 w-4" />
                                     </div>
                                     <div>
@@ -528,7 +528,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
 
                                 {/* Live Class Batches / Timings (Only for Live Cohorts) */}
                                 {data.type === 'live' && (
-                                    <div className="p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/60 dark:bg-slate-900/40 space-y-4 transition">
+                                    <div className="p-4 sm:p-5 rounded-lg border border-slate-200 bg-slate-50/60 dark:bg-slate-900/40 space-y-4 transition">
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 pb-3">
                                             <div className="flex items-center gap-2">
                                                 <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
@@ -690,10 +690,10 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             </div>
 
                             {/* Section 2: Curriculum & Syllabus Builder */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
                                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                                     <div className="flex items-center gap-2.5">
-                                        <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                        <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md">
                                             <Layers className="h-4 w-4" />
                                         </div>
                                         <div>
@@ -709,7 +709,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                     <button
                                         type="button"
                                         onClick={addCurriculumItem}
-                                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition"
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition cursor-pointer"
                                     >
                                         <Plus className="h-3.5 w-3.5" />
                                         <span>Add Module</span>
@@ -822,7 +822,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                         <div className="lg:col-span-4 space-y-5">
 
                             {/* Card: Publishing & Actions */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-4">
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                                     Publishing & Visibility
                                 </h4>
@@ -840,7 +840,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                                 is_featured: nextStatus === 'published' ? prev.is_featured : false,
                                             }));
                                         }}
-                                        className="w-full text-xs rounded-lg border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs"
+                                        className="w-full text-xs rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs"
                                     >
                                         <option value="draft">Draft (Hidden)</option>
                                         <option value="published">Published (Live)</option>
@@ -856,7 +856,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             disabled={data.status !== 'published'}
                                             checked={data.status === 'published' && data.is_featured}
                                             onChange={(e) => setData('is_featured', e.target.checked)}
-                                            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 disabled:cursor-not-allowed"
+                                            className="mt-0.5 h-4 w-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 disabled:cursor-not-allowed"
                                         />
                                         <div>
                                             <span className="text-xs font-semibold text-slate-900 block">Featured Course</span>
@@ -868,11 +868,11 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
                                     <Link
                                         href={route('admin.courses.index')}
-                                        className="w-1/3 py-2 text-center text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition"
+                                        className="w-1/3 py-2 text-center text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-md transition cursor-pointer"
                                     >
                                         Cancel
                                     </Link>
-                                    <PrimaryButton disabled={processing} className="w-2/3 justify-center py-2 text-xs font-semibold shadow-xs">
+                                    <PrimaryButton disabled={processing} className="w-2/3 justify-center py-2 text-xs font-semibold shadow-2xs">
                                         <Save className="h-3.5 w-3.5 mr-1" />
                                         <span>{processing ? 'Saving...' : isEdit ? 'Update' : 'Publish'}</span>
                                     </PrimaryButton>
@@ -880,7 +880,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             </div>
 
                             {/* Card: Course Thumbnail */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                                     Course Thumbnail
                                 </h4>
@@ -895,13 +895,13 @@ export default function CourseCreate({ course = null, categories = [], instructo
 
                                 {imagePreview ? (
                                     <div className="space-y-2">
-                                        <div className="relative w-full h-36 rounded-lg overflow-hidden border border-slate-200 bg-slate-900 shadow-2xs">
+                                        <div className="relative w-full h-36 rounded-md overflow-hidden border border-slate-200 bg-slate-900 shadow-2xs">
                                             <img
                                                 src={imagePreview}
                                                 alt="Thumbnail"
                                                 className="w-full h-full object-cover"
                                             />
-                                            <div className="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-[10px] text-white font-mono px-2 py-0.5 rounded">
+                                            <div className="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-[10px] text-white font-mono px-2 py-0.5 rounded-md">
                                                 {data.thumbnail_image ? 'Selected' : 'Current'}
                                             </div>
                                         </div>
@@ -909,14 +909,14 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                             <button
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="flex-1 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition"
+                                                className="flex-1 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition cursor-pointer"
                                             >
                                                 Change Image
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleRemoveImage}
-                                                className="px-2.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition"
+                                                className="px-2.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-md border border-rose-200 transition cursor-pointer"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
                                             </button>
@@ -925,7 +925,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                                 ) : (
                                     <div
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="rounded-lg border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-slate-50/50 hover:bg-indigo-50/20 p-5 text-center cursor-pointer transition"
+                                        className="rounded-md border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-slate-50/50 hover:bg-indigo-50/20 p-5 text-center cursor-pointer transition"
                                     >
                                         <UploadCloud className="h-6 w-6 text-slate-400 mx-auto mb-1.5" />
                                         <span className="text-xs font-semibold text-slate-700 block">Click to upload banner</span>
@@ -936,7 +936,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             </div>
 
                             {/* Card: Pricing & Duration */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                                     Pricing & Schedule
                                 </h4>
@@ -985,7 +985,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             </div>
 
                             {/* Card: Course Includes / Perks */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                                         Perks & Includes
@@ -1022,7 +1022,7 @@ export default function CourseCreate({ course = null, categories = [], instructo
                             </div>
 
                             {/* Card: Portfolio Capstones */}
-                            <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
+                            <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">

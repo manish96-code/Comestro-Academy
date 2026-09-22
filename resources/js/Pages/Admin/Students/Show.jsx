@@ -176,7 +176,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     <div className="flex items-center gap-2">
                         <Link
                             href={route('admin.students.index')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-xs transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
                         >
                             <ArrowLeft className="h-3.5 w-3.5 text-slate-500" />
                             <span>Back to Students</span>
@@ -191,16 +191,16 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Top Student Banner Card */}
-                    <div className="rounded-xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                    <div className="rounded-lg bg-white p-5 sm:p-6 border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div className="flex items-center space-x-4">
                             {student.profile_pic ? (
                                 <img
                                     src={student.profile_pic}
                                     alt={student.name}
-                                    className="h-14 w-14 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs"
+                                    className="h-14 w-14 rounded-full object-cover border border-slate-200 shrink-0 shadow-2xs"
                                 />
                             ) : (
-                                <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0">
+                                <div className="h-14 w-14 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0">
                                     {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
                                 </div>
                             )}
@@ -226,16 +226,16 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     </div>
 
                     {/* ENROLLED COURSES SECTION */}
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs space-y-4">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200/90 shadow-2xs space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                             <div className="flex items-center space-x-3">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                     <BookOpen className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                         <span>Enrolled Courses</span>
-                                        <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                                             {enrollments.length}
                                         </span>
                                     </h3>
@@ -252,7 +252,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                         setSelectedCourseId(availableCourses[0]?.id || '');
                                         setIsEnrollModalOpen(true);
                                     }}
-                                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition"
+                                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition cursor-pointer"
                                 >
                                     <Plus className="h-3.5 w-3.5" />
                                     <span>Enroll in Course</span>
@@ -261,7 +261,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                         </div>
 
                         {enrollments.length === 0 ? (
-                            <div className="text-center py-10 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+                            <div className="text-center py-10 px-4 rounded-lg border border-dashed border-slate-200 bg-slate-50/50">
                                 <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-2" />
                                 <h4 className="text-xs sm:text-sm font-bold text-slate-700">No Courses Enrolled</h4>
                                 <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
@@ -358,9 +358,9 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     </div>
 
                     {/* Edit Student Details Form */}
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200/90 shadow-2xs">
                         <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 <User className="h-4 w-4" />
                             </div>
                             <div>
@@ -416,7 +416,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                         id="status"
                                         value={data.status}
                                         onChange={(e) => setData('status', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-xs transition"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs transition"
                                     >
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
@@ -436,9 +436,9 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                     </div>
 
                     {/* Academic & Professional Background Card */}
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs space-y-4">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200/90 shadow-2xs space-y-4">
                         <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 <GraduationCap className="h-4 w-4" />
                             </div>
                             <div>
@@ -514,10 +514,10 @@ export default function StudentShow({ student, enrollments = [], availableCourse
             {/* ENROLL STUDENT IN COURSE MODAL */}
             {isEnrollModalOpen && (
                 <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
                         <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                             <div className="flex items-center gap-2">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md">
                                     <BookOpen className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -528,7 +528,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                             <button
                                 type="button"
                                 onClick={() => setIsEnrollModalOpen(false)}
-                                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                                className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -541,7 +541,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                     id="course_id"
                                     value={selectedCourseId}
                                     onChange={(e) => setSelectedCourseId(e.target.value)}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 py-2.5 px-3 mt-1 shadow-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                                    className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 py-2 px-3 mt-1 shadow-2xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
                                     required
                                 >
                                     {availableCourses.map((c) => (
@@ -558,7 +558,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                     id="enroll_status"
                                     value={enrollStatus}
                                     onChange={(e) => setEnrollStatus(e.target.value)}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 py-2.5 px-3 mt-1 shadow-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                                    className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 py-2 px-3 mt-1 shadow-2xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
                                 >
                                     <option value="active">Active (Full Classroom Access)</option>
                                     <option value="completed">Completed</option>
@@ -570,7 +570,7 @@ export default function StudentShow({ student, enrollments = [], availableCourse
                                 <button
                                     type="button"
                                     onClick={() => setIsEnrollModalOpen(false)}
-                                    className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                                    className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-md transition cursor-pointer"
                                 >
                                     Cancel
                                 </button>

@@ -158,7 +158,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                     <button
                         type="button"
                         onClick={() => handleOpenCreateModal()}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition shrink-0"
                     >
                         <Plus className="h-4 w-4" />
                         <span>Create New Exam</span>
@@ -173,8 +173,8 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
                                 <GraduationCap className="h-5 w-5" />
                             </div>
                             <div>
@@ -183,8 +183,8 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
                                 <FileCheck className="h-5 w-5" />
                             </div>
                             <div>
@@ -193,8 +193,8 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900">
                                 <HelpCircle className="h-5 w-5" />
                             </div>
                             <div>
@@ -203,8 +203,8 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900">
                                 <UserCheck className="h-5 w-5" />
                             </div>
                             <div>
@@ -215,12 +215,12 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                     </div>
 
                     {/* Filters Bar */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs">
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                             <SearchBar
                                 onSubmit={handleSearchSubmit}
                                 size="md"
-                                inputClassName="rounded-xl"
+                                inputClassName="rounded-md"
                                 placeholder="Search by exam title or course title..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -238,7 +238,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                         setCourseId(e.target.value);
                                         handleFilter(search || undefined, e.target.value || undefined);
                                     }}
-                                    className="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-500 font-medium"
+                                    className="px-3 py-2 text-xs rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-500 font-medium"
                                 >
                                     <option value="">All Courses</option>
                                     {courses.map((c) => (
@@ -252,7 +252,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                     <button
                                         type="button"
                                         onClick={clearFilters}
-                                        className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
+                                        className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition"
                                     >
                                         Reset
                                     </button>
@@ -263,7 +263,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
 
                     {/* Exams Table */}
                     {examList.length === 0 ? (
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center space-y-3">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center space-y-3 shadow-2xs">
                             <GraduationCap className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
                             <p className="text-sm font-bold text-slate-700 dark:text-slate-200">No exams found</p>
                             <p className="text-xs text-slate-400 max-w-sm mx-auto">
@@ -272,14 +272,14 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             <button
                                 type="button"
                                 onClick={() => handleOpenCreateModal()}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition"
                             >
                                 <Plus className="h-4 w-4" />
                                 <span>Create First Exam</span>
                             </button>
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs">
                                     <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
@@ -382,7 +382,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                                         <div className="flex items-center justify-end gap-1.5">
                                                             <Link
                                                                 href={route('admin.exams.show', exam.id)}
-                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-lg transition border border-indigo-200 dark:border-indigo-800"
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-md transition border border-indigo-200 dark:border-indigo-800"
                                                                 title="Manage Questions & Settings"
                                                             >
                                                                 <Edit3 className="h-3.5 w-3.5" />
@@ -392,7 +392,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(exam)}
-                                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg transition cursor-pointer"
+                                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-md transition cursor-pointer"
                                                                 title="Delete Exam"
                                                             >
                                                                 <Trash2 className="h-3.5 w-3.5" />
@@ -419,11 +419,11 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
             {/* Create Exam Modal */}
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in zoom-in-95 duration-150">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in zoom-in-95 duration-150">
                         {/* Modal Header */}
                         <div className="px-6 py-4.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 bg-slate-50/70 dark:bg-slate-800/40">
                             <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center shrink-0">
+                                <div className="h-10 w-10 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center shrink-0">
                                     <Award className="h-5 w-5" />
                                 </div>
                                 <div>
@@ -438,7 +438,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             <button
                                 type="button"
                                 onClick={() => setIsCreateModalOpen(false)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
                                 title="Close modal"
                             >
                                 <X className="h-5 w-5" />
@@ -464,7 +464,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                         id="create_course_id"
                                         value={createData.course_id}
                                         onChange={(e) => setCreateData('course_id', e.target.value)}
-                                        className="block w-full text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-white py-2.5 pl-3.5 pr-10 focus:border-indigo-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 transition shadow-2xs"
+                                        className="block w-full text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-white py-2.5 pl-3.5 pr-10 focus:border-indigo-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 transition shadow-2xs"
                                     >
                                         <option value="" disabled>Select course to attach exam...</option>
                                         {courses.map((c) => (
@@ -489,7 +489,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                     type="text"
                                     value={createData.title}
                                     onChange={(e) => setCreateData('title', e.target.value)}
-                                    className="block w-full text-xs font-medium rounded-xl py-2.5 px-3.5 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                    className="block w-full text-xs font-medium rounded-md py-2.5 px-3.5 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
                                     placeholder="e.g. Final Certification Assessment: Architecture & Standards"
                                 />
                                 <InputError message={createErrors.title} className="mt-1" />
@@ -510,7 +510,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                     rows={2}
                                     value={createData.description}
                                     onChange={(e) => setCreateData('description', e.target.value)}
-                                    className="block w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-400 shadow-2xs transition resize-none"
+                                    className="block w-full text-xs rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-400 shadow-2xs transition resize-none"
                                     placeholder="Brief guidelines displayed to students prior to starting their attempt..."
                                 />
                                 <InputError message={createErrors.description} className="mt-1" />
@@ -533,7 +533,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                             max="360"
                                             value={createData.duration_minutes}
                                             onChange={(e) => setCreateData('duration_minutes', e.target.value)}
-                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            className="block w-full text-xs font-medium rounded-md py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
                                             placeholder="30"
                                         />
                                         <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
@@ -558,7 +558,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                             max="50"
                                             value={createData.marks_per_question}
                                             onChange={(e) => setCreateData('marks_per_question', e.target.value)}
-                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            className="block w-full text-xs font-medium rounded-md py-2.5 pl-3.5 pr-12 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
                                             placeholder="1"
                                         />
                                         <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
@@ -583,7 +583,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                             max="100"
                                             value={createData.passing_percentage}
                                             onChange={(e) => setCreateData('passing_percentage', e.target.value)}
-                                            className="block w-full text-xs font-medium rounded-xl py-2.5 pl-3.5 pr-8 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+                                            className="block w-full text-xs font-medium rounded-md py-2.5 pl-3.5 pr-8 border-slate-200 dark:border-slate-700 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
                                             placeholder="60"
                                         />
                                         <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-xs text-slate-400 font-medium">
@@ -597,13 +597,13 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             {/* Publish Immediately Interactive Switch Card */}
                             <div
                                 onClick={() => setCreateData('is_published', !createData.is_published)}
-                                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${createData.is_published
+                                className={`p-4 rounded-md border transition-all cursor-pointer flex items-center justify-between gap-3 ${createData.is_published
                                         ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800'
                                         : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-lg shrink-0 transition ${createData.is_published
+                                    <div className={`p-2 rounded-md shrink-0 transition ${createData.is_published
                                             ? 'bg-indigo-600 text-white'
                                             : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
                                         }`}>
@@ -630,14 +630,14 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                 <button
                                     type="button"
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer"
+                                    className="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={createProcessing}
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold rounded-md shadow-2xs transition disabled:opacity-50 cursor-pointer"
                                 >
                                     <span>{createProcessing ? 'Creating Exam...' : 'Create & Configure Questions'}</span>
                                     <ArrowRight className="h-4 w-4" />

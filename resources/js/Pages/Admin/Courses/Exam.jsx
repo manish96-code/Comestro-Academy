@@ -234,7 +234,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                     <div className="flex items-center gap-3">
                         <Link
                             href={route('admin.courses.content', course.id)}
-                            className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-xs"
+                            className="p-2 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-2xs"
                             title="Back to Course Curriculum"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -266,7 +266,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                     <div className="flex items-center gap-2">
                         <Link
                             href={route('admin.courses.content', course.id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-xs transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md shadow-2xs transition"
                         >
                             <Layers className="h-3.5 w-3.5 text-slate-500" />
                             <span>Curriculum</span>
@@ -282,8 +282,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
 
                     {/* Quick Stats Bar */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-100">
                                 <GraduationCap className="h-5 w-5" />
                             </div>
                             <div>
@@ -292,8 +292,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-amber-50 text-amber-600 border border-amber-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100">
                                 <Award className="h-5 w-5" />
                             </div>
                             <div>
@@ -302,8 +302,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
                                 <Clock className="h-5 w-5" />
                             </div>
                             <div>
@@ -316,10 +316,10 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
 
                         <div
                             onClick={() => setActiveTab('submissions')}
-                            className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs cursor-pointer hover:border-indigo-300 hover:shadow-2xs transition"
+                            className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs cursor-pointer hover:border-indigo-300 hover:shadow-xs transition"
                             title="Click to view Student Results"
                         >
-                            <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+                            <div className="p-2.5 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-100">
                                 <UserCheck className="h-5 w-5" />
                             </div>
                             <div>
@@ -334,8 +334,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                         <button
                             type="button"
                             onClick={() => setActiveTab('questions')}
-                            className={`px-4 py-2 text-xs font-bold rounded-lg transition ${activeTab === 'questions'
-                                    ? 'bg-indigo-600 text-white shadow-xs'
+                            className={`px-4 py-2 text-xs font-bold rounded-md transition ${activeTab === 'questions'
+                                    ? 'bg-indigo-600 text-white shadow-2xs'
                                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                                 }`}
                         >
@@ -344,8 +344,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                         <button
                             type="button"
                             onClick={() => setActiveTab('submissions')}
-                            className={`px-4 py-2 text-xs font-bold rounded-lg transition ${activeTab === 'submissions'
-                                    ? 'bg-indigo-600 text-white shadow-xs'
+                            className={`px-4 py-2 text-xs font-bold rounded-md transition ${activeTab === 'submissions'
+                                    ? 'bg-indigo-600 text-white shadow-2xs'
                                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                                 }`}
                         >
@@ -358,7 +358,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
 
                             {/* Left Column: Exam Settings */}
                             <div className="lg:col-span-4 space-y-6">
-                                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+                                <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-4">
                                     <div className="border-b border-slate-100 pb-3">
                                         <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                             <FileCheck className="h-4 w-4 text-indigo-600" />
@@ -390,7 +390,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                 rows={3}
                                                 value={settingsData.description}
                                                 onChange={(e) => setSettingsData('description', e.target.value)}
-                                                className="mt-1 block w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 shadow-2xs focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-400"
+                                                className="mt-1 block w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 bg-white text-slate-900 shadow-2xs focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-400"
                                                 placeholder="Instructions for the student..."
                                             />
                                             <InputError message={settingsErrors.description} className="mt-1" />
@@ -406,7 +406,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                             key={preset}
                                                             type="button"
                                                             onClick={() => setSettingsData('marks_per_question', preset)}
-                                                            className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono transition ${Number(settingsData.marks_per_question) === preset
+                                                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono transition ${Number(settingsData.marks_per_question) === preset
                                                                     ? 'bg-indigo-600 text-white shadow-2xs'
                                                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                                                 }`}
@@ -484,7 +484,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                             <button
                                                 type="submit"
                                                 disabled={settingsProcessing}
-                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-xs transition"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition"
                                             >
                                                 <Save className="h-3.5 w-3.5" />
                                                 <span>{settingsProcessing ? 'Saving...' : 'Save Settings'}</span>
@@ -498,7 +498,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                             <div className="lg:col-span-8 space-y-6">
 
                                 {/* Add Question Card (Streamlined) */}
-                                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+                                <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-4">
                                     <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
                                         <div>
                                             <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -525,7 +525,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                     setQData('question_text', e.target.value);
                                                     if (qErrors.question_text) clearQErrors('question_text');
                                                 }}
-                                                className="mt-1 block w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 shadow-2xs focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-400"
+                                                className="mt-1 block w-full text-sm px-3.5 py-2.5 rounded-md border border-slate-300 bg-white text-slate-900 shadow-2xs focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-400"
                                                 placeholder="e.g. Which hook is used for managing side effects in React?"
                                             />
                                             <InputError message={qErrors.question_text} className="mt-1" />
@@ -558,7 +558,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                     return (
                                                         <div
                                                             key={idx}
-                                                            className={`flex items-center gap-2 p-1.5 pl-2 rounded-xl border transition-all ${isCorrect
+                                                            className={`flex items-center gap-2 p-1.5 pl-2 rounded-md border transition-all ${isCorrect
                                                                     ? 'bg-emerald-50/50 border-emerald-300 ring-1 ring-emerald-200/60 shadow-2xs'
                                                                     : 'bg-white border-slate-200 hover:border-slate-300 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20'
                                                                 }`}
@@ -567,7 +567,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                                 type="button"
                                                                 onClick={() => handleSelectCorrect(idx)}
                                                                 title={isCorrect ? 'Marked as Correct Answer' : 'Click to mark as correct answer'}
-                                                                className={`h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 transition-all ${isCorrect
+                                                                className={`h-8 w-8 rounded-md flex items-center justify-center font-bold text-xs shrink-0 transition-all ${isCorrect
                                                                         ? 'bg-emerald-600 text-white shadow-2xs'
                                                                         : 'bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/60'
                                                                     }`}
@@ -594,7 +594,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleRemoveOption(idx)}
-                                                                    className="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition shrink-0"
+                                                                    className="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition shrink-0"
                                                                     title="Remove option"
                                                                 >
                                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -611,7 +611,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                             <button
                                                 type="submit"
                                                 disabled={qProcessing}
-                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition"
                                             >
                                                 <Plus className="h-4 w-4" />
                                                 <span>{qProcessing ? 'Adding...' : 'Add Question'}</span>
@@ -627,7 +627,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                     </h3>
 
                                     {questionsList.length === 0 ? (
-                                        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-2">
+                                        <div className="bg-white rounded-lg border border-dashed border-slate-300 p-8 text-center space-y-2">
                                             <HelpCircle className="h-8 w-8 text-slate-300 mx-auto" />
                                             <p className="text-xs font-bold text-slate-700">No questions added yet</p>
                                             <p className="text-xs text-slate-400 max-w-sm mx-auto">
@@ -636,7 +636,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                         </div>
                                     ) : (
                                         questionsList.map((q, qIndex) => (
-                                            <div key={q.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
+                                            <div key={q.id} className="bg-white rounded-lg border border-slate-200 p-4 shadow-2xs space-y-3">
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="flex items-start gap-2.5">
                                                         <span className="h-5 w-5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold font-mono flex items-center justify-center shrink-0 border border-indigo-100">
@@ -647,7 +647,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                                 {q.question_text}
                                                             </p>
                                                             <div className="flex items-center gap-2 mt-1">
-                                                                <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-mono">
+                                                                <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
                                                                     {marksPerQ} {marksPerQ === 1 ? 'Mark' : 'Marks'}
                                                                 </span>
                                                             </div>
@@ -657,7 +657,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDeleteQuestion(q.id)}
-                                                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition"
                                                         title="Delete Question"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -669,7 +669,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                     {(q.options || []).map((opt) => (
                                                         <div
                                                             key={opt.id}
-                                                            className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border ${opt.is_correct
+                                                            className={`px-3 py-1.5 rounded-md text-xs flex items-center gap-2 border ${opt.is_correct
                                                                     ? 'bg-emerald-50/70 border-emerald-200 text-emerald-800 font-semibold'
                                                                     : 'bg-slate-50 border-slate-100 text-slate-600'
                                                                 }`}
@@ -691,7 +691,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                         </div>
                     ) : (
                         /* Submissions Tab */
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div className="bg-white rounded-lg border border-slate-200 shadow-2xs overflow-hidden">
                             <div className="p-4 border-b border-slate-100">
                                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                     <GraduationCap className="h-4 w-4 text-indigo-600" />
@@ -772,7 +772,7 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                     <td className="px-4 py-3 text-right">
                                                         <Link
                                                             href={route('admin.exams.submissions.show', [exam.id, sub.id])}
-                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 rounded-xl transition shadow-2xs"
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 rounded-md transition shadow-2xs"
                                                             title="Review Student's Exam Answers"
                                                         >
                                                             <Eye className="h-3.5 w-3.5" />

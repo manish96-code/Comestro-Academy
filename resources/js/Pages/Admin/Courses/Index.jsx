@@ -218,7 +218,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                     </div>
                     <Link
                         href={route('admin.courses.create')}
-                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition shrink-0"
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
                     >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Add Course</span>
@@ -232,7 +232,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
 
                     {/* Header Filter Bar */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-xl bg-white p-3.5 sm:p-4 border border-slate-200 shadow-2xs">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-lg bg-white p-3.5 sm:p-4 border border-slate-200 shadow-2xs">
                         <SearchBar
                             onSubmit={handleSearchSubmit}
                             placeholder="Search courses, slugs..."
@@ -246,7 +246,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                             <select
                                 value={categoryId}
                                 onChange={handleCategoryChange}
-                                className="text-xs rounded-lg border border-slate-300 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
+                                className="text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
                             >
                                 <option value="">All Categories</option>
                                 {categories.map((cat) => (
@@ -260,7 +260,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                             <select
                                 value={status}
                                 onChange={handleStatusChange}
-                                className="text-xs rounded-lg border border-slate-300 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
+                                className="text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white text-slate-700 py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition shadow-2xs"
                             >
                                 <option value="">All Statuses</option>
                                 <option value="published">Published</option>
@@ -272,21 +272,21 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold px-2 py-1 hover:bg-indigo-50 rounded-lg transition"
+                                    className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold px-2 py-1 hover:bg-indigo-50 rounded-md transition cursor-pointer"
                                 >
                                     <X className="h-3 w-3" />
                                     <span>Reset</span>
                                 </button>
                             )}
 
-                            <div className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg">
+                            <div className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-md">
                                 Total: <strong className="text-slate-900 font-bold ml-0.5">{courses?.total || 0}</strong>
                             </div>
                         </div>
                     </div>
 
                     {/* Courses Table */}
-                    <div className="rounded-xl bg-white border border-slate-200 overflow-hidden shadow-2xs">
+                    <div className="rounded-lg bg-white border border-slate-200 overflow-hidden shadow-2xs">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-slate-200 text-left">
                                 <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider font-mono">
@@ -362,17 +362,17 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-4 whitespace-nowrap">
+                                                 <td className="py-3 px-4 whitespace-nowrap">
                                                     {course.instructor?.user ? (
                                                         <div className="flex items-center gap-2">
                                                             {course.instructor.user.profile_pic ? (
                                                                 <img
                                                                     src={course.instructor.user.profile_pic}
                                                                     alt={course.instructor.user.name}
-                                                                    className="h-6 w-6 rounded-md object-cover border border-slate-200 shrink-0"
+                                                                    className="h-6 w-6 rounded-full object-cover border border-slate-200 shrink-0"
                                                                 />
                                                             ) : (
-                                                                <div className="h-6 w-6 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                                <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
                                                                     {course.instructor.user.name.charAt(0)}
                                                                 </div>
                                                             )}
@@ -485,7 +485,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                         <tr>
                                             <td colSpan="7" className="py-12 text-center text-slate-500">
                                                 <div className="flex flex-col items-center justify-center space-y-2">
-                                                    <div className="p-3 bg-slate-50 rounded-xl text-slate-400 border border-slate-200">
+                                                    <div className="p-3 bg-slate-50 rounded-md text-slate-400 border border-slate-200">
                                                         {hasActiveFilters ? <Search className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
                                                     </div>
                                                     <div>
@@ -540,7 +540,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
             {/* ENROLLED STUDENTS MANAGEMENT MODAL */}
             {activeCourse && (
                 <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="relative bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
+                    <div className="relative bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]">
                         {/* Header */}
                         <div className="flex items-start justify-between pb-4 border-b border-slate-100 shrink-0">
                             <div className="flex items-center gap-3">
@@ -548,10 +548,10 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                     <img
                                         src={activeCourse.thumbnail}
                                         alt={activeCourse.title}
-                                        className="h-11 w-16 rounded-lg object-cover border border-slate-200 shrink-0"
+                                        className="h-11 w-16 rounded-md object-cover border border-slate-200 shrink-0"
                                     />
                                 ) : (
-                                    <div className="h-11 w-16 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">
+                                    <div className="h-11 w-16 rounded-md bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">
                                         <BookOpen className="h-5 w-5" />
                                     </div>
                                 )}
@@ -560,7 +560,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                         <h3 className="text-base font-bold text-slate-900 line-clamp-1">
                                             {activeCourse.title}
                                         </h3>
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">
                                             {enrolledStudents.length} Enrolled
                                         </span>
                                     </div>
@@ -572,7 +572,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                             <button
                                 type="button"
                                 onClick={closeStudentsModal}
-                                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition"
+                                className="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-100 transition cursor-pointer"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -590,7 +590,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                             <button
                                 type="button"
                                 onClick={() => setShowEnrollForm(!showEnrollForm)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
                             >
                                 <UserPlus className="h-3.5 w-3.5" />
                                 <span>{showEnrollForm ? 'Cancel Enroll' : 'Enroll Student'}</span>
@@ -601,7 +601,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                         {showEnrollForm && (
                             <form
                                 onSubmit={handleEnrollStudent}
-                                className="p-3.5 mb-3 bg-indigo-50/50 rounded-xl border border-indigo-100/80 space-y-3 shrink-0 animate-in fade-in slide-in-from-top-2 duration-150"
+                                className="p-3.5 mb-3 bg-indigo-50/50 rounded-lg border border-indigo-100/80 space-y-3 shrink-0 animate-in fade-in slide-in-from-top-2 duration-150"
                             >
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
@@ -622,7 +622,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                             value={enrollUserId}
                                             onChange={(e) => setEnrollUserId(e.target.value)}
                                             required
-                                            className="w-full text-xs rounded-lg border border-slate-200 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
                                         >
                                             <option value="">-- Choose a student --</option>
                                             {availableStudentsToEnroll.map((st) => (
@@ -640,7 +640,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                         <select
                                             value={enrollStatus}
                                             onChange={(e) => setEnrollStatus(e.target.value)}
-                                            className="w-full text-xs rounded-lg border border-slate-200 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white py-1.5 px-2.5 focus:ring-2 focus:ring-indigo-500"
                                         >
                                             <option value="active">Active</option>
                                             <option value="completed">Completed</option>
@@ -653,14 +653,14 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                                     <button
                                         type="button"
                                         onClick={() => setShowEnrollForm(false)}
-                                        className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200/60 rounded-md transition"
+                                        className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200/60 rounded-md transition cursor-pointer"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={!enrollUserId || isEnrolling}
-                                        className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-md shadow-xs transition"
+                                        className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-md shadow-2xs transition cursor-pointer"
                                     >
                                         {isEnrolling ? 'Enrolling...' : 'Confirm Enrollment'}
                                     </button>
@@ -669,7 +669,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                         )}
 
                         {/* Students List Table */}
-                        <div className="overflow-y-auto flex-1 border border-slate-200 rounded-xl">
+                        <div className="overflow-y-auto flex-1 border border-slate-200 rounded-lg">
                             {filteredEnrolledStudents.length === 0 ? (
                                 <div className="py-12 text-center text-slate-400">
                                     <Users className="h-8 w-8 mx-auto mb-2 text-slate-300" />

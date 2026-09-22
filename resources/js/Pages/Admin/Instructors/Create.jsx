@@ -39,9 +39,9 @@ export default function InstructorCreate() {
                     </div>
                     <Link
                         href={route('admin.instructors.index')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-xs transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5" />
+                        <ArrowLeft className="h-3.5 w-3.5 text-slate-500" />
                         <span>Back to Instructors</span>
                     </Link>
                 </div>
@@ -52,9 +52,9 @@ export default function InstructorCreate() {
             <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200/90 shadow-2xs">
                         <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 <UserPlus className="h-5 w-5" />
                             </div>
                             <div>
@@ -197,7 +197,7 @@ export default function InstructorCreate() {
                                         rows="3"
                                         value={data.bio}
                                         onChange={(e) => setData('bio', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-xs transition"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-2xs transition"
                                         placeholder="Detailed career history, industry background, and achievements..."
                                     ></textarea>
                                     <InputError className="mt-1.5" message={errors.bio} />
@@ -209,7 +209,7 @@ export default function InstructorCreate() {
                                         id="status"
                                         value={data.status}
                                         onChange={(e) => setData('status', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-xs transition sm:w-1/2"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs transition sm:w-1/2"
                                     >
                                         <option value="active">Active (Can publish & teach)</option>
                                         <option value="inactive">Inactive</option>

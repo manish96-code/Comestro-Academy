@@ -68,12 +68,12 @@ export default function AdminDashboard({ stats, recent_users }) {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                         {/* Card 1: Students */}
-                        <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
+                        <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                                     Total Students
                                 </span>
-                                <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600 border border-indigo-100">
+                                <div className="rounded-md bg-indigo-50 p-2 text-indigo-600 border border-indigo-100">
                                     <GraduationCap className="h-4 w-4" />
                                 </div>
                             </div>
@@ -95,12 +95,12 @@ export default function AdminDashboard({ stats, recent_users }) {
                         </div>
 
                         {/* Card 2: Instructors */}
-                        <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
+                        <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                                     Instructors
                                 </span>
-                                <div className="rounded-lg bg-purple-50 p-2 text-purple-600 border border-purple-100">
+                                <div className="rounded-md bg-purple-50 p-2 text-purple-600 border border-purple-100">
                                     <UserCheck className="h-4 w-4" />
                                 </div>
                             </div>
@@ -122,12 +122,12 @@ export default function AdminDashboard({ stats, recent_users }) {
                         </div>
 
                         {/* Card 3: Active Courses */}
-                        <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
+                        <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                                     Courses
                                 </span>
-                                <div className="rounded-lg bg-sky-50 p-2 text-sky-600 border border-sky-100">
+                                <div className="rounded-md bg-sky-50 p-2 text-sky-600 border border-sky-100">
                                     <BookOpen className="h-4 w-4" />
                                 </div>
                             </div>
@@ -149,12 +149,12 @@ export default function AdminDashboard({ stats, recent_users }) {
                         </div>
 
                         {/* Card 4: Live Sessions */}
-                        <div className="rounded-xl bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
+                        <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs hover:border-slate-300 transition group">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-mono">
                                     Live Classes
                                 </span>
-                                <div className="rounded-lg bg-rose-50 p-2 text-rose-600 border border-rose-100">
+                                <div className="rounded-md bg-rose-50 p-2 text-rose-600 border border-rose-100">
                                     <Video className="h-4 w-4" />
                                 </div>
                             </div>
@@ -178,7 +178,7 @@ export default function AdminDashboard({ stats, recent_users }) {
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-start">
 
                         {/* Table Column: Recent Registrations (2 Cols) */}
-                        <div className="lg:col-span-2 rounded-xl bg-white border border-slate-200 shadow-2xs overflow-hidden">
+                        <div className="lg:col-span-2 rounded-lg bg-white border border-slate-200 shadow-2xs overflow-hidden">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 sm:px-5 border-b border-slate-100">
                                 <div>
                                     <h2 className="text-sm font-bold text-slate-900 tracking-tight">
@@ -217,10 +217,10 @@ export default function AdminDashboard({ stats, recent_users }) {
                                                                 <img
                                                                     src={u.profile_pic}
                                                                     alt={u.name}
-                                                                    className="h-7 w-7 rounded-md object-cover border border-slate-200 shrink-0"
+                                                                    className="h-7 w-7 rounded-full object-cover border border-slate-200 shrink-0"
                                                                 />
                                                             ) : (
-                                                                <div className="h-7 w-7 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                                <div className="h-7 w-7 rounded-full bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs shrink-0">
                                                                     {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
                                                                 </div>
                                                             )}
@@ -236,7 +236,7 @@ export default function AdminDashboard({ stats, recent_users }) {
                                                     </td>
                                                     <td className="py-3 px-4 whitespace-nowrap">
                                                         <span
-                                                            className={`inline-flex px-2 py-0.5 text-[10px] font-semibold rounded uppercase tracking-wider border ${
+                                                            className={`inline-flex px-2 py-0.5 text-[10px] font-semibold rounded-md uppercase tracking-wider border ${
                                                                 u.role === 'admin'
                                                                     ? 'bg-purple-50 text-purple-700 border-purple-200'
                                                                     : u.role === 'instructor'
@@ -287,14 +287,14 @@ export default function AdminDashboard({ stats, recent_users }) {
                         <div className="space-y-5">
 
                             {/* Quick Management Shortcuts */}
-                            <div className="rounded-xl bg-white border border-slate-200 shadow-2xs p-4 sm:p-5">
+                            <div className="rounded-lg bg-white border border-slate-200 shadow-2xs p-4 sm:p-5">
                                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono mb-3">
                                     Quick Actions
                                 </h3>
                                 <div className="space-y-2">
                                     <Link
                                         href={route('admin.courses.create')}
-                                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-indigo-50/70 border border-slate-200/80 hover:border-indigo-200 text-slate-800 transition group"
+                                        className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 hover:bg-indigo-50/70 border border-slate-200/80 hover:border-indigo-200 text-slate-800 transition group"
                                     >
                                         <div className="flex items-center gap-2.5">
                                             <div className="p-1.5 rounded-md bg-indigo-600 text-white shadow-2xs">
@@ -307,7 +307,7 @@ export default function AdminDashboard({ stats, recent_users }) {
 
                                     <Link
                                         href={route('admin.students.index')}
-                                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 transition group"
+                                        className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 transition group"
                                     >
                                         <div className="flex items-center gap-2.5">
                                             <div className="p-1.5 rounded-md bg-slate-200 text-slate-700">
@@ -320,7 +320,7 @@ export default function AdminDashboard({ stats, recent_users }) {
 
                                     <Link
                                         href={route('admin.instructors.create')}
-                                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 transition group"
+                                        className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-800 transition group"
                                     >
                                         <div className="flex items-center gap-2.5">
                                             <div className="p-1.5 rounded-md bg-purple-100 text-purple-700">
@@ -334,12 +334,12 @@ export default function AdminDashboard({ stats, recent_users }) {
                             </div>
 
                             {/* Platform Health & System Services */}
-                            <div className="rounded-xl bg-white border border-slate-200 shadow-2xs p-4 sm:p-5">
+                            <div className="rounded-lg bg-white border border-slate-200 shadow-2xs p-4 sm:p-5">
                                 <div className="flex items-center justify-between mb-3.5">
                                     <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
                                         Services & Engine
                                     </h4>
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                                         Operational
                                     </span>

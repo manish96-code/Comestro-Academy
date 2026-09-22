@@ -74,7 +74,7 @@ export default function InstructorIndex({ instructors, filters }) {
                     </div>
                     <Link
                         href={route('admin.instructors.create')}
-                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
                     >
                         <Plus className="h-4 w-4" />
                         <span>Add Instructor</span>
@@ -88,7 +88,7 @@ export default function InstructorIndex({ instructors, filters }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
 
                     {/* Header Filter Bar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-lg border border-slate-200/90 shadow-2xs">
                         <SearchBar
                             onSubmit={handleSearch}
                             placeholder="Search by instructor name, email, phone..."
@@ -99,7 +99,7 @@ export default function InstructorIndex({ instructors, filters }) {
                             containerClassName="w-full sm:w-auto flex-1 max-w-lg"
                         />
 
-                        <div className="text-xs text-slate-500 font-mono flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+                        <div className="text-xs text-slate-500 font-mono flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md">
                             <UserCheck className="h-3.5 w-3.5 text-slate-400" />
                             <span>Active Faculty:</span>
                             <strong className="text-slate-900 font-bold">{instructors?.total || 0}</strong>
@@ -107,16 +107,16 @@ export default function InstructorIndex({ instructors, filters }) {
                     </div>
 
                     {/* Instructors Table */}
-                    <div className="rounded-xl bg-white border border-slate-200/90 shadow-xs overflow-hidden">
+                    <div className="rounded-lg bg-white border border-slate-200/90 shadow-2xs overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-xs text-slate-600">
                                 <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200/80 text-[11px]">
                                     <tr>
-                                        <th className="py-3 px-4">Instructor Name</th>
-                                        <th className="py-3 px-4">Email</th>
-                                        <th className="py-3 px-4">Phone</th>
-                                        <th className="py-3 px-4">Status</th>
-                                        <th className="py-3 px-4 text-right">Actions</th>
+                                        <th className="py-2.5 px-4 font-semibold">Instructor Name</th>
+                                        <th className="py-2.5 px-4 font-semibold">Email</th>
+                                        <th className="py-2.5 px-4 font-semibold">Phone</th>
+                                        <th className="py-2.5 px-4 font-semibold">Status</th>
+                                        <th className="py-2.5 px-4 text-right font-semibold">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -129,10 +129,10 @@ export default function InstructorIndex({ instructors, filters }) {
                                                             <img
                                                                 src={instructor.profile_pic}
                                                                 alt={instructor.name}
-                                                                className="h-8 w-8 rounded-lg object-cover shrink-0 border border-slate-200"
+                                                                className="h-8 w-8 rounded-full object-cover shrink-0 border border-slate-200"
                                                             />
                                                         ) : (
-                                                            <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
+                                                            <div className="h-8 w-8 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
                                                                 {instructor.name ? instructor.name.charAt(0).toUpperCase() : 'I'}
                                                             </div>
                                                         )}
@@ -157,7 +157,7 @@ export default function InstructorIndex({ instructors, filters }) {
                                                 <td className="py-3 px-4 text-right">
                                                     <Link
                                                         href={route('admin.instructors.show', instructor.id)}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-xs transition"
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-md border border-slate-200 shadow-2xs transition"
                                                         title="View Profile"
                                                     >
                                                         <Eye className="h-3 w-3 text-slate-400" />

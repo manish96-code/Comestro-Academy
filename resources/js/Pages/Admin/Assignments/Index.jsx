@@ -38,7 +38,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
                                 Course Assignments Directory
                             </h1>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                                 Review Queue
                             </span>
                         </div>
@@ -56,9 +56,9 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
 
                     {/* Top Metrics Cards - Flat, Clean */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
                                     <ClipboardList className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -68,9 +68,9 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
                                     <AlertCircle className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -80,9 +80,9 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
+                                <div className="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
                                     <CheckCircle2 className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -94,7 +94,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                     </div>
 
                     {/* Filter Bar */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-3 shadow-2xs">
                         <SearchBar
                             onSubmit={(e) => handleFilter(search, courseId)}
                             containerClassName="max-w-sm"
@@ -117,7 +117,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                                     setCourseId(e.target.value);
                                     handleFilter(search, e.target.value);
                                 }}
-                                className="text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-1.5 px-3 focus:outline-none focus:border-indigo-500"
+                                className="text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-1.5 px-3 focus:outline-none focus:border-indigo-500"
                             >
                                 <option value="">All Courses</option>
                                 {courses.map((c) => (
@@ -135,7 +135,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             {assignments.data.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs hover:shadow-xs"
+                                    className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs hover:shadow-xs"
                                 >
                                     {/* Left Information Section */}
                                     <div className="space-y-2 flex-1 min-w-0">
@@ -186,7 +186,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
 
                                     {/* Right Action & Stats Section */}
                                     <div className="flex items-center gap-4 shrink-0 flex-wrap sm:flex-nowrap pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800 justify-between lg:justify-end">
-                                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/40 p-2.5 px-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-center">
+                                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/40 p-2.5 px-4 rounded-md border border-slate-100 dark:border-slate-800 font-mono text-center">
                                             <div className="pr-3 border-r border-slate-200 dark:border-slate-700">
                                                 <p className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total</p>
                                                 <p className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{item.total_marks}M</p>
@@ -204,7 +204,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
 
                                         <Link
                                             href={route('admin.courses.assignments.index', item.course_id)}
-                                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition shrink-0"
+                                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition shrink-0"
                                         >
                                             <span>Manage & Grade</span>
                                             <ArrowRight className="h-3.5 w-3.5" />
@@ -214,8 +214,8 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-12 text-center space-y-3">
-                            <div className="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3 shadow-2xs">
+                            <div className="h-12 w-12 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center border border-indigo-100 dark:border-indigo-800/60">
                                 <ClipboardList className="h-6 w-6" />
                             </div>
                             <div className="space-y-1">
@@ -229,7 +229,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
                             <div className="pt-2">
                                 <Link
                                     href={route('admin.courses.index')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-2xs transition"
                                 >
                                     <BookOpen className="h-3.5 w-3.5" />
                                     <span>Go to Course Catalog</span>

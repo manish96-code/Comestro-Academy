@@ -193,7 +193,7 @@ export default function CourseContent({ course }) {
                     <div className="flex items-center gap-2">
                         <Link
                             href={route('admin.courses.show', course.id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-xs transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md shadow-2xs transition"
                         >
                             <Settings className="h-3.5 w-3.5 text-slate-500" />
                             <span>Course Settings</span>
@@ -201,7 +201,7 @@ export default function CourseContent({ course }) {
                         <button
                             type="button"
                             onClick={() => openAddModal()}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition shrink-0"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0"
                         >
                             <Plus className="h-4 w-4" />
                             <span>Add New Lecture</span>
@@ -217,8 +217,8 @@ export default function CourseContent({ course }) {
 
                     {/* Summary Metrics Bar */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 <Layers className="h-5 w-5" />
                             </div>
                             <div>
@@ -227,8 +227,8 @@ export default function CourseContent({ course }) {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 bg-sky-50 text-sky-600 rounded-lg border border-sky-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 bg-sky-50 text-sky-600 rounded-md border border-sky-100">
                                 <Video className="h-5 w-5" />
                             </div>
                             <div>
@@ -237,8 +237,8 @@ export default function CourseContent({ course }) {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100">
                                 <FileText className="h-5 w-5" />
                             </div>
                             <div>
@@ -247,8 +247,8 @@ export default function CourseContent({ course }) {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl border border-slate-200/90 p-4 flex items-center gap-3.5 shadow-xs">
-                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-lg border border-amber-100">
+                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
+                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-md border border-amber-100">
                                 <Clock className="h-5 w-5" />
                             </div>
                             <div>
@@ -260,9 +260,9 @@ export default function CourseContent({ course }) {
 
                     {/* Modules and Lessons Listing */}
                     {lessons.length === 0 ? (
-                        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center space-y-4 shadow-xs">
-                            <div className="h-14 w-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto border border-indigo-100">
-                                <BookOpen className="h-7 w-7" />
+                        <div className="bg-white rounded-lg border border-dashed border-slate-300 p-12 text-center space-y-4 shadow-2xs">
+                            <div className="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-md flex items-center justify-center mx-auto border border-indigo-100">
+                                <BookOpen className="h-6 w-6" />
                             </div>
                             <div className="space-y-1 max-w-md mx-auto">
                                 <h3 className="text-sm font-bold text-slate-900">No Curriculum Lectures Uploaded</h3>
@@ -273,7 +273,7 @@ export default function CourseContent({ course }) {
                             <button
                                 type="button"
                                 onClick={() => openAddModal()}
-                                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
+                                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition"
                             >
                                 <Plus className="h-4 w-4" />
                                 <span>Create First Lecture</span>
@@ -284,7 +284,7 @@ export default function CourseContent({ course }) {
                             {moduleNames.map((modName, mIdx) => (
                                 <div
                                     key={modName}
-                                    className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden"
+                                    className="bg-white rounded-lg border border-slate-200 shadow-2xs overflow-hidden"
                                 >
                                     {/* Module Banner */}
                                     <div className="px-5 py-3 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between">
@@ -316,12 +316,12 @@ export default function CourseContent({ course }) {
                                             >
                                                 {/* Left: Info */}
                                                 <div className="flex items-start gap-3.5 min-w-0">
-                                                    <div className="h-9 w-9 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 border border-slate-200">
+                                                    <div className="h-9 w-9 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 border border-slate-200">
                                                         <Video className="h-4 w-4 text-indigo-600" />
                                                     </div>
                                                     <div className="space-y-1 min-w-0">
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <span className="text-[11px] font-mono font-semibold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                                            <span className="text-[11px] font-mono font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200">
                                                                 #{lesson.order || lIdx + 1}
                                                             </span>
                                                             <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
@@ -388,7 +388,7 @@ export default function CourseContent({ course }) {
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditModal(lesson)}
-                                                        className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-xs transition flex items-center gap-1"
+                                                        className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-md border border-slate-200 shadow-2xs transition flex items-center gap-1"
                                                     >
                                                         <Edit3 className="h-3.5 w-3.5 text-slate-500" />
                                                         <span>Edit</span>
@@ -396,7 +396,7 @@ export default function CourseContent({ course }) {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDelete(lesson.id)}
-                                                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 transition"
+                                                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-rose-50 border border-transparent hover:border-rose-200 transition"
                                                         title="Delete Lecture"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -415,11 +415,11 @@ export default function CourseContent({ course }) {
             {/* Modal: Add / Edit Lecture with Video & Notes */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-                    <div className="bg-white rounded-xl border border-slate-200 shadow-xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
                             <div className="flex items-center gap-2.5">
-                                <div className="p-2 bg-indigo-600 text-white rounded-lg shadow-xs">
+                                <div className="p-2 bg-indigo-600 text-white rounded-md shadow-2xs">
                                     <Video className="h-4 w-4" />
                                 </div>
                                 <div>
@@ -434,7 +434,7 @@ export default function CourseContent({ course }) {
                             <button
                                 type="button"
                                 onClick={closeModal}
-                                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition"
+                                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -448,7 +448,7 @@ export default function CourseContent({ course }) {
                                 <select
                                     value={data.module_name}
                                     onChange={(e) => setData('module_name', e.target.value)}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                                    className="w-full text-xs sm:text-sm rounded-md border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                                 >
                                     {moduleNames.map((m) => (
                                         <option key={m} value={m}>{m}</option>
@@ -498,7 +498,7 @@ export default function CourseContent({ course }) {
                             </div>
 
                             {/* Section 1: Video Content */}
-                            <div className="p-4 rounded-xl border border-sky-200 bg-sky-50/40 space-y-3">
+                            <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/40 space-y-3">
                                 <div className="flex items-center gap-1.5 text-sky-800 font-bold text-xs">
                                     <Video className="h-3.5 w-3.5" />
                                     <span>Video Stream / Lecture URL</span>
@@ -534,7 +534,7 @@ export default function CourseContent({ course }) {
                             </div>
 
                             {/* Section 2: Upload Study Notes (PDF/Docs) */}
-                            <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 space-y-3">
+                            <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/40 space-y-3">
                                 <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-xs">
                                     <FileText className="h-3.5 w-3.5" />
                                     <span>Lecture Notes & Downloadable Material</span>
@@ -560,7 +560,7 @@ export default function CourseContent({ course }) {
                                             type="file"
                                             onChange={(e) => setData('notes_file', e.target.files[0])}
                                             accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip"
-                                            className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 mt-1 cursor-pointer"
+                                            className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 mt-1 cursor-pointer"
                                         />
                                         <InputError message={errors.notes_file} />
                                     </div>
@@ -592,7 +592,7 @@ export default function CourseContent({ course }) {
                                         value={data.description}
                                         onChange={(e) => setData('description', e.target.value)}
                                         placeholder="Key takeaways or summary points covered in this lecture..."
-                                        className="w-full text-xs rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 mt-1 transition"
+                                        className="w-full text-xs rounded-md border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 mt-1 transition"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -603,14 +603,14 @@ export default function CourseContent({ course }) {
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
+                                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-md transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition disabled:opacity-50"
                                 >
                                     <Save className="h-3.5 w-3.5" />
                                     <span>{processing ? 'Saving...' : editingLesson ? 'Update Lecture' : 'Save Lecture'}</span>
@@ -624,7 +624,7 @@ export default function CourseContent({ course }) {
             {/* Video Player Preview Modal */}
             {previewVideoUrl && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
-                    <div className="bg-slate-900 rounded-xl overflow-hidden max-w-3xl w-full border border-slate-700 shadow-2xl">
+                    <div className="bg-slate-900 rounded-lg overflow-hidden max-w-3xl w-full border border-slate-700 shadow-2xl">
                         <div className="px-4 py-3 bg-slate-950 flex items-center justify-between text-white border-b border-slate-800">
                             <span className="text-xs font-semibold flex items-center gap-1.5">
                                 <Play className="h-3 w-3 text-indigo-400 fill-current" />

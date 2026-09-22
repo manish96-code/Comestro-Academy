@@ -112,9 +112,9 @@ export default function InstructorShow({ instructor }) {
                     </div>
                     <Link
                         href={route('admin.instructors.index')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-xs transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5" />
+                        <ArrowLeft className="h-3.5 w-3.5 text-slate-500" />
                         <span>Back to Instructors</span>
                     </Link>
                 </div>
@@ -126,9 +126,9 @@ export default function InstructorShow({ instructor }) {
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Top Instructor Banner Card */}
-                    <div className="rounded-xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                    <div className="rounded-lg bg-white p-5 sm:p-6 border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div className="flex items-center space-x-4">
-                            <div className="h-14 w-14 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 overflow-hidden relative group">
+                            <div className="h-14 w-14 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 overflow-hidden relative group">
                                 {previewUrl ? (
                                     <img src={previewUrl} alt={instructor.name} className="h-full w-full object-cover" />
                                 ) : instructor.name ? (
@@ -139,7 +139,7 @@ export default function InstructorShow({ instructor }) {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl"
+                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full cursor-pointer"
                                 >
                                     <Camera className="h-4 w-4 text-white" />
                                 </button>
@@ -175,9 +175,9 @@ export default function InstructorShow({ instructor }) {
                     </div>
 
                     {/* Edit Instructor Details Form */}
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200/90 shadow-2xs">
                         <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 <UserCheck className="h-4 w-4" />
                             </div>
                             <div>
@@ -192,7 +192,7 @@ export default function InstructorShow({ instructor }) {
                                 <InputLabel value="Profile Picture" />
                                 <div className="mt-2 flex items-center gap-4">
                                     <div className="relative">
-                                        <div className="h-16 w-16 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 shadow-xs overflow-hidden">
+                                        <div className="h-16 w-16 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xl border border-indigo-100 shrink-0 shadow-2xs overflow-hidden">
                                             {previewUrl ? (
                                                 <img
                                                     src={previewUrl}
@@ -219,7 +219,7 @@ export default function InstructorShow({ instructor }) {
                                             <button
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs transition"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md shadow-2xs transition cursor-pointer"
                                             >
                                                 <Upload className="h-3.5 w-3.5 text-indigo-600" />
                                                 <span>{previewUrl ? 'Change Photo' : 'Upload Photo'}</span>
@@ -228,7 +228,7 @@ export default function InstructorShow({ instructor }) {
                                                 <button
                                                     type="button"
                                                     onClick={handleRemovePhoto}
-                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-md transition cursor-pointer"
                                                 >
                                                     <Trash2 className="h-3 w-3" />
                                                     <span>Remove</span>
@@ -296,7 +296,7 @@ export default function InstructorShow({ instructor }) {
                                             id="status"
                                             value={data.status}
                                             onChange={(e) => setData('status', e.target.value)}
-                                            className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-xs transition"
+                                            className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs transition"
                                         >
                                             <option value="active">Active (Full access)</option>
                                             <option value="inactive">Inactive</option>
@@ -375,13 +375,13 @@ export default function InstructorShow({ instructor }) {
                                         rows="3"
                                         value={data.bio}
                                         onChange={(e) => setData('bio', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-xs transition"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 dark:border-slate-700 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-2xs transition"
                                         placeholder="Brief introduction about the instructor's background..."
                                     ></textarea>
                                     <InputError className="mt-1.5" message={errors.bio} />
                                 </div>
 
-                                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60">
+                                <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/60">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Key className="h-3.5 w-3.5 text-slate-500" />
                                         <InputLabel htmlFor="password" value="Reset Password (Optional)" />

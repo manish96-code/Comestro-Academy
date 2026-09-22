@@ -18,7 +18,7 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                     <div className="flex items-center gap-3">
                         <Link
                             href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
-                            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition shadow-2xs"
+                            className="p-2 rounded-md border border-slate-200 hover:bg-slate-50 text-slate-600 transition shadow-2xs"
                             title="Back to Submissions Gradebook"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -29,7 +29,7 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                                     Exam Submission Review
                                 </h1>
                                 <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono border ${
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
                                         submission.is_passed
                                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                                             : 'bg-rose-50 text-rose-700 border-rose-200'
@@ -48,7 +48,7 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                         {student?.id && (
                             <Link
                                 href={route('admin.students.show', student.id)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-2xs transition"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
                             >
                                 <User className="h-3.5 w-3.5 text-slate-400" />
                                 <span>Student Profile</span>
@@ -57,7 +57,7 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                         )}
                         <Link
                             href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200/80 rounded-xl transition"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200/80 rounded-md transition shadow-2xs"
                         >
                             <GraduationCap className="h-3.5 w-3.5" />
                             <span>All Submissions</span>

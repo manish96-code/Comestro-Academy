@@ -49,7 +49,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                     </div>
                     <Link
                         href={route('admin.categories.index')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-xs transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
                     >
                         <ArrowLeft className="h-3.5 w-3.5" />
                         <span>Back to Categories</span>
@@ -64,9 +64,9 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
 
                     {/* If Edit Mode: Top Category Badge */}
                     {isEdit && (
-                        <div className="rounded-xl bg-white p-5 border border-slate-200/90 shadow-xs flex items-center justify-between">
+                        <div className="rounded-lg bg-white p-5 border border-slate-200 shadow-2xs flex items-center justify-between">
                             <div className="flex items-center space-x-3.5">
-                                <div className="h-11 w-11 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg border border-indigo-100 shrink-0">
+                                <div className="h-11 w-11 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg border border-indigo-100 shrink-0">
                                     <Tag className="h-5 w-5" />
                                 </div>
                                 <div className="space-y-0.5">
@@ -89,9 +89,9 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                     )}
 
                     {/* Main Form Card */}
-                    <div className="rounded-xl bg-white p-6 border border-slate-200/90 shadow-xs">
+                    <div className="rounded-lg bg-white p-6 border border-slate-200 shadow-2xs">
                         <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
                                 {isEdit ? <Edit3 className="h-4 w-4" /> : <FolderPlus className="h-4 w-4" />}
                             </div>
                             <div>
@@ -125,7 +125,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                                         id="parent_id"
                                         value={data.parent_id}
                                         onChange={(e) => setData('parent_id', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-xs transition"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs transition"
                                     >
                                         <option value="">None (Root Category)</option>
                                         {parentCategories && parentCategories.map((p) => (
@@ -141,7 +141,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                                         id="status"
                                         value={data.status}
                                         onChange={(e) => setData('status', e.target.value)}
-                                        className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-xs transition"
+                                        className="w-full text-xs sm:text-sm rounded-md border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3 mt-1 shadow-2xs transition"
                                     >
                                         <option value="active">Active (Visible to Students)</option>
                                         <option value="inactive">Inactive (Hidden)</option>
@@ -157,7 +157,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                                     rows="3"
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
-                                    className="w-full text-xs sm:text-sm rounded-lg border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-xs transition"
+                                    className="w-full text-xs sm:text-sm rounded-md border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 py-2 px-3.5 mt-1 shadow-2xs transition"
                                     placeholder="Brief summary of technologies and courses under this category..."
                                 ></textarea>
                                 <InputError className="mt-1.5" message={errors.description} />
@@ -168,7 +168,7 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
                                     <button
                                         type="button"
                                         onClick={() => setShowDeleteModal(true)}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg border border-rose-200 transition"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md border border-rose-200 transition"
                                     >
                                         <Trash2 className="h-3.5 w-3.5" />
                                         <span>Delete Category</span>
