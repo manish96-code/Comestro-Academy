@@ -8,6 +8,24 @@
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
+:root {
+    --accent: #4F46E5;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-muted: #F1F5F9;
+    --border: #E2E8F0;
+    --text-heading: #0F172A;
+    --text-body: #334155;
+    --text-muted: #64748B;
+    --sidebar-bg: #0F172A;
+
+    --dark-surface: #1E293B;
+    --dark-bg: #0F172A;
+    --dark-border: #334155;
+    --dark-text: #F8FAFC;
+    --dark-muted: #94A3B8;
+}
+
 @layer base {
     html {
         scroll-behavior: smooth;
@@ -16,14 +34,14 @@
     }
     body {
         font-family: var(--font-sans);
-        background-color: #ffffff;
-        color: #0f172a;
+        background-color: var(--bg);
+        color: var(--text-heading);
         overflow-x: hidden;
-        transition: background-color 0.2s ease, color 0.2s ease;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
     }
     .dark body {
-        background-color: #090d16;
-        color: #f8fafc;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
     }
 }
 
