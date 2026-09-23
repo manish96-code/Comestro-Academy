@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\CourseAssignmentController as AdminCourseAssignmentController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseExamController as AdminCourseExamController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PublicCertificateController;
+use App\Http\Controllers\Student\CertificateController as StudentCertificateController;
 use App\Http\Controllers\Student\CouponController as StudentCouponController;
 use App\Http\Controllers\Student\CourseAssignmentController as StudentCourseAssignmentController;
 use App\Http\Controllers\Student\CourseExamController as StudentCourseExamController;
@@ -141,6 +144,10 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::match(['patch', 'put'], '/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
     Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
     Route::patch('/coupons/{coupon}/toggle-status', [AdminCouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
+
+    // Admin Certificates
+    Route::get('/certificates', [AdminCertificateController::class, 'index'])->name('certificates.index');
+    Route::patch('/certificates/{certificate}/toggle-status', [AdminCertificateController::class, 'toggleStatus'])->name('certificates.toggle-status');
 });
 
 // Public Course Catalog & Detail Page
@@ -148,6 +155,9 @@ Route::get('/courses', [StudentController::class, 'courses'])->name('courses.ind
 Route::get('/courses/{slug}', [StudentController::class, 'showCourse'])->name('courses.show');
 Route::get('/student/courses', [StudentController::class, 'courses'])->name('student.courses.index');
 Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
+
+// Public Certificate Verification
+Route::get('/verify-certificate/{code}', [PublicCertificateController::class, 'verify'])->name('certificates.verify');
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
@@ -172,6 +182,12 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     // Invoices / Receipts
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/{enrollment}', [InvoiceController::class, 'show'])->name('invoices.show');
+
+    // Certificates
+    Route::get('/certificates', [StudentCertificateController::class, 'index'])->name('certificates.index');
+    Route::get('/certificates/{certificate}', [StudentCertificateController::class, 'show'])->name('certificates.show');
+    Route::post('/courses/{course}/claim-certificate', [StudentCertificateController::class, 'claim'])->name('courses.claim-certificate');
+    Route::get('/courses/{course}/certificate-eligibility', [StudentCertificateController::class, 'checkEligibility'])->name('courses.certificate-eligibility');
 });
 
 // Unified Notification Management Routes (Admin & Student)

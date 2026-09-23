@@ -85,6 +85,12 @@ export default function AdminLayout({ header, children }) {
                     icon: Ticket,
                 },
                 {
+                    name: 'Certificates',
+                    href: route('admin.certificates.index', undefined, false),
+                    active: route().current('admin.certificates.*'),
+                    icon: Award,
+                },
+                {
                     name: 'Live Class Control',
                     href: '#',
                     active: false,

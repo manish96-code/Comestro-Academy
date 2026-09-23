@@ -112,4 +112,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(CouponUsage::class);
     }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
 }

@@ -108,10 +108,9 @@ export default function StudentLayout({ header, children }) {
             items: [
                 {
                     name: 'Certificates',
-                    href: '#',
-                    active: false,
+                    href: route('student.certificates.index'),
+                    active: route().current('student.certificates*'),
                     icon: Award,
-                    badge: 'Soon',
                 },
             ],
         },

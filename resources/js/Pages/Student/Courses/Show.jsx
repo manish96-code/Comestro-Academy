@@ -143,7 +143,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
             const msg = err.response?.data?.message || 'Invalid or inapplicable coupon code.';
             setCouponError(msg);
             setAppliedCoupon(null);
-            toast.error(msg);
         } finally {
             setApplyingCoupon(false);
         }

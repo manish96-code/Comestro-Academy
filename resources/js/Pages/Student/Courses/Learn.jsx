@@ -23,6 +23,7 @@ import {
     AlertCircle,
     XCircle,
     ClipboardList,
+    Award,
 } from 'lucide-react';
 
 export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exams = [], assignments = [] }) {
@@ -390,6 +391,32 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
 
                         {/* Main video & lesson details */}
                         <div className="lg:col-span-8 space-y-6">
+
+                            {/* Certificate graduation banner if 100% completed */}
+                            {progressPct === 100 && (
+                                <div className="bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                            <Award className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                                                Course Complete (100%)!
+                                            </h4>
+                                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                                Ensure all exams and assignments are passed to claim your verified certificate.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href={route('student.certificates.index')}
+                                        className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs transition"
+                                    >
+                                        <Award className="w-3.5 h-3.5" />
+                                        Certificates Hub
+                                    </Link>
+                                </div>
+                            )}
 
                             {/* Video player */}
                             <div className="bg-black rounded-lg overflow-hidden shadow-2xs border border-slate-800">

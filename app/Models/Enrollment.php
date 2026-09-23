@@ -46,4 +46,10 @@ class Enrollment extends Model
     {
         return $this->hasOne(Invoice::class);
     }
+
+    // Certificate relationship
+    public function certificate(): HasOne
+    {
+        return $this->hasOne(Certificate::class);
+    }
 }
