@@ -1,15 +1,32 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import ExamSubmissionReview from '@/Components/ExamSubmissionReview';
-import { Head, Link } from '@inertiajs/react';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     ArrowLeft,
     GraduationCap,
     User,
     ExternalLink,
+    Trash2,
 } from 'lucide-react';
 
 export default function ExamSubmissionPage({ course, exam, questions, submission }) {
     const student = submission.user;
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const confirmDelete = () => {
+        setIsDeleting(true);
+        router.delete(route('admin.exams.submissions.destroy', [exam.id, submission.id]), {
+            onSuccess: () => {
+                setDeleteModalOpen(false);
+            },
+            onError: () => {
+                setIsDeleting(false);
+            },
+        });
+    };
 
     return (
         <AdminLayout
@@ -32,7 +49,7 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                                     className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
                                         submission.is_passed
                                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                            : 'bg-rose-50 text-rose-700 border-rose-200'
+                                             : 'bg-rose-50 text-rose-700 border-rose-200'
                                     }`}
                                 >
                                     {submission.is_passed ? 'Passed' : 'Failed'}
@@ -62,6 +79,15 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                             <GraduationCap className="h-3.5 w-3.5" />
                             <span>All Submissions</span>
                         </Link>
+                        <button
+                            type="button"
+                            onClick={() => setDeleteModalOpen(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs cursor-pointer"
+                            title="Remove record so student can retake exam"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Remove Record</span>
+                        </button>
                     </div>
                 </div>
             }
@@ -80,6 +106,19 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
                     />
                 </div>
             </div>
+
+            {/* Confirm Delete Submission Record Modal */}
+            <ConfirmModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                processing={isDeleting}
+                title="Remove Exam Record?"
+                message={`Are you sure you want to remove the exam submission for ${student?.name || 'this student'}? This will reset their attempt so the student can take the exam again.`}
+                confirmText="Yes, Remove Record"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </AdminLayout>
     );
 }

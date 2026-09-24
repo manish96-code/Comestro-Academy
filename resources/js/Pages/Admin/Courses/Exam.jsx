@@ -64,6 +64,13 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
         isDeleting: false,
     });
 
+    const [deleteSubmissionModal, setDeleteSubmissionModal] = useState({
+        isOpen: false,
+        submissionId: null,
+        studentName: '',
+        isDeleting: false,
+    });
+
     // Form for Exam Settings
     const {
         data: settingsData,
@@ -218,6 +225,35 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
             },
             onError: () => {
                 setDeleteQuestionModal((prev) => ({ ...prev, isDeleting: false }));
+            },
+        });
+    };
+
+    const handleDeleteSubmission = (sub) => {
+        setDeleteSubmissionModal({
+            isOpen: true,
+            submissionId: sub.id,
+            studentName: sub.user?.name || 'this student',
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteSubmission = () => {
+        if (!deleteSubmissionModal.submissionId) return;
+
+        setDeleteSubmissionModal((prev) => ({ ...prev, isDeleting: true }));
+        router.delete(route('admin.exams.submissions.destroy', [exam.id, deleteSubmissionModal.submissionId]), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteSubmissionModal({
+                    isOpen: false,
+                    submissionId: null,
+                    studentName: '',
+                    isDeleting: false,
+                });
+            },
+            onError: () => {
+                setDeleteSubmissionModal((prev) => ({ ...prev, isDeleting: false }));
             },
         });
     };
@@ -770,14 +806,25 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                                                         {sub.submitted_at ? new Date(sub.submitted_at).toLocaleString() : 'N/A'}
                                                     </td>
                                                     <td className="px-4 py-3 text-right">
-                                                        <Link
-                                                            href={route('admin.exams.submissions.show', [exam.id, sub.id])}
-                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 rounded-md transition shadow-2xs"
-                                                            title="Review Student's Exam Answers"
-                                                        >
-                                                            <Eye className="h-3.5 w-3.5" />
-                                                            <span>View Answers</span>
-                                                        </Link>
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <Link
+                                                                href={route('admin.exams.submissions.show', [exam.id, sub.id])}
+                                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 rounded-md transition shadow-2xs"
+                                                                title="Review Student's Exam Answers"
+                                                            >
+                                                                <Eye className="h-3.5 w-3.5" />
+                                                                <span>View Answers</span>
+                                                            </Link>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDeleteSubmission(sub)}
+                                                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs cursor-pointer"
+                                                                title="Remove record so student can retake exam"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                                <span>Remove Record</span>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -799,6 +846,19 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
                 title="Delete Question?"
                 message="Are you sure you want to delete this question? This action cannot be undone."
                 confirmText="Yes, Delete Question"
+                cancelText="Cancel"
+                variant="danger"
+            />
+
+            {/* Confirm Delete Submission Record Modal */}
+            <ConfirmModal
+                isOpen={deleteSubmissionModal.isOpen}
+                onClose={() => setDeleteSubmissionModal({ isOpen: false, submissionId: null, studentName: '', isDeleting: false })}
+                onConfirm={confirmDeleteSubmission}
+                processing={deleteSubmissionModal.isDeleting}
+                title="Remove Exam Record?"
+                message={`Are you sure you want to remove the exam submission for ${deleteSubmissionModal.studentName}? This will reset their attempt so the student can take the exam again.`}
+                confirmText="Yes, Remove Record"
                 cancelText="Cancel"
                 variant="danger"
             />

@@ -266,3 +266,95 @@ test('certificate issuance is idempotent and does not create duplicates', functi
 
     expect(Certificate::where('user_id', $student->id)->where('course_id', $course->id)->count())->toBe(1);
 });
+
+test('certificates are auto-generated when eligible student views certificates index or enrolled courses', function () {
+    $student = User::factory()->create(['role' => 'student', 'name' => 'Auto Student']);
+    $course = Course::factory()->create(['status' => 'published']);
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $course->id,
+        'status' => 'active',
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+    $student->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
+
+    expect(Certificate::where('user_id', $student->id)->where('course_id', $course->id)->exists())->toBeFalse();
+
+    // Visiting enrolled courses auto-issues the certificate
+    $response = $this->actingAs($student)->get(route('student.courses.enrolled'));
+    $response->assertOk();
+
+    $cert = Certificate::where('user_id', $student->id)->where('course_id', $course->id)->first();
+    expect($cert)->not->toBeNull();
+    expect($cert->status)->toBe('active');
+
+    // Visiting certificates index shows it
+    $responseIndex = $this->actingAs($student)->get(route('student.certificates.index'));
+    $responseIndex->assertOk();
+});
+
+test('certificate is auto-generated when student passes final exam for 100% completed course', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    $course = Course::factory()->create(['status' => 'published']);
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $course->id,
+        'status' => 'active',
+    ]);
+
+    $module = CourseModule::create([
+        'course_id' => $course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Lesson 1',
+        'sort_order' => 1,
+    ]);
+    $student->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
+
+    $exam = CourseExam::create([
+        'course_id' => $course->id,
+        'title' => 'Final Exam',
+        'duration_minutes' => 30,
+        'marks_per_question' => 5,
+        'passing_percentage' => 50,
+        'is_published' => true,
+    ]);
+
+    $question = $exam->questions()->create([
+        'question_text' => 'What is Laravel?',
+        'question_type' => 'single_choice',
+        'marks' => 5,
+        'sort_order' => 1,
+    ]);
+
+    $option = $question->options()->create([
+        'option_text' => 'PHP Framework',
+        'is_correct' => true,
+        'sort_order' => 1,
+    ]);
+
+    expect(Certificate::where('user_id', $student->id)->where('course_id', $course->id)->exists())->toBeFalse();
+
+    $this->actingAs($student)->post(route('student.exams.submit', $exam->id), [
+        'answers' => [
+            $question->id => $option->id,
+        ],
+    ]);
+
+    $cert = Certificate::where('user_id', $student->id)->where('course_id', $course->id)->first();
+    expect($cert)->not->toBeNull();
+    expect($cert->status)->toBe('active');
+});

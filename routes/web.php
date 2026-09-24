@@ -127,6 +127,7 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/exams/{exam}/questions', [AdminCourseExamController::class, 'storeQuestion'])->name('exams.questions.store');
     Route::delete('/exams/{exam}/questions/{question}', [AdminCourseExamController::class, 'deleteQuestion'])->name('exams.questions.destroy');
     Route::get('/exams/{exam}/submissions/{submission}', [AdminCourseExamController::class, 'showSubmission'])->name('exams.submissions.show');
+    Route::delete('/exams/{exam}/submissions/{submission}', [AdminCourseExamController::class, 'destroySubmission'])->name('exams.submissions.destroy');
 
     // Admin Course Assignments
     Route::get('/assignments', [AdminCourseAssignmentController::class, 'globalIndex'])->name('assignments.index');
@@ -187,7 +188,6 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::get('/certificates', [StudentCertificateController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/{certificate}', [StudentCertificateController::class, 'show'])->name('certificates.show');
     Route::post('/courses/{course}/claim-certificate', [StudentCertificateController::class, 'claim'])->name('courses.claim-certificate');
-    Route::get('/courses/{course}/certificate-eligibility', [StudentCertificateController::class, 'checkEligibility'])->name('courses.certificate-eligibility');
 });
 
 // Unified Notification Management Routes (Admin & Student)

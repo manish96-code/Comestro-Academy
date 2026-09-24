@@ -6,10 +6,12 @@ use App\Events\StudentEnrolledEvent;
 use App\Http\Controllers\Controller;
 use App\Jobs\UploadProfilePicture;
 use App\Models\Category;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\Enrollment;
 use App\Models\Invoice;
+use App\Services\CertificateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -295,6 +297,24 @@ class StudentController extends Controller
                 ];
             });
 
+        $certificate = null;
+        if ($user) {
+            $certificate = Certificate::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if (! $certificate && $progress['is_completed']) {
+                $certService = app(CertificateService::class);
+                if ($certService->checkEligibility($user, $course)['eligible']) {
+                    try {
+                        $certificate = $certService->issueCertificate($user, $course);
+                    } catch (\Throwable) {
+                        // ignore
+                    }
+                }
+            }
+        }
+
         return Inertia::render('Student/Courses/Learn', [
             'course' => $course,
             'enrollment' => $enrollment,
@@ -303,6 +323,10 @@ class StudentController extends Controller
             'unlockedLessonIds' => $unlockedLessonIds,
             'exams' => $exams,
             'assignments' => $assignments,
+            'certificate' => $certificate ? [
+                'id' => $certificate->id,
+                'certificate_number' => $certificate->certificate_number,
+            ] : null,
         ]);
     }
 
@@ -316,9 +340,29 @@ class StudentController extends Controller
             ->latest('enrolled_at')
             ->paginate(9);
 
-        $enrollments->through(function ($enrollment) use ($user) {
+        $certificateService = app(CertificateService::class);
+        $userCertificates = Certificate::where('user_id', $user->id)->get()->keyBy('course_id');
+
+        $enrollments->through(function ($enrollment) use ($user, $certificateService, $userCertificates) {
             if ($enrollment->course) {
-                $enrollment->course->progress = $enrollment->course->getProgressFor($user);
+                $progress = $enrollment->course->getProgressFor($user);
+                $enrollment->course->progress = $progress;
+
+                $cert = $userCertificates->get($enrollment->course_id);
+                if (! $cert && $progress['is_completed']) {
+                    if ($certificateService->checkEligibility($user, $enrollment->course)['eligible']) {
+                        try {
+                            $cert = $certificateService->issueCertificate($user, $enrollment->course);
+                        } catch (\Throwable) {
+                            // ignore
+                        }
+                    }
+                }
+
+                $enrollment->certificate = $cert ? [
+                    'id' => $cert->id,
+                    'certificate_number' => $cert->certificate_number,
+                ] : null;
             }
 
             return $enrollment;
@@ -372,6 +416,16 @@ class StudentController extends Controller
         } else {
             $user->completedLessons()->attach($lesson->id, ['completed_at' => now()]);
             $message = 'Lesson marked as completed!';
+
+            $certificateService = app(CertificateService::class);
+            if ($certificateService->checkEligibility($user, $course)['eligible']) {
+                try {
+                    $certificateService->issueCertificate($user, $course);
+                    $message .= ' Congratulations! Your official completion certificate has been generated!';
+                } catch (\Throwable) {
+                    // ignore
+                }
+            }
         }
 
         return redirect()->back()->with('success', $message);

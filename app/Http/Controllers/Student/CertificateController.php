@@ -7,7 +7,6 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Services\CertificateService;
 use DomainException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,14 +14,11 @@ use Inertia\Response;
 
 class CertificateController extends Controller
 {
-    // List earned certificates and in-progress checklist
+    // List earned certificates
     public function index(Request $request, CertificateService $certificateService): Response
     {
-        $user = $request->user();
-        $data = $certificateService->getStudentCertificatesData($user);
-
         return Inertia::render('Student/Certificates/Index', [
-            'earned' => $data['earned'],
+            'earned' => $certificateService->getEarnedCertificates($request->user()),
         ]);
     }
 
@@ -66,32 +62,13 @@ class CertificateController extends Controller
     // Claim / Generate certificate for a completed course
     public function claim(Request $request, Course $course, CertificateService $certificateService): RedirectResponse
     {
-        $user = $request->user();
-
         try {
-            $certificate = $certificateService->issueCertificate($user, $course);
+            $certificate = $certificateService->issueCertificate($request->user(), $course);
 
             return redirect()->route('student.certificates.show', $certificate->id)
                 ->with('success', 'Congratulations! Your certificate of completion has been successfully issued.');
         } catch (DomainException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
-    }
-
-    // Dynamic JSON check for course learning page
-    public function checkEligibility(Request $request, Course $course, CertificateService $certificateService): JsonResponse
-    {
-        $user = $request->user();
-        $eligibility = $certificateService->checkEligibility($user, $course);
-
-        $existing = Certificate::where('user_id', $user->id)
-            ->where('course_id', $course->id)
-            ->first();
-
-        return response()->json([
-            'eligibility' => $eligibility,
-            'has_certificate' => $existing !== null,
-            'certificate_id' => $existing?->id,
-        ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseExam;
 use App\Models\ExamSubmission;
+use App\Services\CertificateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -319,6 +320,18 @@ class CourseExamController extends Controller
         $statusMsg = $isPassed
             ? "Congratulations! You scored {$percentage}% ({$score}/{$totalMarks}) and passed this exam!"
             : "Exam submitted. You scored {$percentage}% ({$score}/{$totalMarks}). Passing percentage is {$exam->passing_percentage}%.";
+
+        if ($isPassed) {
+            $certificateService = app(CertificateService::class);
+            if ($certificateService->checkEligibility($user, $course)['eligible']) {
+                try {
+                    $certificateService->issueCertificate($user, $course);
+                    $statusMsg .= ' You have met all graduation requirements and your official completion certificate has been issued!';
+                } catch (\Throwable) {
+                    // ignore
+                }
+            }
+        }
 
         return redirect()->route('student.exams.show', $exam->id)->with('success', $statusMsg);
     }

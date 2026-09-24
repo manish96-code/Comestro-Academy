@@ -59,24 +59,30 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
     ];
 
     return (
-        <AdminLayout>
-            <Head title="Course Certificates Management" />
-
-            <div className="space-y-6">
-                {/* 1. Header & Stats */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <AdminLayout
+            header={
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                            <Award className="w-5 h-5 text-indigo-600" />
-                            Issued Course Certificates
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Audit, verify, and manage all verified graduation credentials earned by students across all courses.
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                                Issued Course Certificates
+                            </h1>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-mono">
+                                {stats.total_issued || 0} TOTAL
+                            </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                            Audit, verify, and manage all verified graduation credentials earned by students across all courses
                         </p>
                     </div>
                 </div>
+            }
+        >
+            <Head title="Course Certificates Management" />
 
-                {/* 2. Stats Grid */}
+            <div className="py-6 sm:py-8">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+                    {/* 1. Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
                         <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Certificates</span>
@@ -257,6 +263,7 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                     )}
                 </div>
             </div>
-        </AdminLayout>
-    );
+        </div>
+    </AdminLayout>
+);
 }

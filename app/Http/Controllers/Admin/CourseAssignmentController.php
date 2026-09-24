@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AssignmentSubmission;
 use App\Models\Course;
 use App\Models\CourseAssignment;
+use App\Services\CertificateService;
 use App\Services\ImageKitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -185,6 +186,21 @@ class CourseAssignmentController extends Controller
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
         ]);
+
+        if ($submission->status === 'reviewed') {
+            $student = $submission->user;
+            $course = $submission->assignment?->course;
+            if ($student && $course) {
+                $certificateService = app(CertificateService::class);
+                if ($certificateService->checkEligibility($student, $course)['eligible']) {
+                    try {
+                        $certificateService->issueCertificate($student, $course);
+                    } catch (Throwable) {
+                        // ignore
+                    }
+                }
+            }
+        }
 
         return back()->with('success', 'Submission evaluated and graded successfully.');
     }

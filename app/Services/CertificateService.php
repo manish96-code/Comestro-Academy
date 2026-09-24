@@ -224,15 +224,35 @@ class CertificateService
     }
 
     /**
-     * Get data payload for the student certificates dashboard.
+     * Get earned certificates for student certificates hub.
      *
-     * @return array{
-     *     earned: array<int, mixed>
-     * }
+     * @return array<int, mixed>
      */
-    public function getStudentCertificatesData(User $user): array
+    public function getEarnedCertificates(User $user): array
     {
-        $earnedCertificates = Certificate::with(['course:id,title,slug,thumbnail,duration'])
+        // Auto-generate certificates for any enrolled courses that meet all criteria
+        $activeEnrollments = Enrollment::with('course')
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->get();
+
+        foreach ($activeEnrollments as $enrollment) {
+            if ($enrollment->course) {
+                $hasCert = Certificate::where('user_id', $user->id)
+                    ->where('course_id', $enrollment->course_id)
+                    ->exists();
+
+                if (! $hasCert && $this->checkEligibility($user, $enrollment->course)['eligible']) {
+                    try {
+                        $this->issueCertificate($user, $enrollment->course);
+                    } catch (\Throwable) {
+                        // ignore
+                    }
+                }
+            }
+        }
+
+        return Certificate::with(['course:id,title,slug,thumbnail,duration'])
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->latest('issued_at')
@@ -253,10 +273,7 @@ class CertificateService
                     'final_score' => $cert->final_score,
                     'verification_url' => route('certificates.verify', $cert->certificate_number),
                 ];
-            });
-
-        return [
-            'earned' => $earnedCertificates,
-        ];
+            })
+            ->all();
     }
 }

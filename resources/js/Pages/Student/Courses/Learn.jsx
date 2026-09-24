@@ -26,7 +26,7 @@ import {
     Award,
 } from 'lucide-react';
 
-export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exams = [], assignments = [] }) {
+export default function CourseLearn({ course, enrollment = null, progress = {}, completedLessonIds = [], unlockedLessonIds = [], exams = [], assignments = [], certificate = null }) {
     const modules = course.modules || [];
     const { auth } = usePage().props;
     const isAdminOrInstructor = auth?.user?.role === 'admin' || auth?.user?.role === 'instructor';
@@ -401,19 +401,21 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                         </div>
                                         <div>
                                             <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                                                Course Complete (100%)!
+                                                {certificate ? 'Certificate of Completion Ready!' : 'Course Complete (100%)!'}
                                             </h4>
                                             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                                                Ensure all exams and assignments are passed to claim your verified certificate.
+                                                {certificate
+                                                    ? 'Congratulations! You have passed all requirements and earned your verified graduation certificate.'
+                                                    : 'Ensure all exams and assignments are passed to claim your verified certificate.'}
                                             </p>
                                         </div>
                                     </div>
                                     <Link
-                                        href={route('student.certificates.index')}
-                                        className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs transition"
+                                        href={certificate ? route('student.certificates.show', certificate.id) : route('student.certificates.index')}
+                                        className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-2xs transition"
                                     >
                                         <Award className="w-3.5 h-3.5" />
-                                        Certificates Hub
+                                        {certificate ? 'View Certificate' : 'Certificates Hub'}
                                     </Link>
                                 </div>
                             )}

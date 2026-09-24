@@ -232,4 +232,20 @@ class CourseExamController extends Controller
             ],
         ]);
     }
+
+    // Remove an exam submission record so student can retake the exam
+    public function destroySubmission(CourseExam $exam, ExamSubmission $submission): RedirectResponse
+    {
+        if ($submission->course_exam_id !== $exam->id) {
+            abort(404);
+        }
+
+        $studentName = $submission->user?->name ?? 'Student';
+        $submission->delete();
+
+        return redirect()->route('admin.exams.show', [
+            'exam' => $exam->id,
+            'tab' => 'submissions',
+        ])->with('success', "Exam record for {$studentName} has been removed. The student can now take the exam again.");
+    }
 }

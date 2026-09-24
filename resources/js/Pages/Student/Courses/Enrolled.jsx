@@ -392,6 +392,17 @@ export default function EnrolledCourses({ enrollments }) {
                                                         <FileText className="h-3.5 w-3.5 text-indigo-500" />
                                                         <span>Invoice</span>
                                                     </Link>
+
+                                                    {enrollment.certificate && (
+                                                        <Link
+                                                            href={route('student.certificates.show', enrollment.certificate.id)}
+                                                            className="px-2 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition flex items-center gap-1 rounded-md hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                                                            title="View & Download Verified Certificate"
+                                                        >
+                                                            <Award className="h-3.5 w-3.5 text-amber-500" />
+                                                            <span>Certificate</span>
+                                                        </Link>
+                                                    )}
                                                 </div>
 
                                                 <Link
