@@ -18,8 +18,7 @@ class PublicCertificateController extends Controller
         $code = $code ?: $request->query('code', $request->query('certificate_number', ''));
         $name = $request->query('name', $request->query('student_name', ''));
 
-        // If both code and name are present in query params, verify immediately
-        if (! empty($code) && ! empty($name)) {
+        if (! empty($code)) {
             return $this->performVerification($code, $name);
         }
 
@@ -27,8 +26,8 @@ class PublicCertificateController extends Controller
             'searched' => false,
             'found' => false,
             'certificate' => null,
-            'searched_code' => $code,
-            'searched_name' => $name,
+            'searched_code' => '',
+            'searched_name' => '',
             'error_message' => null,
         ]);
     }
@@ -40,25 +39,23 @@ class PublicCertificateController extends Controller
     {
         $validated = $request->validate([
             'certificate_number' => 'required|string',
-            'student_name' => 'required|string',
+            'student_name' => 'nullable|string',
         ], [
             'certificate_number.required' => 'Please enter the Certificate Number.',
-            'student_name.required' => 'Please enter the Student Full Name.',
         ]);
 
         return $this->performVerification(
             $validated['certificate_number'],
-            $validated['student_name']
+            $validated['student_name'] ?? null
         );
     }
 
     /**
-     * Core verification logic checking both Certificate Number and Student Name.
+     * Core verification logic checking Certificate Number and optional Student Name.
      */
-    private function performVerification(string $code, string $name): Response
+    private function performVerification(string $code, ?string $name = null): Response
     {
         $normalizedCode = strtoupper(trim($code));
-        $normalizedName = strtolower(trim($name));
 
         $certificate = Certificate::with(['course.category', 'user'])
             ->where(function ($query) use ($normalizedCode) {
@@ -69,7 +66,7 @@ class PublicCertificateController extends Controller
 
         $searchedData = [
             'searched_code' => $code,
-            'searched_name' => $name,
+            'searched_name' => $name ?? '',
         ];
 
         if (! $certificate) {
@@ -81,22 +78,26 @@ class PublicCertificateController extends Controller
             ]));
         }
 
-        // Compare Student Name
         $actualStudentName = $certificate->metadata['student_name'] ?? $certificate->user?->name ?? '';
-        $normalizedActualName = strtolower(trim($actualStudentName));
 
-        // Match exact or contains
-        $nameMatches = ($normalizedActualName === $normalizedName)
-            || str_contains($normalizedActualName, $normalizedName)
-            || str_contains($normalizedName, $normalizedActualName);
+        // Compare Student Name if provided
+        if (! empty($name)) {
+            $normalizedName = strtolower(trim($name));
+            $normalizedActualName = strtolower(trim($actualStudentName));
 
-        if (! $nameMatches) {
-            return Inertia::render('Certificates/Verify', array_merge($searchedData, [
-                'searched' => true,
-                'found' => false,
-                'certificate' => null,
-                'error_message' => "The student name entered does not match the issued record for certificate '{$code}'.",
-            ]));
+            // Match exact or contains
+            $nameMatches = ($normalizedActualName === $normalizedName)
+                || str_contains($normalizedActualName, $normalizedName)
+                || str_contains($normalizedName, $normalizedActualName);
+
+            if (! $nameMatches) {
+                return Inertia::render('Certificates/Verify', array_merge($searchedData, [
+                    'searched' => true,
+                    'found' => false,
+                    'certificate' => null,
+                    'error_message' => "The student name entered does not match the issued record for certificate '{$code}'.",
+                ]));
+            }
         }
 
         return Inertia::render('Certificates/Verify', array_merge($searchedData, [

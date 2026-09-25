@@ -10,8 +10,13 @@ import {
     Terminal,
     Users
 } from 'lucide-react';
+import PublicLayout from '@/Layouts/PublicLayout';
 
-export default function GuestLayout({ children, activeTab = 'auth' }) {
+export default function GuestLayout({ children, activeTab = 'auth', variant = 'auth', ...props }) {
+    if (variant === 'public' || activeTab === 'public') {
+        return <PublicLayout {...props}>{children}</PublicLayout>;
+    }
+
     return (
         <div className="min-h-screen grid lg:grid-cols-12 bg-slate-950 font-sans selection:bg-emerald-500 selection:text-white">
             

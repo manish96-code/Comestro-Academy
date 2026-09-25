@@ -1,30 +1,16 @@
 import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
 import {
     ArrowLeft,
     Printer,
-    Share2,
-    Check,
     Award,
     ShieldCheck,
-    ExternalLink,
     CheckCircle2
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 export default function CertificateShow({ certificate }) {
-    const [copied, setCopied] = useState(false);
-
     const handlePrint = () => {
         window.print();
-    };
-
-    const handleShare = () => {
-        navigator.clipboard.writeText(certificate.verification_url);
-        setCopied(true);
-        toast.success('Verification URL copied to clipboard!');
-        setTimeout(() => setCopied(false), 2500);
     };
 
     return (
@@ -46,7 +32,7 @@ export default function CertificateShow({ certificate }) {
 
             <div className="py-6 min-h-[calc(100vh-140px)]">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                {/* 1. Print / Share Toolbar (Hidden during Print) */}
+                {/* 1. Print Toolbar (Hidden during Print) */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
                     <Link
                         href={route('student.certificates.index')}
@@ -56,24 +42,6 @@ export default function CertificateShow({ certificate }) {
                     </Link>
 
                     <div className="flex items-center gap-2.5">
-                        <button
-                            type="button"
-                            onClick={handleShare}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition"
-                        >
-                            {copied ? (
-                                <>
-                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                    Copied Link
-                                </>
-                            ) : (
-                                <>
-                                    <Share2 className="w-3.5 h-3.5 text-slate-400" />
-                                    Copy Verification Link
-                                </>
-                            )}
-                        </button>
-
                         <button
                             type="button"
                             onClick={handlePrint}
@@ -218,9 +186,6 @@ export default function CertificateShow({ certificate }) {
                             </div>
                             <div>
                                 Issue Date: <strong className="text-slate-800">{certificate.issued_at}</strong>
-                            </div>
-                            <div className="truncate max-w-xs">
-                                Verify at: <span className="text-indigo-600">{certificate.verification_url}</span>
                             </div>
                         </div>
                     </div>

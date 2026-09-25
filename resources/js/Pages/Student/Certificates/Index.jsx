@@ -1,25 +1,14 @@
 import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
 import {
     Award,
     Sparkles,
     Check,
-    Copy,
     GraduationCap,
     ArrowRight
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 export default function CertificateIndex({ earned = [] }) {
-    const [copiedCertId, setCopiedCertId] = useState(null);
-
-    const copyVerificationLink = (cert) => {
-        navigator.clipboard.writeText(cert.verification_url);
-        setCopiedCertId(cert.id);
-        toast.success(`Verification link for ${cert.certificate_number} copied!`);
-        setTimeout(() => setCopiedCertId(null), 2500);
-    };
 
     return (
         <StudentLayout
@@ -114,7 +103,7 @@ export default function CertificateIndex({ earned = [] }) {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="pt-2 flex flex-col gap-2">
+                                    <div className="pt-2">
                                         <Link
                                             href={route('student.certificates.show', cert.id)}
                                             className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition"
@@ -122,24 +111,6 @@ export default function CertificateIndex({ earned = [] }) {
                                             <Award className="w-3.5 h-3.5" />
                                             View & Print Certificate
                                         </Link>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => copyVerificationLink(cert)}
-                                            className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition cursor-pointer"
-                                        >
-                                            {copiedCertId === cert.id ? (
-                                                <>
-                                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                                    Copied Verification Link!
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Copy className="w-3.5 h-3.5 text-slate-400" />
-                                                    Share / Verify URL
-                                                </>
-                                            )}
-                                        </button>
                                     </div>
                                 </div>
                             </div>

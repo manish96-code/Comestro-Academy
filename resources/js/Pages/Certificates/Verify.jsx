@@ -1,18 +1,15 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import {
     ShieldCheck,
     ShieldAlert,
     Award,
     CheckCircle2,
-    Calendar,
     User,
     BookOpen,
-    GraduationCap,
-    ArrowLeft,
     Search,
     Check
 } from 'lucide-react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import PublicLayout from '@/Layouts/PublicLayout';
 
 export default function CertificateVerify({
     searched = false,
@@ -36,37 +33,14 @@ export default function CertificateVerify({
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between">
+        <PublicLayout
+            activeNav="verify"
+            containerClassName="max-w-3xl mx-auto px-4 sm:px-6"
+            mainClassName="pt-24 sm:pt-28 pb-16 flex-1 flex flex-col justify-center"
+        >
             <Head title={found && certificate ? `Verified: ${certificate.student_name} - Comestro Academy` : 'Verify Certificate - Comestro Academy'} />
 
-            {/* Top Navigation Bar */}
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-4 px-6 sm:px-12 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-3">
-                    <ApplicationLogo className="w-8 h-8 fill-current text-indigo-600" />
-                    <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
-                        Comestro Academy
-                    </span>
-                </Link>
-
-                <div className="flex items-center gap-3 text-xs">
-                    <Link
-                        href={typeof route === 'function' ? route('courses.index') : '/courses'}
-                        className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition hidden sm:inline"
-                    >
-                        Browse Courses
-                    </Link>
-                    <Link
-                        href={typeof route === 'function' ? route('login') : '/login'}
-                        className="px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition"
-                    >
-                        Student Portal
-                    </Link>
-                </div>
-            </header>
-
-            {/* Main Content Area */}
-            <main className="max-w-3xl w-full mx-auto p-4 sm:p-8 my-auto space-y-6">
-                
+            <div className="space-y-6 w-full my-auto">
                 {/* Search & Verification Input Card */}
                 <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
                     <div className="text-center space-y-2">
@@ -102,15 +76,14 @@ export default function CertificateVerify({
 
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                    Student Full Name <span className="text-rose-500">*</span>
+                                    Student Full Name <span className="text-slate-400 font-normal text-[11px]">(Optional)</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={data.student_name}
                                     onChange={(e) => setData('student_name', e.target.value)}
-                                    placeholder="e.g. Manish Kumar"
+                                    placeholder="e.g. Rahul Verma"
                                     className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                                    required
                                 />
                                 {errors.student_name && (
                                     <p className="mt-1 text-xs text-rose-500">{errors.student_name}</p>
@@ -254,7 +227,7 @@ export default function CertificateVerify({
                         </div>
                         <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
                             <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                <GraduationCap className="w-4 h-4 text-indigo-500" /> Direct Verification
+                                <Award className="w-4 h-4 text-indigo-500" /> Direct Verification
                             </span>
                             <p>Employers and institutions can verify authentic course completion and exam scores.</p>
                         </div>
@@ -266,13 +239,7 @@ export default function CertificateVerify({
                         </div>
                     </div>
                 )}
-
-            </main>
-
-            {/* Footer */}
-            <footer className="py-6 px-6 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                © {new Date().getFullYear()} Comestro Academy of Technology. All rights reserved.
-            </footer>
-        </div>
+            </div>
+        </PublicLayout>
     );
 }
