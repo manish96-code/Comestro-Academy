@@ -2,13 +2,13 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import SearchBar from '@/Components/SearchBar';
 import FilterSelect from '@/Components/FilterSelect';
+import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     Award,
     ShieldCheck,
     ShieldAlert,
-    ExternalLink,
     GraduationCap,
     CheckCircle2,
     XCircle,
@@ -16,12 +16,16 @@ import {
     Calendar,
     BookOpen
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 export default function AdminCertificateIndex({ certificates = { data: [] }, stats = {}, courses = [], filters = {} }) {
     const [search, setSearch] = useState(filters.search || '');
     const [courseId, setCourseId] = useState(filters.course_id || '');
     const [status, setStatus] = useState(filters.status || '');
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        cert: null,
+        processing: false,
+    });
 
     const handleFilter = (newSearch, newCourseId, newStatus) => {
         router.get(
@@ -38,13 +42,35 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
         );
     };
 
-    const handleToggleStatus = (cert) => {
-        const actionText = cert.status === 'active' ? 'revoke' : 'activate';
-        if (confirm(`Are you sure you want to ${actionText} certificate ${cert.certificate_number}?`)) {
-            router.patch(route('admin.certificates.toggle-status', cert.id), {}, {
+    const handleOpenToggleModal = (cert) => {
+        setConfirmModal({
+            isOpen: true,
+            cert,
+            processing: false,
+        });
+    };
+
+    const handleConfirmToggle = () => {
+        if (!confirmModal.cert) return;
+        const cert = confirmModal.cert;
+        setConfirmModal((prev) => ({ ...prev, processing: true }));
+
+        router.patch(
+            route('admin.certificates.toggle-status', cert.id),
+            {},
+            {
                 preserveScroll: true,
-            });
-        }
+                onSuccess: () => {
+                    setConfirmModal({ isOpen: false, cert: null, processing: false });
+                },
+                onError: () => {
+                    setConfirmModal((prev) => ({ ...prev, processing: false }));
+                },
+                onFinish: () => {
+                    setConfirmModal((prev) => ({ ...prev, processing: false }));
+                }
+            }
+        );
     };
 
     const courseOptions = [
@@ -226,19 +252,9 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                                             </td>
                                             <td className="py-3 px-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <a
-                                                        href={route('certificates.verify', cert.certificate_number)}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium inline-flex items-center gap-1 transition"
-                                                        title="Public Verification"
-                                                    >
-                                                        Verify <ExternalLink className="w-3 h-3" />
-                                                    </a>
-
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleToggleStatus(cert)}
+                                                        onClick={() => handleOpenToggleModal(cert)}
                                                         className={`px-2.5 py-1 rounded text-xs font-medium transition cursor-pointer ${
                                                             cert.status === 'active'
                                                                 ? 'text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50'
@@ -264,6 +280,42 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                 </div>
             </div>
         </div>
+
+        {/* Confirmation Modal */}
+        <ConfirmModal
+            isOpen={confirmModal.isOpen}
+            onClose={() => setConfirmModal({ isOpen: false, cert: null, processing: false })}
+            onConfirm={handleConfirmToggle}
+            processing={confirmModal.processing}
+            title={confirmModal.cert?.status === 'active' ? 'Revoke Certificate?' : 'Restore Certificate?'}
+            message={
+                confirmModal.cert?.status === 'active' ? (
+                    <span>
+                        Are you sure you want to revoke certificate{' '}
+                        <strong className="font-mono text-slate-900 dark:text-white">
+                            {confirmModal.cert?.certificate_number}
+                        </strong>{' '}
+                        issued to{' '}
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                            {confirmModal.cert?.student_name}
+                        </span>?
+                    </span>
+                ) : (
+                    <span>
+                        Are you sure you want to restore certificate{' '}
+                        <strong className="font-mono text-slate-900 dark:text-white">
+                            {confirmModal.cert?.certificate_number}
+                        </strong>{' '}
+                        issued to{' '}
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                            {confirmModal.cert?.student_name}
+                        </span>?
+                    </span>
+                )
+            }
+            confirmText={confirmModal.cert?.status === 'active' ? 'Yes, Revoke' : 'Yes, Restore'}
+            variant={confirmModal.cert?.status === 'active' ? 'danger' : 'success'}
+        />
     </AdminLayout>
 );
 }

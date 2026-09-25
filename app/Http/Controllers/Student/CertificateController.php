@@ -43,7 +43,6 @@ class CertificateController extends Controller
                 'issued_at' => $certificate->issued_at->format('F d, Y'),
                 'final_score' => $certificate->final_score,
                 'metadata' => $certificate->metadata,
-                'verification_url' => route('certificates.verify'),
                 'student' => [
                     'name' => $certificate->metadata['student_name'] ?? $certificate->user?->name,
                     'email' => $certificate->metadata['student_email'] ?? $certificate->user?->email,

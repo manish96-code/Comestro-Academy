@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\CourseAssignmentController as AdminCourseAssignme
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseExamController as AdminCourseExamController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PublicCertificateController;
 use App\Http\Controllers\Student\CertificateController as StudentCertificateController;
 use App\Http\Controllers\Student\CouponController as StudentCouponController;
 use App\Http\Controllers\Student\CourseAssignmentController as StudentCourseAssignmentController;
@@ -156,10 +155,6 @@ Route::get('/courses', [StudentController::class, 'courses'])->name('courses.ind
 Route::get('/courses/{slug}', [StudentController::class, 'showCourse'])->name('courses.show');
 Route::get('/student/courses', [StudentController::class, 'courses'])->name('student.courses.index');
 Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
-
-// Public Certificate Verification
-Route::get('/verify-certificate/{code?}', [PublicCertificateController::class, 'show'])->name('certificates.verify');
-Route::post('/verify-certificate', [PublicCertificateController::class, 'verify'])->name('certificates.verify.check');
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');

@@ -532,12 +532,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                         >
                             FAQ
                         </a>
-                        <Link
-                            href={route('certificates.verify')}
-                            className={isDark ? 'text-slate-400 hover:text-white transition' : 'text-slate-600 hover:text-slate-900 transition'}
-                        >
-                            Verify Certificate
-                        </Link>
                     </nav>
                 </div>
 
@@ -638,13 +632,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             Capstones
                         </a>
                     )}
-                    <Link
-                        href={route('certificates.verify')}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block text-sm py-1 text-slate-700 dark:text-slate-300"
-                    >
-                        Verify Certificate
-                    </Link>
                     <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
                         {user ? (
                             <Link
@@ -697,9 +684,6 @@ export default function CourseShow({ course, relatedCourses = [] }) {
                             Capstones
                         </a>
                     )}
-                    <Link href={route('certificates.verify')} className="hover:text-slate-900 dark:hover:text-white transition">
-                        Verify Certificate
-                    </Link>
                     <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white transition">
                         Log in
                     </Link>

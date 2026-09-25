@@ -72,9 +72,4 @@ class Certificate extends Model
     {
         return $this->status === 'active';
     }
-
-    public function getPublicVerificationUrlAttribute(): string
-    {
-        return route('certificates.verify');
-    }
 }

@@ -10,16 +10,11 @@ import {
     Terminal,
     Users
 } from 'lucide-react';
-import PublicLayout from '@/Layouts/PublicLayout';
 
-export default function GuestLayout({ children, activeTab = 'auth', variant = 'auth', ...props }) {
-    if (variant === 'public' || activeTab === 'public') {
-        return <PublicLayout {...props}>{children}</PublicLayout>;
-    }
-
+export default function GuestLayout({ children, activeTab = 'auth' }) {
     return (
         <div className="min-h-screen grid lg:grid-cols-12 bg-slate-950 font-sans selection:bg-emerald-500 selection:text-white">
-            
+
             {/* Left Showcase Panel (Visible on lg+ screens) */}
             <aside className="hidden lg:flex lg:col-span-5 xl:col-span-5 flex-col justify-between p-10 xl:p-14 relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950/70 border-r border-slate-800/80">
                 {/* Background Glow Lights */}
@@ -148,7 +143,7 @@ export default function GuestLayout({ children, activeTab = 'auth', variant = 'a
 
             {/* Right Form Panel (Universal) */}
             <main className="lg:col-span-7 xl:col-span-7 flex flex-col justify-between bg-white min-h-screen p-6 sm:p-10 lg:p-12 xl:p-16 relative">
-                
+
                 {/* Mobile Top Header (Visible on screens < lg) */}
                 <div className="lg:hidden flex items-center justify-between pb-6 border-b border-gray-100">
                     <Link href="/">

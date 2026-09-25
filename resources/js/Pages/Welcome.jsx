@@ -176,12 +176,6 @@ public class OrderController {
                         >
                             Instructors
                         </a>
-                        <Link
-                            href={route('certificates.verify')}
-                            className={isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-950'}
-                        >
-                            Verify Certificate
-                        </Link>
                     </nav>
 
                     {/* Right Controls */}
@@ -261,13 +255,6 @@ public class OrderController {
                             <a href="#mentors" onClick={() => setMobileMenuOpen(false)} className="text-slate-600 dark:text-slate-300">
                                 Instructors
                             </a>
-                            <Link
-                                href={route('certificates.verify')}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="text-slate-600 dark:text-slate-300"
-                            >
-                                Verify Certificate
-                            </Link>
                             <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
                                 <Link
                                     href={route('register')}
@@ -574,7 +561,6 @@ public class OrderController {
                         <Link href={route('courses.index')} className="hover:text-slate-900 dark:hover:text-white">Courses</Link>
                         <a href="#live" className="hover:text-slate-900 dark:hover:text-white">Live Classes</a>
                         <a href="#projects" className="hover:text-slate-900 dark:hover:text-white">Projects</a>
-                        <Link href={route('certificates.verify')} className="hover:text-slate-900 dark:hover:text-white">Verify Certificate</Link>
                         <Link href={route('login')} className="hover:text-slate-900 dark:hover:text-white">Log in</Link>
                     </div>
                 </div>
