@@ -158,7 +158,8 @@ Route::get('/student/courses', [StudentController::class, 'courses'])->name('stu
 Route::post('/courses/{course}/enroll', [StudentController::class, 'enroll'])->name('courses.enroll');
 
 // Public Certificate Verification
-Route::get('/verify-certificate/{code}', [PublicCertificateController::class, 'verify'])->name('certificates.verify');
+Route::get('/verify-certificate/{code?}', [PublicCertificateController::class, 'show'])->name('certificates.verify');
+Route::post('/verify-certificate', [PublicCertificateController::class, 'verify'])->name('certificates.verify.check');
 
 Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');

@@ -405,7 +405,7 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
                                             </h4>
                                             <p className="text-[11px] text-slate-500 dark:text-slate-400">
                                                 {certificate
-                                                    ? 'Congratulations! You have passed all requirements and earned your verified graduation certificate.'
+                                                    ? 'Congratulations! You have passed all requirements and earned your verified certificate of completion.'
                                                     : 'Ensure all exams and assignments are passed to claim your verified certificate.'}
                                             </p>
                                         </div>

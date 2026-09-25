@@ -30,7 +30,7 @@ export default function CertificateIndex({ earned = [] }) {
                             My Certificates
                         </h1>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            View, print, and share your official graduation certificates of completion
+                            View, print, and share your official course completion certificates
                         </p>
                     </div>
                 </div>
@@ -105,7 +105,7 @@ export default function CertificateIndex({ earned = [] }) {
                                         </div>
                                         {cert.final_score && (
                                             <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-                                                <span className="text-slate-400">Graduation Score:</span>
+                                                <span className="text-slate-400">Final Score:</span>
                                                 <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                                                     {cert.final_score}%
                                                 </span>

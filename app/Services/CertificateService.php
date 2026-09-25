@@ -271,7 +271,7 @@ class CertificateService
                     'instructor_name' => $cert->metadata['instructor_name'] ?? 'Comestro Faculty Team',
                     'issued_at' => $cert->issued_at->format('M d, Y'),
                     'final_score' => $cert->final_score,
-                    'verification_url' => route('certificates.verify', $cert->certificate_number),
+                    'verification_url' => route('certificates.verify'),
                 ];
             })
             ->all();

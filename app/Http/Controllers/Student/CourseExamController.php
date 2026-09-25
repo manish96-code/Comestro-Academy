@@ -326,7 +326,7 @@ class CourseExamController extends Controller
             if ($certificateService->checkEligibility($user, $course)['eligible']) {
                 try {
                     $certificateService->issueCertificate($user, $course);
-                    $statusMsg .= ' You have met all graduation requirements and your official completion certificate has been issued!';
+                    $statusMsg .= ' You have met all course requirements and your official completion certificate has been issued!';
                 } catch (\Throwable) {
                     // ignore
                 }

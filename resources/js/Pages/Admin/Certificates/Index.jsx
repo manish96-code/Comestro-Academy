@@ -72,7 +72,7 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                             </span>
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Audit, verify, and manage all verified graduation credentials earned by students across all courses
+                            Audit, verify, and manage all verified course completion certificates earned by students across all courses
                         </p>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                     </div>
 
                     <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
-                        <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Unique Graduates</span>
+                        <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Certified Students</span>
                         <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 font-mono">
                             {stats.unique_graduates || 0}
                         </div>
@@ -157,7 +157,7 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                             <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
                                 <tr>
                                     <th className="py-3 px-4">Certificate ID</th>
-                                    <th className="py-3 px-4">Student Graduate</th>
+                                    <th className="py-3 px-4">Student Name</th>
                                     <th className="py-3 px-4">Course Program</th>
                                     <th className="py-3 px-4">Issue Date</th>
                                     <th className="py-3 px-4">Score</th>
