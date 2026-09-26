@@ -156,11 +156,14 @@ export default function CourseLearn({ course, enrollment = null, progress = {}, 
     // Current video URL
     const activeVideoUrl = useMemo(() => {
         if (!activeLesson) return null;
-        if (activeLesson.video_url) return activeLesson.video_url;
-        if (activeLesson.videos && activeLesson.videos.length > 0) {
-            return activeLesson.videos[0].video_url;
+        let url = activeLesson.video_url;
+        if (!url && activeLesson.videos && activeLesson.videos.length > 0) {
+            url = activeLesson.videos[0].video_url;
         }
-        return null;
+        if (url && url.includes('ik.imagekit.io') && !url.includes('tr=')) {
+            url = url.includes('?') ? `${url}&tr=orig` : `${url}?tr=orig`;
+        }
+        return url;
     }, [activeLesson]);
 
     // Current lesson resources

@@ -4,7 +4,6 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
 import {
     ArrowLeft,
     Plus,
@@ -31,6 +30,27 @@ import {
     AlertCircle,
     Loader2,
 } from 'lucide-react';
+
+const getEmbedUrl = (url) => {
+    if (!url) return null;
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    if (ytMatch) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+    }
+    const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)/);
+    if (vimeoMatch) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
+    }
+    return null;
+};
+
+const formatVideoUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('ik.imagekit.io') && !url.includes('tr=')) {
+        return url.includes('?') ? `${url}&tr=orig` : `${url}?tr=orig`;
+    }
+    return url;
+};
 
 export default function CourseContent({ course }) {
     const lessons = useMemo(() => {
@@ -69,7 +89,7 @@ export default function CourseContent({ course }) {
         const uploadErr = params.get('upload_error');
         if (uploadErr) {
             setError('video_file', uploadErr);
-            toast.error(uploadErr, { duration: 6000, id: 'upload-size-err' });
+            setIsModalOpen(true);
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, []);
@@ -111,7 +131,6 @@ export default function CourseContent({ course }) {
             const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
             const errMsg = `Video file (${sizeMb} MB) exceeds the ${MAX_VIDEO_SIZE_MB} MB limit. Please select a smaller video.`;
             setError('video_file', errMsg);
-            toast.error(errMsg, { id: 'file-size-limit' });
             e.target.value = '';
             handleRemoveSelectedVideo();
             return;
@@ -129,11 +148,6 @@ export default function CourseContent({ course }) {
         }
         const previewUrl = URL.createObjectURL(file);
         setLocalVideoPreviewUrl(previewUrl);
-
-        toast.success(`Video "${file.name}" loaded (${sizeMb} MB)`, {
-            id: 'video-selected-toast',
-            duration: 3000,
-        });
 
         // Automatically detect video duration if not already set
         try {
@@ -234,21 +248,30 @@ export default function CourseContent({ course }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        clearErrors();
+
+        let hasValidationErrors = false;
 
         if (!data.title.trim()) {
-            toast.error('Please enter a Lecture Title before saving.', { id: 'val-title' });
+            setError('title', 'Please enter a lecture title.');
             document.getElementById('title')?.focus();
-            return;
+            hasValidationErrors = true;
         }
 
         if (videoSource === 'upload' && !data.video_file && !editingLesson?.video_url) {
-            toast.error('Please choose a video file to upload, or switch to External URL.', { id: 'val-video' });
-            return;
+            setError('video_file', 'Please select a video file or switch to External URL.');
+            hasValidationErrors = true;
         }
 
         if (videoSource === 'url' && !data.video_url?.trim()) {
-            toast.error('Please enter a valid video stream or lecture URL.', { id: 'val-url' });
-            document.getElementById('video_url')?.focus();
+            setError('video_url', 'Please enter a valid video stream or lecture URL.');
+            if (!hasValidationErrors) {
+                document.getElementById('video_url')?.focus();
+            }
+            hasValidationErrors = true;
+        }
+
+        if (hasValidationErrors) {
             return;
         }
 
@@ -277,33 +300,11 @@ export default function CourseContent({ course }) {
             return payload;
         });
 
-        const loadingToastId = toast.loading(
-            data.video_file
-                ? 'Uploading video file to ImageKit CDN... Please keep this page open.'
-                : 'Saving lecture...',
-            { id: 'saving-lecture' }
-        );
-
         const requestOptions = {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.dismiss(loadingToastId);
-                toast.success(
-                    editingLesson
-                        ? 'Lecture updated successfully!'
-                        : 'Lecture created and video uploaded successfully!',
-                    { id: 'lecture-success' }
-                );
                 closeModal();
-            },
-            onError: (formErrors) => {
-                toast.dismiss(loadingToastId);
-                const firstMsg = Object.values(formErrors || {})[0];
-                toast.error(firstMsg || 'Failed to save lecture. Please check form errors.', { id: 'lecture-error' });
-            },
-            onFinish: () => {
-                toast.dismiss(loadingToastId);
             },
         };
 
@@ -321,8 +322,6 @@ export default function CourseContent({ course }) {
 
         router.delete(route('admin.courses.lessons.destroy', [course.id, lessonId]), {
             preserveScroll: true,
-            onSuccess: () => toast.success('Lecture deleted successfully!'),
-            onError: () => toast.error('Failed to delete lecture.'),
         });
     };
 
@@ -520,20 +519,24 @@ export default function CourseContent({ course }) {
                                                         {/* Video & Notes Status Pills */}
                                                         <div className="flex items-center gap-2.5 pt-0.5 flex-wrap text-xs text-slate-500">
                                                             {/* Video Status */}
-                                                            {lesson.video_url ? (
+                                                            {lesson.video_status === 'processing' ? (
+                                                                <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-[11px] animate-pulse">
+                                                                    <Loader2 className="h-3 w-3 animate-spin text-amber-600" />
+                                                                    <span>Uploading...</span>
+                                                                </span>
+                                                            ) : lesson.video_status === 'failed' ? (
+                                                                <span className="inline-flex items-center gap-1 font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 text-[11px]">
+                                                                    <AlertCircle className="h-3 w-3 text-rose-600" />
+                                                                    <span>Upload Failed</span>
+                                                                </span>
+                                                            ) : lesson.video_url ? (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setPreviewVideoUrl(lesson.video_url)}
                                                                     className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 transition text-[11px] cursor-pointer"
                                                                 >
                                                                     <Play className="h-2.5 w-2.5 fill-current" />
-                                                                    <span>
-                                                                        {lesson.video_provider === 'imagekit'
-                                                                            ? 'Play (ImageKit CDN)'
-                                                                            : (lesson.video_provider === 'local'
-                                                                                ? 'Play (Uploaded)'
-                                                                                : 'Watch Stream')}
-                                                                    </span>
+                                                                    <span>Play</span>
                                                                     {lesson.duration && (
                                                                         <span className="text-sky-600 font-mono ml-0.5">({lesson.duration})</span>
                                                                     )}
@@ -664,11 +667,16 @@ export default function CourseContent({ course }) {
                                         id="title"
                                         type="text"
                                         value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
+                                        onChange={(e) => {
+                                            setData('title', e.target.value);
+                                            if (errors.title) clearErrors('title');
+                                        }}
                                         placeholder="e.g. Introduction to Routing & Middleware"
-                                        className="w-full text-xs sm:text-sm py-2 px-3 mt-1"
+                                        className={`w-full text-xs sm:text-sm py-2 px-3 mt-1 ${
+                                            errors.title ? '!border-red-500 !ring-1 !ring-red-500' : ''
+                                        }`}
                                     />
-                                    <InputError message={errors.title} />
+                                    <InputError message={errors.title} className="mt-1 text-xs" />
                                 </div>
                                 <div className="sm:col-span-3">
                                     <InputLabel htmlFor="order" value="Lesson Order" />
@@ -734,7 +742,7 @@ export default function CourseContent({ course }) {
                                                     disabled={processing}
                                                     className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 mt-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 />
-                                                <InputError message={errors.video_file} />
+                                                <InputError message={errors.video_file} className="mt-1 text-xs" />
 
                                                 {/* Local Video Preview Player & Confirmation Box */}
                                                 {localVideoPreviewUrl && (
@@ -810,7 +818,7 @@ export default function CourseContent({ course }) {
                                                     <span className="flex items-center gap-1.5">
                                                         <UploadCloud className="h-4 w-4 animate-bounce text-indigo-600" />
                                                         {progress.percentage === 100
-                                                            ? 'Processing & sending to ImageKit CDN...'
+                                                            ? 'Saving video...'
                                                             : 'Uploading video payload...'}
                                                     </span>
                                                     <span className="font-mono">{progress.percentage}%</span>
@@ -823,7 +831,7 @@ export default function CourseContent({ course }) {
                                                 </div>
                                                 <p className="text-[11px] text-slate-500">
                                                     {progress.percentage === 100
-                                                        ? 'Almost done! ImageKit is registering your media file. Please wait...'
+                                                        ? 'Almost done! Finalizing video save...'
                                                         : `Transferred ${((progress.loaded || 0) / (1024 * 1024)).toFixed(1)} MB of ${((progress.total || 0) / (1024 * 1024)).toFixed(1)} MB.`}
                                                 </p>
                                             </div>
@@ -837,11 +845,16 @@ export default function CourseContent({ course }) {
                                                 id="video_url"
                                                 type="url"
                                                 value={data.video_url}
-                                                onChange={(e) => setData('video_url', e.target.value)}
+                                                onChange={(e) => {
+                                                    setData('video_url', e.target.value);
+                                                    if (errors.video_url) clearErrors('video_url');
+                                                }}
                                                 placeholder="https://www.youtube.com/watch?v=... or .mp4"
-                                                className="w-full text-xs py-2 px-3 mt-1 font-mono"
+                                                className={`w-full text-xs py-2 px-3 mt-1 font-mono ${
+                                                    errors.video_url ? '!border-red-500 !ring-1 !ring-red-500' : ''
+                                                }`}
                                             />
-                                            <InputError message={errors.video_url} />
+                                            <InputError message={errors.video_url} className="mt-1 text-xs" />
                                         </div>
 
                                         <div className="sm:col-span-4">
@@ -946,8 +959,6 @@ export default function CourseContent({ course }) {
                                             <span>
                                                 {progress
                                                     ? `Uploading (${progress.percentage}%)...`
-                                                    : data.video_file
-                                                    ? 'Uploading to ImageKit...'
                                                     : 'Saving...'}
                                             </span>
                                         </>
@@ -971,31 +982,55 @@ export default function CourseContent({ course }) {
                         <div className="px-4 py-3 bg-slate-950 flex items-center justify-between text-white border-b border-slate-800">
                             <span className="text-xs font-semibold flex items-center gap-1.5">
                                 <Play className="h-3 w-3 text-indigo-400 fill-current" />
-                                Video Lecture Stream Preview
+                                Video Preview
                             </span>
                             <button
                                 type="button"
                                 onClick={() => setPreviewVideoUrl(null)}
-                                className="p-1 text-slate-400 hover:text-white rounded-md transition"
+                                className="p-1 text-slate-400 hover:text-white rounded-md transition cursor-pointer"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
                         <div className="aspect-video w-full bg-black flex items-center justify-center">
-                            {previewVideoUrl.includes('youtube.com') || previewVideoUrl.includes('youtu.be') ? (
-                                <iframe
-                                    src={previewVideoUrl.replace('watch?v=', 'embed/').split('&')[0]}
-                                    className="w-full h-full"
-                                    allowFullScreen
-                                />
-                            ) : (
-                                <video
-                                    src={previewVideoUrl}
-                                    controls
-                                    autoPlay
-                                    className="w-full h-full object-contain"
-                                />
-                            )}
+                            {(() => {
+                                const embedUrl = getEmbedUrl(previewVideoUrl);
+                                const directUrl = formatVideoUrl(previewVideoUrl);
+
+                                if (embedUrl) {
+                                    return (
+                                        <iframe
+                                            src={embedUrl}
+                                            className="w-full h-full border-0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowFullScreen
+                                        />
+                                    );
+                                }
+
+                                return (
+                                    <video
+                                        key={directUrl}
+                                        src={directUrl}
+                                        controls
+                                        autoPlay
+                                        playsInline
+                                        preload="auto"
+                                        className="w-full h-full object-contain"
+                                        onCanPlay={(e) => {
+                                            const playPromise = e.target.play();
+                                            if (playPromise !== undefined) {
+                                                playPromise.catch(() => {
+                                                    e.target.muted = true;
+                                                    e.target.play().catch(() => {});
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        Your browser does not support the video tag.
+                                    </video>
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>

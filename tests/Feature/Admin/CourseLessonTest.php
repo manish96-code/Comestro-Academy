@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\UploadLessonNotes;
+use App\Jobs\UploadLessonVideo;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseLesson;
@@ -549,7 +550,7 @@ test('admin can upload a video file directly via ImageKit service when configure
 
     $this->assertDatabaseHas('lesson_videos', [
         'lesson_id' => $lesson->id,
-        'video_url' => 'https://ik.imagekit.io/test/courses/videos/lecture.mp4',
+        'video_url' => 'https://ik.imagekit.io/test/courses/videos/lecture.mp4?tr=orig',
         'storage_key' => 'ik_video_file_999',
         'video_provider' => 'imagekit',
         'duration_seconds' => 930,
@@ -633,31 +634,77 @@ test('updating a lesson with a new video deletes the old uploaded video', functi
     $this->assertDatabaseHas('lesson_videos', [
         'lesson_id' => $lesson->id,
         'storage_key' => 'new_ik_file_456',
-        'video_url' => 'https://ik.imagekit.io/test/courses/videos/new_lecture.mp4',
+        'video_url' => 'https://ik.imagekit.io/test/courses/videos/new_lecture.mp4?tr=orig',
     ]);
 });
 
-test('lesson creation failure during video upload cleans up orphaned lesson and returns error', function () {
+test('lesson creation with video dispatches UploadLessonVideo background job and marks video processing', function () {
+    Queue::fake();
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $videoFile = UploadedFile::fake()->create('lecture.mp4', 5000, 'video/mp4');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1',
+        'title' => 'Queued Video Lecture',
+        'video_file' => $videoFile,
+    ]);
+
+    $response->assertRedirect();
+
+    $lesson = CourseLesson::where('title', 'Queued Video Lecture')->first();
+    expect($lesson)->not->toBeNull();
+
+    $video = $lesson->videos()->first();
+    expect($video)->not->toBeNull();
+    expect($video->status)->toBe('processing');
+
+    Queue::assertPushed(UploadLessonVideo::class, function (UploadLessonVideo $job) use ($video) {
+        return $job->lessonVideo->id === $video->id;
+    });
+});
+
+test('upload lesson video job marks video as failed and cleans up temp file on exception', function () {
+    Storage::fake('local');
+    Storage::fake('public');
+
     config()->set('services.imagekit.private_key', 'test_private_key');
 
     $mockImageKit = Mockery::mock(ImageKitService::class);
     $mockImageKit->shouldReceive('upload')
         ->once()
         ->andThrow(new RuntimeException('ImageKit network connection timeout'));
-    $this->app->instance(ImageKitService::class, $mockImageKit);
 
-    $admin = User::factory()->create(['role' => 'admin']);
-
-    $videoFile = UploadedFile::fake()->create('lecture.mp4', 5000, 'video/mp4');
-
-    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
-        'module_name' => 'Module 1',
-        'title' => 'Failed Upload Lecture',
-        'video_file' => $videoFile,
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
     ]);
 
-    $response->assertSessionHasErrors('video_file');
-    $this->assertDatabaseMissing('course_lessons', [
-        'title' => 'Failed Upload Lecture',
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Failing Job Lecture',
+        'sort_order' => 1,
     ]);
+
+    $video = $lesson->videos()->create([
+        'title' => 'Failing Job Lecture',
+        'video_url' => '',
+        'status' => 'processing',
+    ]);
+
+    $tempPath = 'temp-videos/dummy.mp4';
+    Storage::disk('local')->put($tempPath, 'dummy video content');
+
+    $job = new UploadLessonVideo($video, $tempPath);
+
+    try {
+        $job->handle($mockImageKit);
+    } catch (RuntimeException $e) {
+        expect($e->getMessage())->toBe('ImageKit network connection timeout');
+    }
+
+    $video->refresh();
+    expect($video->status)->toBe('failed');
+    Storage::disk('local')->assertMissing($tempPath);
 });

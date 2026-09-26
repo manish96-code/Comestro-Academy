@@ -29,6 +29,7 @@ class CourseLesson extends Model
         'module_name',
         'video_url',
         'video_provider',
+        'video_status',
         'duration',
         'notes_file',
         'notes_title',
@@ -76,7 +77,14 @@ class CourseLesson extends Model
     protected function videoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->videos->first()?->video_url
+            get: function () {
+                $url = $this->videos->first()?->video_url;
+                if ($url && str_contains($url, 'ik.imagekit.io') && ! str_contains($url, 'tr=')) {
+                    return str_contains($url, '?') ? "{$url}&tr=orig" : "{$url}?tr=orig";
+                }
+
+                return $url;
+            }
         );
     }
 
@@ -84,6 +92,13 @@ class CourseLesson extends Model
     {
         return Attribute::make(
             get: fn () => $this->videos->first()?->video_provider ?? 'url'
+        );
+    }
+
+    protected function videoStatus(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->videos->first()?->status ?? 'ready'
         );
     }
 

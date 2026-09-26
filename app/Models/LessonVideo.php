@@ -37,6 +37,19 @@ class LessonVideo extends Model
         return $this->belongsTo(CourseLesson::class, 'lesson_id');
     }
 
+    protected function videoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if ($value && str_contains($value, 'ik.imagekit.io') && ! str_contains($value, 'tr=')) {
+                    return str_contains($value, '?') ? "{$value}&tr=orig" : "{$value}?tr=orig";
+                }
+
+                return $value;
+            }
+        );
+    }
+
     protected function formattedDuration(): Attribute
     {
         return Attribute::make(
