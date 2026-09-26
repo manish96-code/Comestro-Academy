@@ -3,7 +3,8 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import {
     ArrowLeft,
     Plus,
@@ -26,6 +27,9 @@ import {
     UploadCloud,
     Film,
     Link as LinkIcon,
+    CheckCircle2,
+    AlertCircle,
+    Loader2,
 } from 'lucide-react';
 
 export default function CourseContent({ course }) {
@@ -57,11 +61,33 @@ export default function CourseContent({ course }) {
     const [previewVideoUrl, setPreviewVideoUrl] = useState(null);
 
     const [videoSource, setVideoSource] = useState('upload');
+    const [localVideoPreviewUrl, setLocalVideoPreviewUrl] = useState(null);
+
+    // Handle upload error passed back via query param on post size overflow
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const uploadErr = params.get('upload_error');
+        if (uploadErr) {
+            setError('video_file', uploadErr);
+            toast.error(uploadErr, { duration: 6000, id: 'upload-size-err' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, []);
+
+    // Clean up local blob object URL to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            if (localVideoPreviewUrl) {
+                URL.revokeObjectURL(localVideoPreviewUrl);
+            }
+        };
+    }, [localVideoPreviewUrl]);
+
     const [selectedVideoName, setSelectedVideoName] = useState('');
     const [selectedVideoSize, setSelectedVideoSize] = useState('');
 
     // Form setup for add/edit
-    const { data, setData, post, processing, progress, errors, reset, clearErrors, transform } = useForm({
+    const { data, setData, post, processing, progress, errors, setError, reset, clearErrors, transform } = useForm({
         module_name: moduleNames[0] || 'Module 1: Introduction',
         new_module_name: '',
         title: '',
@@ -74,22 +100,46 @@ export default function CourseContent({ course }) {
         order: 1,
     });
 
+    const MAX_VIDEO_SIZE_MB = 100;
+    const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
+
     const handleVideoFileChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (file.size > MAX_VIDEO_SIZE_BYTES) {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+            const errMsg = `Video file (${sizeMb} MB) exceeds the ${MAX_VIDEO_SIZE_MB} MB limit. Please select a smaller video.`;
+            setError('video_file', errMsg);
+            toast.error(errMsg, { id: 'file-size-limit' });
+            e.target.value = '';
+            handleRemoveSelectedVideo();
+            return;
+        }
+
+        clearErrors('video_file');
         setData('video_file', file);
         setSelectedVideoName(file.name);
         const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
         setSelectedVideoSize(`${sizeMb} MB`);
 
+        // Create local preview blob URL so the user can immediately preview the video
+        if (localVideoPreviewUrl) {
+            URL.revokeObjectURL(localVideoPreviewUrl);
+        }
+        const previewUrl = URL.createObjectURL(file);
+        setLocalVideoPreviewUrl(previewUrl);
+
+        toast.success(`Video "${file.name}" loaded (${sizeMb} MB)`, {
+            id: 'video-selected-toast',
+            duration: 3000,
+        });
+
         // Automatically detect video duration if not already set
         try {
-            const tempUrl = URL.createObjectURL(file);
             const tempVideo = document.createElement('video');
             tempVideo.preload = 'metadata';
             tempVideo.onloadedmetadata = () => {
-                URL.revokeObjectURL(tempUrl);
                 const totalSecs = Math.round(tempVideo.duration);
                 if (totalSecs) {
                     const mins = Math.floor(totalSecs / 60);
@@ -98,13 +148,17 @@ export default function CourseContent({ course }) {
                     setData((prev) => ({ ...prev, duration: formatted, video_file: file }));
                 }
             };
-            tempVideo.src = tempUrl;
+            tempVideo.src = previewUrl;
         } catch {
             // Ignore duration parse failure
         }
     };
 
     const handleRemoveSelectedVideo = () => {
+        if (localVideoPreviewUrl) {
+            URL.revokeObjectURL(localVideoPreviewUrl);
+            setLocalVideoPreviewUrl(null);
+        }
         setData('video_file', null);
         setSelectedVideoName('');
         setSelectedVideoSize('');
@@ -116,6 +170,10 @@ export default function CourseContent({ course }) {
 
     const openAddModal = (presetModule = '') => {
         clearErrors();
+        if (localVideoPreviewUrl) {
+            URL.revokeObjectURL(localVideoPreviewUrl);
+            setLocalVideoPreviewUrl(null);
+        }
         setEditingLesson(null);
         setVideoSource('upload');
         setSelectedVideoName('');
@@ -137,6 +195,10 @@ export default function CourseContent({ course }) {
 
     const openEditModal = (lesson) => {
         clearErrors();
+        if (localVideoPreviewUrl) {
+            URL.revokeObjectURL(localVideoPreviewUrl);
+            setLocalVideoPreviewUrl(null);
+        }
         setEditingLesson(lesson);
         const isUploaded = lesson.video_provider === 'imagekit' || lesson.video_provider === 'local';
         setVideoSource(isUploaded || !lesson.video_url ? 'upload' : 'url');
@@ -158,6 +220,10 @@ export default function CourseContent({ course }) {
     };
 
     const closeModal = () => {
+        if (localVideoPreviewUrl) {
+            URL.revokeObjectURL(localVideoPreviewUrl);
+            setLocalVideoPreviewUrl(null);
+        }
         setIsModalOpen(false);
         setEditingLesson(null);
         setSelectedVideoName('');
@@ -168,6 +234,24 @@ export default function CourseContent({ course }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!data.title.trim()) {
+            toast.error('Please enter a Lecture Title before saving.', { id: 'val-title' });
+            document.getElementById('title')?.focus();
+            return;
+        }
+
+        if (videoSource === 'upload' && !data.video_file && !editingLesson?.video_url) {
+            toast.error('Please choose a video file to upload, or switch to External URL.', { id: 'val-video' });
+            return;
+        }
+
+        if (videoSource === 'url' && !data.video_url?.trim()) {
+            toast.error('Please enter a valid video stream or lecture URL.', { id: 'val-url' });
+            document.getElementById('video_url')?.focus();
+            return;
+        }
+
         const effectiveModule = data.module_name === '__new__'
             ? (data.new_module_name.trim() || 'New Module')
             : data.module_name;
@@ -193,18 +277,40 @@ export default function CourseContent({ course }) {
             return payload;
         });
 
+        const loadingToastId = toast.loading(
+            data.video_file
+                ? 'Uploading video file to ImageKit CDN... Please keep this page open.'
+                : 'Saving lecture...',
+            { id: 'saving-lecture' }
+        );
+
+        const requestOptions = {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.dismiss(loadingToastId);
+                toast.success(
+                    editingLesson
+                        ? 'Lecture updated successfully!'
+                        : 'Lecture created and video uploaded successfully!',
+                    { id: 'lecture-success' }
+                );
+                closeModal();
+            },
+            onError: (formErrors) => {
+                toast.dismiss(loadingToastId);
+                const firstMsg = Object.values(formErrors || {})[0];
+                toast.error(firstMsg || 'Failed to save lecture. Please check form errors.', { id: 'lecture-error' });
+            },
+            onFinish: () => {
+                toast.dismiss(loadingToastId);
+            },
+        };
+
         if (editingLesson) {
-            post(route('admin.courses.lessons.update', [course.id, editingLesson.id]), {
-                forceFormData: true,
-                preserveScroll: true,
-                onSuccess: () => closeModal(),
-            });
+            post(route('admin.courses.lessons.update', [course.id, editingLesson.id]), requestOptions);
         } else {
-            post(route('admin.courses.lessons.store', course.id), {
-                forceFormData: true,
-                preserveScroll: true,
-                onSuccess: () => closeModal(),
-            });
+            post(route('admin.courses.lessons.store', course.id), requestOptions);
         }
     };
 
@@ -215,6 +321,8 @@ export default function CourseContent({ course }) {
 
         router.delete(route('admin.courses.lessons.destroy', [course.id, lessonId]), {
             preserveScroll: true,
+            onSuccess: () => toast.success('Lecture deleted successfully!'),
+            onError: () => toast.error('Failed to delete lecture.'),
         });
     };
 
@@ -617,31 +725,46 @@ export default function CourseContent({ course }) {
                                     <div className="space-y-3">
                                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
                                             <div className="sm:col-span-8">
-                                                <InputLabel htmlFor="video_file" value="Select Video File (MP4, WebM, MOV, MKV up to 100MB)" />
+                                                <InputLabel htmlFor="video_file" value="Select Video File (MP4, WebM, MOV, MKV up to 100MB) *" />
                                                 <input
                                                     id="video_file"
                                                     type="file"
                                                     onChange={handleVideoFileChange}
                                                     accept="video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo"
-                                                    className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 mt-1 cursor-pointer"
+                                                    disabled={processing}
+                                                    className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 mt-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 />
                                                 <InputError message={errors.video_file} />
 
-                                                {selectedVideoName && (
-                                                    <div className="mt-2 flex items-center justify-between p-2 rounded-md bg-white border border-indigo-200 text-xs text-slate-700 shadow-2xs">
-                                                        <div className="flex items-center gap-2 truncate">
-                                                            <Film className="h-4 w-4 text-indigo-600 shrink-0" />
-                                                            <span className="font-medium truncate">{selectedVideoName}</span>
-                                                            <span className="text-[11px] font-mono text-slate-400">({selectedVideoSize})</span>
+                                                {/* Local Video Preview Player & Confirmation Box */}
+                                                {localVideoPreviewUrl && (
+                                                    <div className="mt-3 p-3 rounded-lg bg-white border border-indigo-200 shadow-2xs space-y-2.5">
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <div className="flex items-center gap-1.5 font-bold text-indigo-900 truncate">
+                                                                <Film className="h-4 w-4 text-indigo-600 shrink-0" />
+                                                                <span className="truncate">{selectedVideoName}</span>
+                                                                <span className="text-[11px] font-mono text-slate-500 font-normal shrink-0">({selectedVideoSize})</span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleRemoveSelectedVideo}
+                                                                disabled={processing}
+                                                                className="text-slate-400 hover:text-rose-600 p-1 cursor-pointer shrink-0 transition"
+                                                                title="Remove selected video"
+                                                            >
+                                                                <X className="h-3.5 w-3.5" />
+                                                            </button>
                                                         </div>
-                                                        <button
-                                                            type="button"
-                                                            onClick={handleRemoveSelectedVideo}
-                                                            className="text-slate-400 hover:text-rose-600 p-1 cursor-pointer"
-                                                            title="Remove selected video"
-                                                        >
-                                                            <X className="h-3.5 w-3.5" />
-                                                        </button>
+
+                                                        {/* Instant Video Player Preview */}
+                                                        <div className="relative rounded-md overflow-hidden bg-black aspect-video max-h-44 flex items-center justify-center border border-slate-200">
+                                                            <video
+                                                                src={localVideoPreviewUrl}
+                                                                controls
+                                                                className="w-full h-full object-contain"
+                                                            />
+                                                        </div>
+
                                                     </div>
                                                 )}
 
@@ -672,25 +795,37 @@ export default function CourseContent({ course }) {
                                                     value={data.duration}
                                                     onChange={(e) => setData('duration', e.target.value)}
                                                     placeholder="12:45"
-                                                    className="w-full text-xs py-2 px-3 mt-1 font-mono"
+                                                    disabled={processing}
+                                                    className="w-full text-xs py-2 px-3 mt-1 font-mono disabled:opacity-50"
                                                 />
                                                 <p className="text-[10px] text-slate-400 mt-1">Auto-detected from file</p>
                                                 <InputError message={errors.duration} />
                                             </div>
                                         </div>
 
+                                        {/* Dynamic Upload Progress with Detailed Status */}
                                         {progress && (
-                                            <div className="p-2.5 rounded-md bg-white border border-indigo-200 space-y-1.5 shadow-2xs">
-                                                <div className="flex items-center justify-between text-xs font-semibold text-indigo-700">
-                                                    <span>Uploading Video to ImageKit...</span>
+                                            <div className="p-3 rounded-lg bg-white border border-indigo-200 space-y-2 shadow-2xs">
+                                                <div className="flex items-center justify-between text-xs font-bold text-indigo-700">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <UploadCloud className="h-4 w-4 animate-bounce text-indigo-600" />
+                                                        {progress.percentage === 100
+                                                            ? 'Processing & sending to ImageKit CDN...'
+                                                            : 'Uploading video payload...'}
+                                                    </span>
                                                     <span className="font-mono">{progress.percentage}%</span>
                                                 </div>
-                                                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                                                     <div
-                                                        className="bg-indigo-600 h-2 transition-all duration-150"
+                                                        className="bg-indigo-600 h-2.5 rounded-full transition-all duration-150"
                                                         style={{ width: `${progress.percentage}%` }}
                                                     />
                                                 </div>
+                                                <p className="text-[11px] text-slate-500">
+                                                    {progress.percentage === 100
+                                                        ? 'Almost done! ImageKit is registering your media file. Please wait...'
+                                                        : `Transferred ${((progress.loaded || 0) / (1024 * 1024)).toFixed(1)} MB of ${((progress.total || 0) / (1024 * 1024)).toFixed(1)} MB.`}
+                                                </p>
                                             </div>
                                         )}
                                     </div>
@@ -795,17 +930,33 @@ export default function CourseContent({ course }) {
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-md transition"
+                                    disabled={processing}
+                                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-md transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed"
                                 >
-                                    <Save className="h-3.5 w-3.5" />
-                                    <span>{processing ? 'Saving...' : editingLesson ? 'Update Lecture' : 'Save Lecture'}</span>
+                                    {processing ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin text-white" />
+                                            <span>
+                                                {progress
+                                                    ? `Uploading (${progress.percentage}%)...`
+                                                    : data.video_file
+                                                    ? 'Uploading to ImageKit...'
+                                                    : 'Saving...'}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="h-3.5 w-3.5" />
+                                            <span>{editingLesson ? 'Update Lecture' : 'Save Lecture'}</span>
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </form>

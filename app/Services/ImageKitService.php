@@ -97,4 +97,33 @@ class ImageKitService
 
         return $response->json();
     }
+
+    /**
+     * Delete a file from ImageKit by fileId.
+     */
+    public function deleteFile(?string $fileId): bool
+    {
+        if (! $fileId) {
+            return false;
+        }
+
+        $privateKey = config('services.imagekit.private_key');
+
+        if (! $privateKey) {
+            return false;
+        }
+
+        try {
+            $response = Http::withBasicAuth($privateKey, '')
+                ->timeout(30)
+                ->withOptions([
+                    'force_ip_resolve' => 'v4',
+                ])
+                ->delete("https://api.imagekit.io/v1/files/{$fileId}");
+
+            return $response->successful();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
 }

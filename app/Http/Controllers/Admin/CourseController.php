@@ -432,6 +432,8 @@ class CourseController extends Controller
                     'status' => 'ready',
                 ]);
             } catch (Throwable $e) {
+                $lesson->delete();
+
                 return back()->withErrors(['video_file' => 'Video upload failed: '.$e->getMessage()])->withInput();
             }
         } elseif (! empty($validated['video_url'])) {

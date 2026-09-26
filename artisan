@@ -6,6 +6,18 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
+// Auto-configure PHP scan directory for local development to support video uploads up to 150M
+$iniDir = realpath(__DIR__.'/.config/php');
+if ($iniDir && is_dir($iniDir)) {
+    $current = (string) getenv('PHP_INI_SCAN_DIR');
+    if (! str_contains($current, $iniDir)) {
+        $scan = $current ? $current.':'.$iniDir : ':'.$iniDir;
+        putenv("PHP_INI_SCAN_DIR={$scan}");
+        $_ENV['PHP_INI_SCAN_DIR'] = $scan;
+        $_SERVER['PHP_INI_SCAN_DIR'] = $scan;
+    }
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 

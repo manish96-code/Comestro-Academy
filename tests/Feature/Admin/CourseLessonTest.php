@@ -636,3 +636,28 @@ test('updating a lesson with a new video deletes the old uploaded video', functi
         'video_url' => 'https://ik.imagekit.io/test/courses/videos/new_lecture.mp4',
     ]);
 });
+
+test('lesson creation failure during video upload cleans up orphaned lesson and returns error', function () {
+    config()->set('services.imagekit.private_key', 'test_private_key');
+
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->andThrow(new RuntimeException('ImageKit network connection timeout'));
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $videoFile = UploadedFile::fake()->create('lecture.mp4', 5000, 'video/mp4');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1',
+        'title' => 'Failed Upload Lecture',
+        'video_file' => $videoFile,
+    ]);
+
+    $response->assertSessionHasErrors('video_file');
+    $this->assertDatabaseMissing('course_lessons', [
+        'title' => 'Failed Upload Lecture',
+    ]);
+});
