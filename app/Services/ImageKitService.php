@@ -30,8 +30,8 @@ class ImageKitService
 
         try {
             $response = Http::withBasicAuth($privateKey, '')
-                ->timeout(120)
-                ->connectTimeout(20)
+                ->timeout(600)
+                ->connectTimeout(30)
                 ->withOptions([
                     'force_ip_resolve' => 'v4',
                 ])
@@ -77,8 +77,8 @@ class ImageKitService
             .pathinfo($originalName, PATHINFO_EXTENSION);
 
         $response = Http::withBasicAuth($privateKey, '')
-            ->timeout(120)
-            ->connectTimeout(20)
+            ->timeout(600)
+            ->connectTimeout(30)
             ->withOptions([
                 'force_ip_resolve' => 'v4',
             ])

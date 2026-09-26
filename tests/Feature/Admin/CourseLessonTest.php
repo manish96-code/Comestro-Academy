@@ -6,8 +6,10 @@ use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\CourseModule;
 use App\Models\User;
+use App\Services\ImageKitService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->category = Category::create([
@@ -484,4 +486,153 @@ test('course classroom page returns unlockedLessonIds sequentially', function ()
         ->component('Student/Courses/Learn')
         ->where('unlockedLessonIds', [$lesson1->id, $lesson2->id])
     );
+});
+
+test('admin can upload a video file for a lesson with local storage fallback when ImageKit is not configured', function () {
+    config()->set('services.imagekit.private_key', null);
+    Storage::fake('public');
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $videoFile = UploadedFile::fake()->create('lecture.mp4', 2048, 'video/mp4');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1: Setup',
+        'title' => 'Installing Environment',
+        'video_file' => $videoFile,
+        'duration' => '10:00',
+    ]);
+
+    $response->assertRedirect();
+
+    $lesson = CourseLesson::where('title', 'Installing Environment')->first();
+    expect($lesson)->not->toBeNull();
+
+    $this->assertDatabaseHas('lesson_videos', [
+        'lesson_id' => $lesson->id,
+        'video_provider' => 'local',
+        'duration_seconds' => 600,
+    ]);
+
+    $video = $lesson->videos()->first();
+    expect($video->storage_key)->not->toBeNull();
+    Storage::disk('public')->assertExists($video->storage_key);
+});
+
+test('admin can upload a video file directly via ImageKit service when configured', function () {
+    config()->set('services.imagekit.private_key', 'test_private_key');
+
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->andReturn([
+            'fileId' => 'ik_video_file_999',
+            'url' => 'https://ik.imagekit.io/test/courses/videos/lecture.mp4',
+            'name' => 'lecture.mp4',
+            'size' => 4096,
+        ]);
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $videoFile = UploadedFile::fake()->create('lecture.mp4', 4096, 'video/mp4');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1: Setup',
+        'title' => 'Advanced Deployment',
+        'video_file' => $videoFile,
+        'duration' => '15:30',
+    ]);
+
+    $response->assertRedirect();
+
+    $lesson = CourseLesson::where('title', 'Advanced Deployment')->first();
+    expect($lesson)->not->toBeNull();
+
+    $this->assertDatabaseHas('lesson_videos', [
+        'lesson_id' => $lesson->id,
+        'video_url' => 'https://ik.imagekit.io/test/courses/videos/lecture.mp4',
+        'storage_key' => 'ik_video_file_999',
+        'video_provider' => 'imagekit',
+        'duration_seconds' => 930,
+    ]);
+});
+
+test('admin video upload fails validation for unsupported file types or excessive size', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    // Unsupported file type
+    $invalidFile = UploadedFile::fake()->create('not-a-video.txt', 500, 'text/plain');
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1: Setup',
+        'title' => 'Bad Video File',
+        'video_file' => $invalidFile,
+    ]);
+    $response->assertSessionHasErrors(['video_file']);
+
+    // Exceeding 100MB (102400 KB)
+    $oversizedFile = UploadedFile::fake()->create('huge-video.mp4', 102401, 'video/mp4');
+    $response2 = $this->actingAs($admin)->post(route('admin.courses.lessons.store', $this->course->id), [
+        'module_name' => 'Module 1: Setup',
+        'title' => 'Oversized Video File',
+        'video_file' => $oversizedFile,
+    ]);
+    $response2->assertSessionHasErrors(['video_file']);
+});
+
+test('updating a lesson with a new video deletes the old uploaded video', function () {
+    config()->set('services.imagekit.private_key', 'test_private_key');
+
+    $mockImageKit = Mockery::mock(ImageKitService::class);
+    $mockImageKit->shouldReceive('deleteFile')
+        ->with('old_ik_file_123')
+        ->once()
+        ->andReturn(true);
+    $mockImageKit->shouldReceive('upload')
+        ->once()
+        ->andReturn([
+            'fileId' => 'new_ik_file_456',
+            'url' => 'https://ik.imagekit.io/test/courses/videos/new_lecture.mp4',
+            'name' => 'new_lecture.mp4',
+            'size' => 3072,
+        ]);
+    $this->app->instance(ImageKitService::class, $mockImageKit);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $module = CourseModule::create([
+        'course_id' => $this->course->id,
+        'title' => 'Module 1',
+        'sort_order' => 1,
+    ]);
+
+    $lesson = CourseLesson::create([
+        'module_id' => $module->id,
+        'title' => 'Initial Lesson',
+        'sort_order' => 1,
+    ]);
+
+    $lesson->videos()->create([
+        'title' => 'Initial Lesson',
+        'video_url' => 'https://ik.imagekit.io/test/courses/videos/old.mp4',
+        'storage_key' => 'old_ik_file_123',
+        'duration_seconds' => 300,
+        'video_provider' => 'imagekit',
+        'status' => 'ready',
+    ]);
+
+    $newVideoFile = UploadedFile::fake()->create('new_lecture.mp4', 3072, 'video/mp4');
+
+    $response = $this->actingAs($admin)->post(route('admin.courses.lessons.update', [$this->course->id, $lesson->id]), [
+        'module_name' => 'Module 1',
+        'title' => 'Initial Lesson (Updated)',
+        'video_file' => $newVideoFile,
+        'duration' => '05:00',
+    ]);
+
+    $response->assertRedirect();
+
+    $this->assertDatabaseHas('lesson_videos', [
+        'lesson_id' => $lesson->id,
+        'storage_key' => 'new_ik_file_456',
+        'video_url' => 'https://ik.imagekit.io/test/courses/videos/new_lecture.mp4',
+    ]);
 });

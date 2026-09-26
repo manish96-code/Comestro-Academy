@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Services\ImageKitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -373,6 +374,12 @@ class CourseController extends Controller
             'module_name' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'video_url' => ['nullable', 'string', 'max:1000'],
+            'video_file' => [
+                'nullable',
+                'file',
+                'mimetypes:video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo',
+                'max:102400',
+            ],
             'duration' => ['nullable', 'string', 'max:50'],
             'notes_file' => ['nullable', 'file', 'max:51200'],
             'notes_title' => ['nullable', 'string', 'max:255'],
@@ -397,7 +404,37 @@ class CourseController extends Controller
             'status' => 'published',
         ]);
 
-        if (! empty($validated['video_url'])) {
+        // Handle direct video file upload or external URL
+        if ($request->hasFile('video_file')) {
+            $videoFile = $request->file('video_file');
+            $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
+
+            try {
+                if (config('services.imagekit.private_key')) {
+                    $upload = $imageKit->upload($videoFile, '/courses/videos');
+                    $videoUrl = $upload['url'];
+                    $storageKey = $upload['fileId'] ?? null;
+                    $provider = 'imagekit';
+                } else {
+                    $path = $videoFile->store('courses/videos', 'public');
+                    $videoUrl = Storage::url($path);
+                    $storageKey = $path;
+                    $provider = 'local';
+                }
+
+                $lesson->videos()->create([
+                    'title' => $validated['title'],
+                    'video_url' => $videoUrl,
+                    'storage_key' => $storageKey,
+                    'duration_seconds' => $durationSeconds,
+                    'file_size' => $videoFile->getSize(),
+                    'video_provider' => $provider,
+                    'status' => 'ready',
+                ]);
+            } catch (Throwable $e) {
+                return back()->withErrors(['video_file' => 'Video upload failed: '.$e->getMessage()])->withInput();
+            }
+        } elseif (! empty($validated['video_url'])) {
             $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
 
             $lesson->videos()->create([
@@ -442,6 +479,12 @@ class CourseController extends Controller
             'module_name' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'video_url' => ['nullable', 'string', 'max:1000'],
+            'video_file' => [
+                'nullable',
+                'file',
+                'mimetypes:video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo',
+                'max:102400',
+            ],
             'duration' => ['nullable', 'string', 'max:50'],
             'notes_file' => ['nullable', 'file', 'max:51200'],
             'notes_title' => ['nullable', 'string', 'max:255'],
@@ -465,16 +508,81 @@ class CourseController extends Controller
         }
         $lesson->save();
 
-        // Handle video
-        if (! empty($validated['video_url'])) {
+        // Handle video updates (direct upload vs URL)
+        if ($request->hasFile('video_file')) {
+            $videoFile = $request->file('video_file');
+            $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
+
+            try {
+                $video = $lesson->videos()->first();
+                if ($video && $video->storage_key) {
+                    if ($video->video_provider === 'imagekit') {
+                        $imageKit->deleteFile($video->storage_key);
+                    } elseif ($video->video_provider === 'local') {
+                        Storage::disk('public')->delete($video->storage_key);
+                    }
+                }
+
+                if (config('services.imagekit.private_key')) {
+                    $upload = $imageKit->upload($videoFile, '/courses/videos');
+                    $videoUrl = $upload['url'];
+                    $storageKey = $upload['fileId'] ?? null;
+                    $provider = 'imagekit';
+                } else {
+                    $path = $videoFile->store('courses/videos', 'public');
+                    $videoUrl = Storage::url($path);
+                    $storageKey = $path;
+                    $provider = 'local';
+                }
+
+                if ($video) {
+                    $video->update([
+                        'title' => $validated['title'],
+                        'video_url' => $videoUrl,
+                        'storage_key' => $storageKey,
+                        'duration_seconds' => $durationSeconds,
+                        'file_size' => $videoFile->getSize(),
+                        'video_provider' => $provider,
+                        'status' => 'ready',
+                    ]);
+                } else {
+                    $lesson->videos()->create([
+                        'title' => $validated['title'],
+                        'video_url' => $videoUrl,
+                        'storage_key' => $storageKey,
+                        'duration_seconds' => $durationSeconds,
+                        'file_size' => $videoFile->getSize(),
+                        'video_provider' => $provider,
+                        'status' => 'ready',
+                    ]);
+                }
+            } catch (Throwable $e) {
+                return back()->withErrors(['video_file' => 'Video upload failed: '.$e->getMessage()])->withInput();
+            }
+        } elseif (! empty($validated['video_url'])) {
             $durationSeconds = $this->parseDurationToSeconds($validated['duration'] ?? null);
 
             $video = $lesson->videos()->first();
             if ($video) {
+                // If replacing an uploaded video with an external URL, remove old file from storage
+                if ($video->storage_key && $video->video_url !== $validated['video_url']) {
+                    if ($video->video_provider === 'imagekit') {
+                        $imageKit->deleteFile($video->storage_key);
+                    } elseif ($video->video_provider === 'local') {
+                        Storage::disk('public')->delete($video->storage_key);
+                    }
+                    $video->storage_key = null;
+                    $video->file_size = null;
+                    $video->video_provider = 'url';
+                }
+
                 $video->update([
                     'title' => $validated['title'],
                     'video_url' => $validated['video_url'],
                     'duration_seconds' => $durationSeconds,
+                    'storage_key' => $video->storage_key,
+                    'video_provider' => $video->video_provider ?? 'url',
+                    'file_size' => $video->file_size,
                 ]);
             } else {
                 $lesson->videos()->create([
@@ -516,8 +624,18 @@ class CourseController extends Controller
     }
 
     // Delete a lesson
-    public function destroyLesson(Course $course, CourseLesson $lesson): RedirectResponse
+    public function destroyLesson(Course $course, CourseLesson $lesson, ImageKitService $imageKit): RedirectResponse
     {
+        foreach ($lesson->videos as $video) {
+            if ($video->storage_key) {
+                if ($video->video_provider === 'imagekit') {
+                    $imageKit->deleteFile($video->storage_key);
+                } elseif ($video->video_provider === 'local') {
+                    Storage::disk('public')->delete($video->storage_key);
+                }
+            }
+        }
+
         $lesson->delete();
 
         return back()->with('success', 'Lesson deleted successfully.');

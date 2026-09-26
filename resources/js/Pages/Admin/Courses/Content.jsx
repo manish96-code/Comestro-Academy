@@ -22,7 +22,10 @@ import {
     Radio,
     BookOpen,
     HelpCircle,
-    Settings
+    Settings,
+    UploadCloud,
+    Film,
+    Link as LinkIcon,
 } from 'lucide-react';
 
 export default function CourseContent({ course }) {
@@ -53,12 +56,17 @@ export default function CourseContent({ course }) {
     const [editingLesson, setEditingLesson] = useState(null);
     const [previewVideoUrl, setPreviewVideoUrl] = useState(null);
 
+    const [videoSource, setVideoSource] = useState('upload');
+    const [selectedVideoName, setSelectedVideoName] = useState('');
+    const [selectedVideoSize, setSelectedVideoSize] = useState('');
+
     // Form setup for add/edit
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
+    const { data, setData, post, processing, progress, errors, reset, clearErrors, transform } = useForm({
         module_name: moduleNames[0] || 'Module 1: Introduction',
         new_module_name: '',
         title: '',
         video_url: '',
+        video_file: null,
         duration: '',
         notes_file: null,
         notes_title: '',
@@ -66,14 +74,58 @@ export default function CourseContent({ course }) {
         order: 1,
     });
 
+    const handleVideoFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setData('video_file', file);
+        setSelectedVideoName(file.name);
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        setSelectedVideoSize(`${sizeMb} MB`);
+
+        // Automatically detect video duration if not already set
+        try {
+            const tempUrl = URL.createObjectURL(file);
+            const tempVideo = document.createElement('video');
+            tempVideo.preload = 'metadata';
+            tempVideo.onloadedmetadata = () => {
+                URL.revokeObjectURL(tempUrl);
+                const totalSecs = Math.round(tempVideo.duration);
+                if (totalSecs) {
+                    const mins = Math.floor(totalSecs / 60);
+                    const secs = totalSecs % 60;
+                    const formatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    setData((prev) => ({ ...prev, duration: formatted, video_file: file }));
+                }
+            };
+            tempVideo.src = tempUrl;
+        } catch {
+            // Ignore duration parse failure
+        }
+    };
+
+    const handleRemoveSelectedVideo = () => {
+        setData('video_file', null);
+        setSelectedVideoName('');
+        setSelectedVideoSize('');
+        const fileInput = document.getElementById('video_file');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    };
+
     const openAddModal = (presetModule = '') => {
         clearErrors();
         setEditingLesson(null);
+        setVideoSource('upload');
+        setSelectedVideoName('');
+        setSelectedVideoSize('');
         setData({
             module_name: presetModule || moduleNames[0] || 'Module 1: Introduction',
             new_module_name: '',
             title: '',
             video_url: '',
+            video_file: null,
             duration: '',
             notes_file: null,
             notes_title: '',
@@ -86,11 +138,16 @@ export default function CourseContent({ course }) {
     const openEditModal = (lesson) => {
         clearErrors();
         setEditingLesson(lesson);
+        const isUploaded = lesson.video_provider === 'imagekit' || lesson.video_provider === 'local';
+        setVideoSource(isUploaded || !lesson.video_url ? 'upload' : 'url');
+        setSelectedVideoName('');
+        setSelectedVideoSize('');
         setData({
             module_name: lesson.module_name,
             new_module_name: '',
             title: lesson.title,
             video_url: lesson.video_url || '',
+            video_file: null,
             duration: lesson.duration || '',
             notes_file: null,
             notes_title: lesson.notes_title || '',
@@ -103,6 +160,8 @@ export default function CourseContent({ course }) {
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingLesson(null);
+        setSelectedVideoName('');
+        setSelectedVideoSize('');
         reset();
         clearErrors();
     };
@@ -113,21 +172,35 @@ export default function CourseContent({ course }) {
             ? (data.new_module_name.trim() || 'New Module')
             : data.module_name;
 
-        const payload = {
-            ...data,
-            module_name: effectiveModule,
-        };
+        transform((currentData) => {
+            const payload = {
+                ...currentData,
+                module_name: effectiveModule,
+            };
+            if (videoSource === 'upload') {
+                if (currentData.video_file) {
+                    // New video file uploaded
+                    payload.video_file = currentData.video_file;
+                } else if (editingLesson?.video_url) {
+                    // Preserved existing uploaded video URL
+                    payload.video_url = editingLesson.video_url;
+                    delete payload.video_file;
+                }
+            } else {
+                // External URL mode
+                delete payload.video_file;
+            }
+            return payload;
+        });
 
         if (editingLesson) {
             post(route('admin.courses.lessons.update', [course.id, editingLesson.id]), {
-                data: payload,
                 forceFormData: true,
                 preserveScroll: true,
                 onSuccess: () => closeModal(),
             });
         } else {
             post(route('admin.courses.lessons.store', course.id), {
-                data: payload,
                 forceFormData: true,
                 preserveScroll: true,
                 onSuccess: () => closeModal(),
@@ -343,17 +416,23 @@ export default function CourseContent({ course }) {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setPreviewVideoUrl(lesson.video_url)}
-                                                                    className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 transition text-[11px]"
+                                                                    className="inline-flex items-center gap-1 font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 transition text-[11px] cursor-pointer"
                                                                 >
                                                                     <Play className="h-2.5 w-2.5 fill-current" />
-                                                                    <span>Watch Stream</span>
+                                                                    <span>
+                                                                        {lesson.video_provider === 'imagekit'
+                                                                            ? 'Play (ImageKit CDN)'
+                                                                            : (lesson.video_provider === 'local'
+                                                                                ? 'Play (Uploaded)'
+                                                                                : 'Watch Stream')}
+                                                                    </span>
                                                                     {lesson.duration && (
                                                                         <span className="text-sky-600 font-mono ml-0.5">({lesson.duration})</span>
                                                                     )}
                                                                 </button>
                                                             ) : (
                                                                 <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md text-[11px] border border-slate-200">
-                                                                    <span>No video link</span>
+                                                                    <span>No video attached</span>
                                                                 </span>
                                                             )}
 
@@ -498,39 +577,152 @@ export default function CourseContent({ course }) {
                             </div>
 
                             {/* Section 1: Video Content */}
-                            <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/40 space-y-3">
-                                <div className="flex items-center gap-1.5 text-sky-800 font-bold text-xs">
-                                    <Video className="h-3.5 w-3.5" />
-                                    <span>Video Stream / Lecture URL</span>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                    <div className="sm:col-span-8">
-                                        <InputLabel htmlFor="video_url" value="Video URL (YouTube, Vimeo, MP4, Drive)" />
-                                        <TextInput
-                                            id="video_url"
-                                            type="url"
-                                            value={data.video_url}
-                                            onChange={(e) => setData('video_url', e.target.value)}
-                                            placeholder="https://www.youtube.com/watch?v=... or .mp4"
-                                            className="w-full text-xs py-2 px-3 mt-1 font-mono"
-                                        />
-                                        <InputError message={errors.video_url} />
+                            <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/40 space-y-3.5">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5 text-sky-900 font-bold text-xs">
+                                        <Video className="h-4 w-4 text-sky-700" />
+                                        <span>Lecture Video</span>
                                     </div>
 
-                                    <div className="sm:col-span-4">
-                                        <InputLabel htmlFor="duration" value="Duration (e.g. 15:30)" />
-                                        <TextInput
-                                            id="duration"
-                                            type="text"
-                                            value={data.duration}
-                                            onChange={(e) => setData('duration', e.target.value)}
-                                            placeholder="12:45"
-                                            className="w-full text-xs py-2 px-3 mt-1 font-mono"
-                                        />
-                                        <InputError message={errors.duration} />
+                                    {/* Video Source Segmented Control */}
+                                    <div className="inline-flex items-center p-0.5 rounded-md bg-slate-200/80 border border-slate-300 text-xs shadow-2xs">
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoSource('upload')}
+                                            className={`flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold transition-all cursor-pointer ${
+                                                videoSource === 'upload'
+                                                    ? 'bg-white text-indigo-700 shadow-2xs'
+                                                    : 'text-slate-600 hover:text-slate-900'
+                                            }`}
+                                        >
+                                            <UploadCloud className="h-3.5 w-3.5" />
+                                            <span>Upload Video File</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setVideoSource('url')}
+                                            className={`flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold transition-all cursor-pointer ${
+                                                videoSource === 'url'
+                                                    ? 'bg-white text-indigo-700 shadow-2xs'
+                                                    : 'text-slate-600 hover:text-slate-900'
+                                            }`}
+                                        >
+                                            <LinkIcon className="h-3.5 w-3.5" />
+                                            <span>External URL / Stream</span>
+                                        </button>
                                     </div>
                                 </div>
+
+                                {videoSource === 'upload' ? (
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+                                            <div className="sm:col-span-8">
+                                                <InputLabel htmlFor="video_file" value="Select Video File (MP4, WebM, MOV, MKV up to 100MB)" />
+                                                <input
+                                                    id="video_file"
+                                                    type="file"
+                                                    onChange={handleVideoFileChange}
+                                                    accept="video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo"
+                                                    className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 mt-1 cursor-pointer"
+                                                />
+                                                <InputError message={errors.video_file} />
+
+                                                {selectedVideoName && (
+                                                    <div className="mt-2 flex items-center justify-between p-2 rounded-md bg-white border border-indigo-200 text-xs text-slate-700 shadow-2xs">
+                                                        <div className="flex items-center gap-2 truncate">
+                                                            <Film className="h-4 w-4 text-indigo-600 shrink-0" />
+                                                            <span className="font-medium truncate">{selectedVideoName}</span>
+                                                            <span className="text-[11px] font-mono text-slate-400">({selectedVideoSize})</span>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleRemoveSelectedVideo}
+                                                            className="text-slate-400 hover:text-rose-600 p-1 cursor-pointer"
+                                                            title="Remove selected video"
+                                                        >
+                                                            <X className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {editingLesson?.video_url && !selectedVideoName && (
+                                                    <div className="flex items-center gap-2 pt-2 text-xs text-slate-600">
+                                                        <span className="font-semibold text-slate-700">Current Video:</span>
+                                                        <a
+                                                            href={editingLesson.video_url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="text-indigo-600 hover:underline font-mono truncate max-w-xs flex items-center gap-1"
+                                                        >
+                                                            <span className="truncate">{editingLesson.video_url}</span>
+                                                            <ExternalLink className="h-3 w-3 shrink-0" />
+                                                        </a>
+                                                        <span className="text-[10px] text-slate-400 font-mono">
+                                                            (Select a new file above to replace)
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="sm:col-span-4">
+                                                <InputLabel htmlFor="duration" value="Duration (e.g. 15:30)" />
+                                                <TextInput
+                                                    id="duration"
+                                                    type="text"
+                                                    value={data.duration}
+                                                    onChange={(e) => setData('duration', e.target.value)}
+                                                    placeholder="12:45"
+                                                    className="w-full text-xs py-2 px-3 mt-1 font-mono"
+                                                />
+                                                <p className="text-[10px] text-slate-400 mt-1">Auto-detected from file</p>
+                                                <InputError message={errors.duration} />
+                                            </div>
+                                        </div>
+
+                                        {progress && (
+                                            <div className="p-2.5 rounded-md bg-white border border-indigo-200 space-y-1.5 shadow-2xs">
+                                                <div className="flex items-center justify-between text-xs font-semibold text-indigo-700">
+                                                    <span>Uploading Video to ImageKit...</span>
+                                                    <span className="font-mono">{progress.percentage}%</span>
+                                                </div>
+                                                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                                    <div
+                                                        className="bg-indigo-600 h-2 transition-all duration-150"
+                                                        style={{ width: `${progress.percentage}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                        <div className="sm:col-span-8">
+                                            <InputLabel htmlFor="video_url" value="Video URL (YouTube, Vimeo, MP4, Drive)" />
+                                            <TextInput
+                                                id="video_url"
+                                                type="url"
+                                                value={data.video_url}
+                                                onChange={(e) => setData('video_url', e.target.value)}
+                                                placeholder="https://www.youtube.com/watch?v=... or .mp4"
+                                                className="w-full text-xs py-2 px-3 mt-1 font-mono"
+                                            />
+                                            <InputError message={errors.video_url} />
+                                        </div>
+
+                                        <div className="sm:col-span-4">
+                                            <InputLabel htmlFor="duration" value="Duration (e.g. 15:30)" />
+                                            <TextInput
+                                                id="duration"
+                                                type="text"
+                                                value={data.duration}
+                                                onChange={(e) => setData('duration', e.target.value)}
+                                                placeholder="12:45"
+                                                className="w-full text-xs py-2 px-3 mt-1 font-mono"
+                                            />
+                                            <InputError message={errors.duration} />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Section 2: Upload Study Notes (PDF/Docs) */}

@@ -28,6 +28,8 @@ class CourseLesson extends Model
     protected $appends = [
         'module_name',
         'video_url',
+        'video_provider',
+        'duration',
         'notes_file',
         'notes_title',
         'order',
@@ -75,6 +77,20 @@ class CourseLesson extends Model
     {
         return Attribute::make(
             get: fn () => $this->videos->first()?->video_url
+        );
+    }
+
+    protected function videoProvider(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->videos->first()?->video_provider ?? 'url'
+        );
+    }
+
+    protected function duration(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->videos->first()?->formatted_duration
         );
     }
 
