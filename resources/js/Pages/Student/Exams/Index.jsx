@@ -54,33 +54,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
     }, [exams, searchQuery, filterTab]);
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Course Exams & Certifications
-                            </h1>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                Single Attempt
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Official assessments unlock automatically upon completing 100% of course lectures
-                        </p>
-                    </div>
-
-                    <Link
-                        href={route('student.courses.enrolled')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-md shadow-2xs transition"
-                    >
-                        <BookOpen className="h-3.5 w-3.5 text-slate-500" />
-                        <span>My Courses</span>
-                    </Link>
-                </div>
-            }
-        >
+        <StudentLayout title="Course Exams">
             <Head title="Course Exams - Student Portal" />
 
             {/* Main Outer Container with Proper Padding & Max Width */}

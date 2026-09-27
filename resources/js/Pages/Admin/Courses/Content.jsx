@@ -6,7 +6,6 @@ import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect } from 'react';
 import {
-    ArrowLeft,
     Plus,
     Video,
     FileText,
@@ -330,20 +329,8 @@ export default function CourseContent({ course }) {
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.courses.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Courses"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        {course.title}
-                    </h1>
-                </div>
-            }
+            title={course.title}
+            backUrl={route('admin.courses.index')}
         >
             <Head title={`Curriculum & Notes - ${course.title}`} />
 

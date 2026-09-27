@@ -1,9 +1,10 @@
 import Dropdown from '@/Components/Dropdown';
 import NotificationBell from '@/Components/NotificationBell';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import {
+    ArrowLeft,
     LayoutDashboard,
     User,
     BookOpen,
@@ -23,10 +24,29 @@ import {
     ClipboardList
 } from 'lucide-react';
 
-export default function StudentLayout({ header, children }) {
+export default function StudentLayout({
+    title,
+    header,
+    backUrl,
+    showBack = true,
+    headerActions = null,
+    children,
+}) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const handleBack = () => {
+        if (backUrl) {
+            router.visit(backUrl);
+        } else if (typeof window !== 'undefined' && window.history.length > 1) {
+            window.history.back();
+        } else {
+            router.visit(route('student.dashboard'));
+        }
+    };
+
+    const pageTitle = title || (typeof header === 'string' ? header : null);
 
     // Theme state with localStorage persistence
     const [theme, setTheme] = useState(() => {
@@ -326,21 +346,54 @@ export default function StudentLayout({ header, children }) {
                 {/* Top Navbar */}
                 <header className="h-16 bg-white/85 dark:bg-[#0c101c]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-200">
                     
-                    {/* Left: Mobile Toggle & Page Header Title */}
-                    <div className="flex items-center space-x-3">
+                    {/* Left: Mobile Toggle, Back Button & Page Header Title */}
+                    <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            className="lg:hidden p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
-                        <div>
-                            {header}
+
+                        {showBack !== false && (
+                            backUrl ? (
+                                <Link
+                                    href={backUrl}
+                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                                    title="Go back"
+                                >
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Link>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleBack}
+                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
+                                    title="Go back"
+                                >
+                                    <ArrowLeft className="h-4 w-4" />
+                                </button>
+                            )
+                        )}
+
+                        <div className="min-w-0">
+                            {pageTitle ? (
+                                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                                    {pageTitle}
+                                </h1>
+                            ) : (
+                                header
+                            )}
                         </div>
                     </div>
 
-                    {/* Right: Theme Switcher, Notifications & User Menu Dropdown */}
+                    {/* Right: Header Actions, Theme Switcher, Notifications & User Menu Dropdown */}
                     <div className="flex items-center space-x-2.5 sm:space-x-3">
+                        {headerActions && (
+                            <div className="flex items-center gap-2">
+                                {headerActions}
+                            </div>
+                        )}
                         {/* Clean Theme Toggle Button */}
                         <button
                             type="button"

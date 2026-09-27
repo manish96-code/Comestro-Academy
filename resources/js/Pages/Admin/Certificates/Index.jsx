@@ -85,13 +85,7 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
     ];
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                    Certificates
-                </h1>
-            }
-        >
+        <AdminLayout title="Certificates">
             <Head title="Course Certificates Management" />
 
             <div className="py-6 sm:py-8">

@@ -57,13 +57,7 @@ export default function InstructorIndex({ instructors, filters }) {
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                    Instructors
-                </h1>
-            }
-        >
+        <AdminLayout title="Instructors">
             <Head title="Instructors Directory" />
 
             <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">

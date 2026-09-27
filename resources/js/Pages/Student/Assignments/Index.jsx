@@ -44,33 +44,7 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
     }, [assignments, searchQuery, activeTab]);
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Course Assignments & Projects
-                            </h1>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                Practical Work
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Submit your solution PDF and GitHub repository links for instructor review and evaluation
-                        </p>
-                    </div>
-
-                    <Link
-                        href={route('student.courses.enrolled')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-md shadow-2xs transition shrink-0"
-                    >
-                        <BookOpen className="h-3.5 w-3.5 text-slate-500" />
-                        <span>Enrolled Courses</span>
-                    </Link>
-                </div>
-            }
-        >
+        <StudentLayout title="Assignments">
             <Head title="My Assignments - Student Portal" />
 
             <div className="py-6 sm:py-8 bg-slate-50 dark:bg-slate-950 min-h-screen">

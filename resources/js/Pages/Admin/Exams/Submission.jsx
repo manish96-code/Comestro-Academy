@@ -4,7 +4,6 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    ArrowLeft,
     GraduationCap,
     User,
     ExternalLink,
@@ -30,28 +29,18 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Submissions Gradebook"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        Exam Submission Review
-                    </h1>
-                    <button
-                        type="button"
-                        onClick={() => setDeleteModalOpen(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs shrink-0 cursor-pointer"
-                        title="Remove record so student can retake exam"
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        <span>Remove Record</span>
-                    </button>
-                </div>
+            title="Exam Submission Review"
+            backUrl={`${route('admin.exams.show', exam.id)}?tab=submissions`}
+            headerActions={
+                <button
+                    type="button"
+                    onClick={() => setDeleteModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs shrink-0 cursor-pointer"
+                    title="Remove record so student can retake exam"
+                >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Remove Record</span>
+                </button>
             }
         >
             <Head title={`Submission: ${student?.name || 'Student'} - ${exam.title}`} />

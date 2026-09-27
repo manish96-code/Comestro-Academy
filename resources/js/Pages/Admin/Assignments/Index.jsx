@@ -31,13 +31,7 @@ export default function AdminAssignmentsIndex({ assignments = { data: [] }, cour
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                    Assignments
-                </h1>
-            }
-        >
+        <AdminLayout title="Assignments">
             <Head title="Course Assignments - Admin Portal" />
 
             <div className="py-6 sm:py-8">

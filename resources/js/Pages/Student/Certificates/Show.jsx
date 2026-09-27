@@ -1,7 +1,6 @@
 import StudentLayout from '@/Layouts/StudentLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
-    ArrowLeft,
     Printer,
     Award,
     ShieldCheck,
@@ -15,43 +14,13 @@ export default function CertificateShow({ certificate }) {
 
     return (
         <StudentLayout
-            header={
-                <div className="flex items-center gap-3">
-                    <div>
-                        <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            Certificate #{certificate.certificate_number}
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {certificate.course.title}
-                        </p>
-                    </div>
-                </div>
-            }
+            title={`Certificate #${certificate.certificate_number}`}
+            backUrl={route('student.certificates.index')}
         >
             <Head title={`Certificate - ${certificate.certificate_number}`} />
 
             <div className="py-6 min-h-[calc(100vh-140px)]">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                {/* 1. Print Toolbar (Hidden during Print) */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
-                    <Link
-                        href={route('student.certificates.index')}
-                        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
-                    >
-                        <ArrowLeft className="w-4 h-4" /> Back to My Certificates
-                    </Link>
-
-                    <div className="flex items-center gap-2.5">
-                        <button
-                            type="button"
-                            onClick={handlePrint}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition cursor-pointer"
-                        >
-                            <Printer className="w-3.5 h-3.5" />
-                            Print / Save as PDF
-                        </button>
-                    </div>
-                </div>
 
                 {/* Print Styles */}
                 <style>{`
@@ -189,6 +158,18 @@ export default function CertificateShow({ certificate }) {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Print / Save as PDF Button outside certificate border */}
+                <div className="flex justify-center print:hidden pt-4 pb-8">
+                    <button
+                        type="button"
+                        onClick={handlePrint}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                    >
+                        <Printer className="h-4 w-4" />
+                        <span>Print / Save as PDF</span>
+                    </button>
                 </div>
             </div>
         </div>

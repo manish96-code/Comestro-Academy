@@ -441,20 +441,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
     // If student is logged in, wrap in StudentLayout
     if (user && user.role === 'student') {
         return (
-            <StudentLayout
-                header={
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Explore Courses
-                            </h1>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Discover industry-standard courses taught by official framework contributors
-                            </p>
-                        </div>
-                    </div>
-                }
-            >
+            <StudentLayout title="Explore Courses">
                 <Head title="Explore Courses - Student Portal" />
 
                 <div className="py-6 min-h-[calc(100vh-140px)]">
@@ -469,27 +456,7 @@ export default function CoursesIndex({ courses, categories, filters }) {
     // If admin or instructor is logged in, wrap in AdminLayout
     if (user && (user.role === 'admin' || user.role === 'instructor')) {
         return (
-            <AdminLayout
-                header={
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-lg font-bold text-gray-900 leading-tight">
-                                Explore Courses
-                            </h1>
-                            <p className="text-xs text-gray-500">
-                                Active course catalog and curriculum preview
-                            </p>
-                        </div>
-                        <Link
-                            href={route('admin.courses.index')}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shrink-0"
-                        >
-                            <LayoutDashboard className="h-3.5 w-3.5" />
-                            <span>Manage Courses</span>
-                        </Link>
-                    </div>
-                }
-            >
+            <AdminLayout title="Explore Courses">
                 <Head title="Explore Courses - Admin Portal" />
 
                 <div className="py-6 bg-gray-50 min-h-[calc(100vh-140px)]">

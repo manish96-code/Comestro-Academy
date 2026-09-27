@@ -6,7 +6,7 @@ import TextInput from '@/Components/TextInput';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { FolderPlus, Edit3, ArrowLeft, Save, Tag, FolderTree, Trash2 } from 'lucide-react';
+import { FolderPlus, Edit3, Save, Tag, FolderTree, Trash2 } from 'lucide-react';
 
 export default function CategoryCreate({ category = null, parentCategories = [] }) {
     const isEdit = Boolean(category);
@@ -35,20 +35,8 @@ export default function CategoryCreate({ category = null, parentCategories = [] 
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.categories.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Categories"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        {isEdit ? 'Edit Category' : 'Create Category'}
-                    </h1>
-                </div>
-            }
+            title={isEdit ? 'Edit Category' : 'Create Category'}
+            backUrl={route('admin.categories.index')}
         >
             <Head title={isEdit ? `Edit Category - ${category.name}` : 'Create Course Category'} />
 

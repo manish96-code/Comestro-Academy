@@ -10,7 +10,6 @@ import {
     Calendar,
     Clock,
     Save,
-    ArrowLeft,
     Briefcase,
     GraduationCap,
     Shield,
@@ -100,20 +99,8 @@ export default function InstructorShow({ instructor }) {
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.instructors.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Instructors"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        {instructor.name}
-                    </h1>
-                </div>
-            }
+            title={instructor.name}
+            backUrl={route('admin.instructors.index')}
         >
             <Head title={`Instructor - ${instructor.name}`} />
 

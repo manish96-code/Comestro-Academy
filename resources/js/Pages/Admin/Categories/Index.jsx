@@ -68,13 +68,7 @@ export default function CategoryIndex({ categories, filters }) {
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                    Categories
-                </h1>
-            }
-        >
+        <AdminLayout title="Categories">
             <Head title="Course Categories" />
 
             <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">

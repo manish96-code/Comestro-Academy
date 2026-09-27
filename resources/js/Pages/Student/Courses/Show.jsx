@@ -1723,16 +1723,8 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     if (user && user.role === 'student') {
         return (
             <StudentLayout
-                header={
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                        <Link href={route('courses.index')} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-1 font-medium">
-                            <Compass className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">Browse Courses</span>
-                        </Link>
-                        <span className="hidden sm:inline text-slate-300 dark:text-slate-600">/</span>
-                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-slate-800 dark:text-slate-200 font-semibold">{course.title}</span>
-                    </div>
-                }
+                title={course.title}
+                backUrl={route('courses.index')}
             >
                 <Head title={`${course.title} - Comestro Academy`} />
                 <div className="pb-16 lg:pb-0">
@@ -1746,15 +1738,8 @@ export default function CourseShow({ course, relatedCourses = [] }) {
     if (user && (user.role === 'admin' || user.role === 'instructor')) {
         return (
             <AdminLayout
-                header={
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Link href={route('admin.courses.index')} className="hover:text-indigo-600 transition font-medium">
-                            Courses
-                        </Link>
-                        <span>/</span>
-                        <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-sm text-gray-800 font-semibold">{course.title}</span>
-                    </div>
-                }
+                title={course.title}
+                backUrl={route('admin.courses.index')}
             >
                 <Head title={`${course.title} - Admin Preview | Comestro Academy`} />
                 <div className="pb-16 lg:pb-0">

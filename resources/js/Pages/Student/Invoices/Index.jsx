@@ -26,28 +26,7 @@ export default function InvoiceIndex({ enrollments, stats }) {
     }) : [];
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            Billing & Course Invoices
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            View, download, and track payment receipts for your enrolled courses
-                        </p>
-                    </div>
-
-                    <Link
-                        href={route('student.courses.enrolled')}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold rounded-md hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-2xs transition"
-                    >
-                        <BookOpen className="h-3.5 w-3.5 text-slate-400" />
-                        <span>My Enrolled Courses</span>
-                    </Link>
-                </div>
-            }
-        >
+        <StudentLayout title="Invoices & Billing">
             <Head title="Course Invoices & Receipts - Comestro Academy" />
 
             <div className="py-6 min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-950">

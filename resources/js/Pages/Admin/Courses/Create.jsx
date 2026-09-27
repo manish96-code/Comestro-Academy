@@ -9,7 +9,6 @@ import { useState, useRef } from 'react';
 import {
     BookPlus,
     Edit3,
-    ArrowLeft,
     Save,
     BookOpen,
     Image,
@@ -316,20 +315,8 @@ export default function CourseCreate({ course = null, categories = [], instructo
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.courses.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Courses"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        {isEdit ? 'Edit Course' : 'Create Course'}
-                    </h1>
-                </div>
-            }
+            title={isEdit ? 'Edit Course' : 'Create Course'}
+            backUrl={route('admin.courses.index')}
         >
             <Head title={isEdit ? `Edit Course - ${course.title}` : 'Create Course'} />
 

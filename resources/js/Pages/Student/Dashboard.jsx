@@ -23,26 +23,7 @@ export default function StudentDashboard({ student, enrolledCoursesCount = 0, re
     const mostRecent = recentEnrollments.length > 0 ? recentEnrollments[0] : null;
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Welcome back, {student?.name || 'Student'}
-                            </h1>
-                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                                Active Learner
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Pick up where you left off and keep building your coding skills
-                        </p>
-                    </div>
-                </div>
-            }
-        >
+        <StudentLayout title="Dashboard">
             <Head title="Student Dashboard - Comestro Academy" />
 
             <div className="py-6">

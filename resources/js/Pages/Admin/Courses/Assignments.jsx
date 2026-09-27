@@ -3,7 +3,6 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    ArrowLeft,
     Plus,
     ClipboardList,
     Clock,
@@ -119,20 +118,8 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.assignments.index')}
-                        className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition shadow-2xs shrink-0"
-                        title="Back to All Assignments"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        {course.title} — Assignments
-                    </h1>
-                </div>
-            }
+            title={`${course.title} — Assignments`}
+            backUrl={route('admin.assignments.index')}
         >
             <Head title={`${course.title} Assignments - Admin`} />
 

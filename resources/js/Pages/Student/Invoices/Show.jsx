@@ -16,48 +16,17 @@ export default function InvoiceShow({ invoice, enrollmentId }) {
 
     return (
         <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('student.courses.enrolled')}
-                            className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs transition"
-                            title="Back to Enrolled Courses"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <h1 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
-                                    Invoice {invoice.invoice_number}
-                                </h1>
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                    <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                                    {invoice.status}
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Issued on {invoice.date} for {invoice.course.title}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('student.invoices.index')}
-                            className="px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-2xs transition"
-                        >
-                            All Invoices
-                        </Link>
-                        <button
-                            onClick={handlePrint}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition cursor-pointer"
-                        >
-                            <Printer className="h-3.5 w-3.5" />
-                            <span>Print / Save PDF</span>
-                        </button>
-                    </div>
-                </div>
+            title={`Invoice #${invoice.invoice_number}`}
+            backUrl={route('student.invoices.index')}
+            headerActions={
+                <button
+                    onClick={handlePrint}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition shrink-0 cursor-pointer"
+                >
+                    <Printer className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Print / Save PDF</span>
+                    <span className="sm:hidden">Print</span>
+                </button>
             }
         >
             <Head title={`Invoice ${invoice.invoice_number} - Comestro Academy`} />

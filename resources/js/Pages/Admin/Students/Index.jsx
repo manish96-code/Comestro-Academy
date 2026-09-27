@@ -55,13 +55,7 @@ export default function StudentIndex({ students, filters }) {
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                    Students
-                </h1>
-            }
-        >
+        <AdminLayout title="Students">
             <Head title="Students Directory" />
 
             <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">

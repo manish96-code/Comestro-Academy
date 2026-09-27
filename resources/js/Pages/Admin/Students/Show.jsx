@@ -13,7 +13,6 @@ import {
     Save,
     GraduationCap,
     ExternalLink,
-    ArrowLeft,
     Shield,
     Globe,
     Building,
@@ -163,20 +162,8 @@ export default function StudentShow({ student, enrollments = [], availableCourse
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.students.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Students"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        {student.name}
-                    </h1>
-                </div>
-            }
+            title={student.name}
+            backUrl={route('admin.students.index')}
         >
             <Head title={`Student: ${student.name}`} />
 

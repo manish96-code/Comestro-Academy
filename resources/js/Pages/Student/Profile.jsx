@@ -122,18 +122,7 @@ export default function StudentProfile({ student }) {
     };
 
     return (
-        <StudentLayout
-            header={
-                <div>
-                    <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                        My Student Profile
-                    </h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Manage your personal credentials, education, college background, and portfolio links
-                    </p>
-                </div>
-            }
-        >
+        <StudentLayout title="Student Profile">
             <Head title="My Profile" />
 
             <div className="py-6 bg-slate-50 dark:bg-slate-950 min-h-screen">

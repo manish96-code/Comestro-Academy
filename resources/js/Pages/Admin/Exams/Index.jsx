@@ -140,13 +140,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
     const examList = exams.data || [];
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                    Exams & Assessments
-                </h1>
-            }
-        >
+        <AdminLayout title="Exams & Assessments">
             <Head title="Course Exams - Admin" />
 
             <div className="py-6 min-h-[calc(100vh-5rem)]">

@@ -45,13 +45,7 @@ export default function AdminDashboard({ stats, recent_users }) {
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                    Dashboard
-                </h1>
-            }
-        >
+        <AdminLayout title="Dashboard">
             <Head title="Admin Dashboard" />
 
             <div className="py-6">

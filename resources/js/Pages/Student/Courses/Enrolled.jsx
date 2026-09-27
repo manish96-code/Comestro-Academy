@@ -70,37 +70,7 @@ export default function EnrolledCourses({ enrollments }) {
     }, [allData, searchQuery, filterTab]);
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                My Enrolled Courses
-                            </h1>
-                            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 font-mono">
-                                <Sparkles className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
-                                {metrics.total} {metrics.total === 1 ? 'Track' : 'Tracks'}
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Track your learning milestones, resume lectures, and access curriculum projects
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('courses.index')}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-2xs transition"
-                        >
-                            <Compass className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                            <span>Browse Catalog</span>
-                            <ArrowRight className="h-3 w-3 text-slate-400" />
-                        </Link>
-                    </div>
-                </div>
-            }
-        >
+        <StudentLayout title="My Enrolled Courses">
             <Head title="My Enrolled Courses - Comestro Academy" />
 
             <div className="py-6 min-h-[calc(100vh-140px)]">

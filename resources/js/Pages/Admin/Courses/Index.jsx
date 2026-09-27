@@ -207,13 +207,7 @@ export default function CourseIndex({ courses, categories = [], students = [], f
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                    Courses
-                </h1>
-            }
-        >
+        <AdminLayout title="Courses">
             <Head title="Course Management" />
 
             <div className="py-6">

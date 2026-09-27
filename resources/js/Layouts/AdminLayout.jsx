@@ -1,9 +1,10 @@
 import Dropdown from '@/Components/Dropdown';
 import NotificationBell from '@/Components/NotificationBell';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import {
+    ArrowLeft,
     LayoutDashboard,
     Users,
     GraduationCap,
@@ -25,10 +26,29 @@ import {
     Ticket
 } from 'lucide-react';
 
-export default function AdminLayout({ header, children }) {
+export default function AdminLayout({
+    title,
+    header,
+    backUrl,
+    showBack = true,
+    headerActions = null,
+    children,
+}) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const handleBack = () => {
+        if (backUrl) {
+            router.visit(backUrl);
+        } else if (typeof window !== 'undefined' && window.history.length > 1) {
+            window.history.back();
+        } else {
+            router.visit(route('admin.dashboard'));
+        }
+    };
+
+    const pageTitle = title || (typeof header === 'string' ? header : null);
 
     useEffect(() => {
         if (flash?.success) {
@@ -333,21 +353,54 @@ export default function AdminLayout({ header, children }) {
                 {/* Compact Top Navbar */}
                 <header className="h-14 bg-white border-b border-slate-200/90 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8">
                     {/* Left: Mobile Toggle & Page Header / Breadcrumb */}
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer"
+                            className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer shrink-0"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
+
+                        {showBack !== false && (
+                            backUrl ? (
+                                <Link
+                                    href={backUrl}
+                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0"
+                                    title="Go back"
+                                >
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Link>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleBack}
+                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0 cursor-pointer"
+                                    title="Go back"
+                                >
+                                    <ArrowLeft className="h-4 w-4" />
+                                </button>
+                            )
+                        )}
+
                         <div className="min-w-0">
-                            {header}
+                            {pageTitle ? (
+                                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                                    {pageTitle}
+                                </h1>
+                            ) : (
+                                header
+                            )}
                         </div>
                     </div>
 
                     {/* Right: Quick Tools & Profile Dropdown */}
                     <div className="flex items-center gap-2.5 sm:gap-3">
+                        {headerActions && (
+                            <div className="flex items-center gap-2">
+                                {headerActions}
+                            </div>
+                        )}
 
                         {/* Real-time Live Notifications */}
                         <NotificationBell user={user} />

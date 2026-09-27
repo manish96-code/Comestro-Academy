@@ -9,7 +9,6 @@ import {
     Percent,
     DollarSign,
     Calendar,
-    ArrowLeft,
     BookOpen
 } from 'lucide-react';
 
@@ -54,20 +53,8 @@ export default function CouponEdit({ coupon, courses = [] }) {
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.coupons.index')}
-                        className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-600 hover:text-slate-900 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-2xs shrink-0"
-                        title="Back to Coupons"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        Edit Coupon: {coupon.code}
-                    </h1>
-                </div>
-            }
+            title="Edit Coupon"
+            backUrl={route('admin.coupons.index')}
         >
             <Head title={`Edit Coupon ${coupon.code} - Admin`} />
 

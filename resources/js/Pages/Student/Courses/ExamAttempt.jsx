@@ -318,35 +318,8 @@ export default function ExamAttempt({ course, exam, questions = [], submission =
     if (isSubmitted) {
         return (
             <StudentLayout
-                header={
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <Link
-                                href={route('student.exams.index')}
-                                className="p-2 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-2xs transition"
-                                title="Back to All Exams"
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
-                            <div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                        {exam.title}
-                                    </h1>
-                                    <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${submission.is_passed
-                                            ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-                                            : 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800'
-                                        }`}>
-                                        {submission.is_passed ? 'Passed' : 'Failed'}
-                                    </span>
-                                </div>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                                    {course.title} • {questions.length} Questions • Passing: {exam.passing_percentage}%
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                }
+                title={exam.title}
+                backUrl={route('student.exams.index')}
             >
                 <Head title={`Results: ${exam.title} - ${course.title}`} />
 

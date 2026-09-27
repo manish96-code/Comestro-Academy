@@ -6,7 +6,6 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import {
-    ArrowLeft,
     GraduationCap,
     Clock,
     Award,
@@ -265,20 +264,8 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.courses.content', course.id)}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Course Curriculum"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
-                        {course.title} — Exam
-                    </h1>
-                </div>
-            }
+            title={`${course.title} — Exam`}
+            backUrl={route('admin.courses.content', course.id)}
         >
             <Head title={`Exam Management - ${course.title}`} />
 

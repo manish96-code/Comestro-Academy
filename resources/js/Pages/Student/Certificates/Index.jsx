@@ -11,20 +11,7 @@ import {
 export default function CertificateIndex({ earned = [] }) {
 
     return (
-        <StudentLayout
-            header={
-                <div className="flex items-center gap-3">
-                    <div>
-                        <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            My Certificates
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            View, print, and share your official course completion certificates
-                        </p>
-                    </div>
-                </div>
-            }
-        >
+        <StudentLayout title="My Certificates">
             <Head title="My Certificates" />
 
             <div className="py-6 min-h-[calc(100vh-140px)]">

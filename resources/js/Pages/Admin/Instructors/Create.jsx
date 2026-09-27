@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { UserPlus, ArrowLeft, Save, Shield, Briefcase, GraduationCap } from 'lucide-react';
+import { UserPlus, Save, Shield, Briefcase, GraduationCap } from 'lucide-react';
 
 export default function InstructorCreate() {
     const { data, setData, post, processing, errors } = useForm({
@@ -27,20 +27,8 @@ export default function InstructorCreate() {
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <Link
-                        href={route('admin.instructors.index')}
-                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
-                        title="Back to Instructors"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        Add Instructor
-                    </h1>
-                </div>
-            }
+            title="Add Instructor"
+            backUrl={route('admin.instructors.index')}
         >
             <Head title="Add New Instructor" />
 

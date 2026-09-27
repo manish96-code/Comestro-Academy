@@ -2,7 +2,6 @@ import StudentLayout from '@/Layouts/StudentLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import {
-    ArrowLeft,
     ClipboardList,
     Clock,
     Award,
@@ -47,51 +46,8 @@ export default function StudentAssignmentShow({ assignment, submission }) {
 
     return (
         <StudentLayout
-            header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('student.assignments.index')}
-                            className="p-2 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-2xs transition"
-                            title="Back to Assignments"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                    {assignment.title}
-                                </h1>
-                                {submission ? (
-                                    submission.status === 'reviewed' ? (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
-                                            <CheckCircle2 className="h-3 w-3" />
-                                            Graded: {submission.marks_obtained}/{assignment.total_marks}
-                                        </span>
-                                    ) : submission.status === 'resubmit' ? (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800">
-                                            <AlertCircle className="h-3 w-3" />
-                                            Revision Requested
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
-                                            <Clock className="h-3 w-3" />
-                                            Under Review
-                                        </span>
-                                    )
-                                ) : (
-                                    <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                                        Pending Submission
-                                    </span>
-                                )}
-                            </div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                                Course: {assignment.course?.title} • {assignment.total_marks} Marks (Passing: {assignment.passing_marks} Marks)
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            }
+            title={assignment.title}
+            backUrl={route('student.assignments.index')}
         >
             <Head title={`${assignment.title} - ${assignment.course?.title}`} />
 

@@ -73,13 +73,7 @@ export default function CouponIndex({ coupons = { data: [] }, stats = {}, filter
     };
 
     return (
-        <AdminLayout
-            header={
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                    Coupons
-                </h1>
-            }
-        >
+        <AdminLayout title="Coupons">
             <Head title="Coupons & Discounts - Admin" />
 
             <div className="py-6 bg-slate-50 dark:bg-slate-950 min-h-[calc(100vh-5rem)]">
