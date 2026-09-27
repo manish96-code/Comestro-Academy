@@ -208,18 +208,13 @@ export default function CourseIndex({ courses, categories = [], students = [], f
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                            Courses & Curriculums
-                        </h1>
-                        <p className="text-[11px] text-slate-500">
-                            Manage curriculum, pricing, instructor allocations, and video content
-                        </p>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                        Courses
+                    </h1>
                     <Link
                         href={route('admin.courses.create')}
-                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
                     >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Add Course</span>

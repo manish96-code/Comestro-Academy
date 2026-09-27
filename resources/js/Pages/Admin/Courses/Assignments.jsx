@@ -119,34 +119,21 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('admin.assignments.index')}
-                            className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
-                            title="Back to All Assignments"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                    {course.title} — Assignments
-                                </h1>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                    {assignments.length} {assignments.length === 1 ? 'Assignment' : 'Assignments'}
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                                Manage practical project tasks, evaluate student PDF/GitHub work, and enter grades
-                            </p>
-                        </div>
-                    </div>
-
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={route('admin.assignments.index')}
+                        className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition shadow-2xs shrink-0"
+                        title="Back to All Assignments"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        {course.title} — Assignments
+                    </h1>
                     <button
                         type="button"
                         onClick={openCreateModal}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition shrink-0"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition shrink-0 cursor-pointer"
                     >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Create Assignment</span>

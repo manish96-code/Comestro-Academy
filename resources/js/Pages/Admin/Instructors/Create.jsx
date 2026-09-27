@@ -28,22 +28,17 @@ export default function InstructorCreate() {
     return (
         <AdminLayout
             header={
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-lg font-bold text-slate-900 leading-tight">
-                            Add New Instructor
-                        </h1>
-                        <p className="text-xs text-slate-500">
-                            Onboard a faculty instructor or teaching assistant to Comestro Academy
-                        </p>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
                     <Link
                         href={route('admin.instructors.index')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Instructors"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5 text-slate-500" />
-                        <span>Back to Instructors</span>
+                        <ArrowLeft className="h-4 w-4" />
                     </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                        Add Instructor
+                    </h1>
                 </div>
             }
         >

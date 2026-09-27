@@ -141,28 +141,17 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Course Exams & Assessments
-                            </h1>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                Multiple Exams Per Course
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Manage exam questions, time limits, passing grades, and view student certifications
-                        </p>
-                    </div>
-
+                <div className="flex items-center gap-3 min-w-0">
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                        Exams & Assessments
+                    </h1>
                     <button
                         type="button"
                         onClick={() => handleOpenCreateModal()}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md shadow-2xs transition shrink-0"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition shrink-0 cursor-pointer"
                     >
-                        <Plus className="h-4 w-4" />
-                        <span>Create New Exam</span>
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Create Exam</span>
                     </button>
                 </div>
             }

@@ -31,64 +31,26 @@ export default function ExamSubmissionPage({ course, exam, questions, submission
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
-                            className="p-2 rounded-md border border-slate-200 hover:bg-slate-50 text-slate-600 transition shadow-2xs"
-                            title="Back to Submissions Gradebook"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
-                                    Exam Submission Review
-                                </h1>
-                                <span
-                                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
-                                        submission.is_passed
-                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                             : 'bg-rose-50 text-rose-700 border-rose-200'
-                                    }`}
-                                >
-                                    {submission.is_passed ? 'Passed' : 'Failed'}
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-500 font-medium mt-0.5">
-                                {exam.title} • {course.title}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        {student?.id && (
-                            <Link
-                                href={route('admin.students.show', student.id)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
-                            >
-                                <User className="h-3.5 w-3.5 text-slate-400" />
-                                <span>Student Profile</span>
-                                <ExternalLink className="h-3 w-3 text-slate-400" />
-                            </Link>
-                        )}
-                        <Link
-                            href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200/80 rounded-md transition shadow-2xs"
-                        >
-                            <GraduationCap className="h-3.5 w-3.5" />
-                            <span>All Submissions</span>
-                        </Link>
-                        <button
-                            type="button"
-                            onClick={() => setDeleteModalOpen(true)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs cursor-pointer"
-                            title="Remove record so student can retake exam"
-                        >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            <span>Remove Record</span>
-                        </button>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={`${route('admin.exams.show', exam.id)}?tab=submissions`}
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Submissions Gradebook"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        Exam Submission Review
+                    </h1>
+                    <button
+                        type="button"
+                        onClick={() => setDeleteModalOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 rounded-md transition shadow-2xs shrink-0 cursor-pointer"
+                        title="Remove record so student can retake exam"
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span>Remove Record</span>
+                    </button>
                 </div>
             }
         >

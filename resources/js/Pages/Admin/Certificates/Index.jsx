@@ -87,21 +87,9 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                Issued Course Certificates
-                            </h1>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-mono">
-                                {stats.total_issued || 0} TOTAL
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                            Audit, verify, and manage all verified course completion certificates earned by students across all courses
-                        </p>
-                    </div>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                    Certificates
+                </h1>
             }
         >
             <Head title="Course Certificates Management" />

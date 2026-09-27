@@ -266,48 +266,17 @@ export default function CourseExamPage({ course, exam, initialTab = 'questions' 
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('admin.courses.content', course.id)}
-                            className="p-2 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-2xs"
-                            title="Back to Course Curriculum"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-lg font-bold text-slate-900 leading-tight">
-                                    Course Exam & Assessment
-                                </h1>
-                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${exam?.is_published
-                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                        : 'bg-amber-50 text-amber-700 border-amber-200'
-                                    }`}>
-                                    {exam?.is_published ? 'Published' : 'Draft / Unpublished'}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-2.5 text-xs text-slate-500 font-medium mt-1 flex-wrap">
-                                <span>{course.title} • Students unlock this exam upon 100% lecture completion</span>
-                                {exam?.creator && (
-                                    <span className="inline-flex items-center gap-1 text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md text-[11px] font-medium shadow-2xs">
-                                        <User className="h-3 w-3 text-slate-400" />
-                                        <span>Created by <strong className="text-slate-800 font-semibold">{exam.creator.name}</strong></span>
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('admin.courses.content', course.id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md shadow-2xs transition"
-                        >
-                            <Layers className="h-3.5 w-3.5 text-slate-500" />
-                            <span>Curriculum</span>
-                        </Link>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={route('admin.courses.content', course.id)}
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Course Curriculum"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        {course.title} — Exam
+                    </h1>
                 </div>
             }
         >

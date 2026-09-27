@@ -47,16 +47,9 @@ export default function AdminDashboard({ stats, recent_users }) {
     return (
         <AdminLayout
             header={
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                            Platform Overview
-                        </h1>
-                        <p className="text-[11px] text-slate-500">
-                            Real-time platform activity, enrollment counts & system services
-                        </p>
-                    </div>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                    Dashboard
+                </h1>
             }
         >
             <Head title="Admin Dashboard" />

@@ -57,21 +57,9 @@ export default function StudentIndex({ students, filters }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-lg font-bold text-slate-900 leading-tight">
-                                Students Directory
-                            </h1>
-                            <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-mono">
-                                {students?.total || 0} TOTAL
-                            </span>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                            Manage student registrations, academic background, and learning accounts
-                        </p>
-                    </div>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                    Students
+                </h1>
             }
         >
             <Head title="Students Directory" />

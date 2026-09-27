@@ -19,10 +19,8 @@ import {
     FolderTree,
     FileCheck,
     Save,
-    Radio,
     BookOpen,
     HelpCircle,
-    Settings,
     UploadCloud,
     Film,
     Link as LinkIcon,
@@ -332,108 +330,74 @@ export default function CourseContent({ course }) {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('admin.courses.index')}
-                            className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-xs"
-                            title="Back to Courses"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-lg font-bold text-slate-900 leading-tight">
-                                    {course.title}
-                                </h1>
-                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${
-                                    (course.type === 'live' || course.course_type === 'live')
-                                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                                }`}>
-                                    {(course.type === 'live' || course.course_type === 'live') ? (
-                                        <>
-                                            <Radio className="h-2.5 w-2.5 text-rose-500 animate-pulse" />
-                                            Live Course
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Video className="h-2.5 w-2.5 text-indigo-500" />
-                                            Recorded Lectures & Notes
-                                        </>
-                                    )}
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-500 font-mono mt-0.5">
-                                /{course.slug} • Manage curriculum modules, video streams, and PDF study resources
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('admin.courses.show', course.id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md shadow-2xs transition"
-                        >
-                            <Settings className="h-3.5 w-3.5 text-slate-500" />
-                            <span>Course Settings</span>
-                        </Link>
-                        <button
-                            type="button"
-                            onClick={() => openAddModal()}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0"
-                        >
-                            <Plus className="h-4 w-4" />
-                            <span>Add New Lecture</span>
-                        </button>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={route('admin.courses.index')}
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Courses"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        {course.title}
+                    </h1>
+                    <button
+                        type="button"
+                        onClick={() => openAddModal()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
+                    >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Add Lecture</span>
+                    </button>
                 </div>
             }
         >
             <Head title={`Curriculum & Notes - ${course.title}`} />
 
-            <div className="py-6 bg-slate-50 min-h-[calc(100vh-5rem)]">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="py-5 bg-slate-50 min-h-[calc(100vh-5rem)]">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-5">
 
                     {/* Summary Metrics Bar */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
-                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100">
-                                <Layers className="h-5 w-5" />
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="bg-white rounded-lg border border-slate-200 px-3.5 py-2.5 flex items-center gap-3 shadow-2xs">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-md border border-indigo-100/80 shrink-0">
+                                <Layers className="h-4 w-4" />
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Modules</p>
-                                <p className="text-lg font-bold text-slate-900 font-mono">{moduleNames.length}</p>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
-                            <div className="p-2.5 bg-sky-50 text-sky-600 rounded-md border border-sky-100">
-                                <Video className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Video Lessons</p>
-                                <p className="text-lg font-bold text-slate-900 font-mono">{totalVideos} <span className="text-xs text-slate-400 font-normal">/ {lessons.length}</span></p>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-medium text-slate-500 truncate">Modules</p>
+                                <p className="text-base font-bold text-slate-900 font-mono leading-tight">{moduleNames.length}</p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
-                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100">
-                                <FileText className="h-5 w-5" />
+                        <div className="bg-white rounded-lg border border-slate-200 px-3.5 py-2.5 flex items-center gap-3 shadow-2xs">
+                            <div className="p-2 bg-sky-50 text-sky-600 rounded-md border border-sky-100/80 shrink-0">
+                                <Video className="h-4 w-4" />
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">PDF Study Notes</p>
-                                <p className="text-lg font-bold text-slate-900 font-mono">{totalNotes}</p>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-medium text-slate-500 truncate">Video Lessons</p>
+                                <p className="text-base font-bold text-slate-900 font-mono leading-tight">
+                                    {totalVideos} <span className="text-xs text-slate-400 font-normal">/ {lessons.length}</span>
+                                </p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg border border-slate-200 p-4 flex items-center gap-3.5 shadow-2xs">
-                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-md border border-amber-100">
-                                <Clock className="h-5 w-5" />
+                        <div className="bg-white rounded-lg border border-slate-200 px-3.5 py-2.5 flex items-center gap-3 shadow-2xs">
+                            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100/80 shrink-0">
+                                <FileText className="h-4 w-4" />
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Lessons</p>
-                                <p className="text-lg font-bold text-slate-900 font-mono">{lessons.length}</p>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-medium text-slate-500 truncate">PDF Notes</p>
+                                <p className="text-base font-bold text-slate-900 font-mono leading-tight">{totalNotes}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg border border-slate-200 px-3.5 py-2.5 flex items-center gap-3 shadow-2xs">
+                            <div className="p-2 bg-amber-50 text-amber-600 rounded-md border border-amber-100/80 shrink-0">
+                                <Clock className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-medium text-slate-500 truncate">Total Lessons</p>
+                                <p className="text-base font-bold text-slate-900 font-mono leading-tight">{lessons.length}</p>
                             </div>
                         </div>
                     </div>

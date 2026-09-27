@@ -317,24 +317,17 @@ export default function CourseCreate({ course = null, categories = [], instructo
     return (
         <AdminLayout
             header={
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                            {isEdit ? 'Edit Course Curriculum' : 'Create Course'}
-                        </h1>
-                        <p className="text-[11px] text-slate-500">
-                            {isEdit
-                                ? `Updating details and syllabus for ${course.title}`
-                                : 'Configure curriculum, allocate instructors, and set pricing'}
-                        </p>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
                     <Link
                         href={route('admin.courses.index')}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg shadow-2xs transition"
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Courses"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                        <span>Courses</span>
+                        <ArrowLeft className="h-4 w-4" />
                     </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                        {isEdit ? 'Edit Course' : 'Create Course'}
+                    </h1>
                 </div>
             }
         >

@@ -164,24 +164,17 @@ export default function StudentShow({ student, enrollments = [], availableCourse
     return (
         <AdminLayout
             header={
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-lg font-bold text-slate-900 leading-tight">
-                            Student Profile & Course Access
-                        </h1>
-                        <p className="text-xs text-slate-500">
-                            Academic background, developer links, and enrolled courses for {student.name}
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href={route('admin.students.index')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-md shadow-2xs transition"
-                        >
-                            <ArrowLeft className="h-3.5 w-3.5 text-slate-500" />
-                            <span>Back to Students</span>
-                        </Link>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <Link
+                        href={route('admin.students.index')}
+                        className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-2xs shrink-0"
+                        title="Back to Students"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        {student.name}
+                    </h1>
                 </div>
             }
         >

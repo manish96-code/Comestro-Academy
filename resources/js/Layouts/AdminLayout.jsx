@@ -348,15 +348,6 @@ export default function AdminLayout({ header, children }) {
 
                     {/* Right: Quick Tools & Profile Dropdown */}
                     <div className="flex items-center gap-2.5 sm:gap-3">
-                        {/* Public Catalog Link on Desktop */}
-                        <Link
-                            href={route('courses.index')}
-                            target="_blank"
-                            className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-md transition"
-                        >
-                            <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
-                            <span>Live Portal</span>
-                        </Link>
 
                         {/* Real-time Live Notifications */}
                         <NotificationBell user={user} />

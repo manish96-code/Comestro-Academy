@@ -55,22 +55,17 @@ export default function CouponCreate({ courses = [] }) {
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                     <Link
                         href={route('admin.coupons.index')}
-                        className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-600 hover:text-slate-900 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-2xs shrink-0"
                         title="Back to Coupons"
                     >
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
-                    <div>
-                        <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            Create Promotion Coupon
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Set up discount percentages, redemption quotas, and course applicability rules
-                        </p>
-                    </div>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                        Create Coupon
+                    </h1>
                 </div>
             }
         >
