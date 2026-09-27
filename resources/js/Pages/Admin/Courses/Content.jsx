@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -341,14 +342,6 @@ export default function CourseContent({ course }) {
                     <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
                         {course.title}
                     </h1>
-                    <button
-                        type="button"
-                        onClick={() => openAddModal()}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Lecture</span>
-                    </button>
                 </div>
             }
         >
@@ -999,6 +992,11 @@ export default function CourseContent({ course }) {
                     </div>
                 </div>
             )}
+
+            <FloatingActionButton
+                onClick={() => openAddModal()}
+                label="Add Lecture"
+            />
         </AdminLayout>
     );
 }

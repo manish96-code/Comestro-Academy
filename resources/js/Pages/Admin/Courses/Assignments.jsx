@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -130,14 +131,6 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                     <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
                         {course.title} — Assignments
                     </h1>
-                    <button
-                        type="button"
-                        onClick={openCreateModal}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Create Assignment</span>
-                    </button>
                 </div>
             }
         >
@@ -650,6 +643,11 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                 </div>
             )}
 
+
+            <FloatingActionButton
+                onClick={openCreateModal}
+                label="Create Assignment"
+            />
         </AdminLayout>
     );
 }

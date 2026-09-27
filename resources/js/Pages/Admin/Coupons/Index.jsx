@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
@@ -74,18 +75,9 @@ export default function CouponIndex({ coupons = { data: [] }, stats = {}, filter
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        Coupons
-                    </h1>
-                    <Link
-                        href={route('admin.coupons.create')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Coupon</span>
-                    </Link>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                    Coupons
+                </h1>
             }
         >
             <Head title="Coupons & Discounts - Admin" />
@@ -413,6 +405,11 @@ export default function CouponIndex({ coupons = { data: [] }, stats = {}, filter
                 confirmVariant="danger"
                 onConfirm={handleDeleteCoupon}
                 onClose={() => setDeleteModal({ isOpen: false, couponId: null, couponCode: '' })}
+            />
+
+            <FloatingActionButton
+                href={route('admin.coupons.create')}
+                label="Add Coupon"
             />
         </AdminLayout>
     );

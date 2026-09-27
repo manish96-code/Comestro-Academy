@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import InputError from '@/Components/InputError';
@@ -141,19 +142,9 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        Exams & Assessments
-                    </h1>
-                    <button
-                        type="button"
-                        onClick={() => handleOpenCreateModal()}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Create Exam</span>
-                    </button>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                    Exams & Assessments
+                </h1>
             }
         >
             <Head title="Course Exams - Admin" />
@@ -648,6 +639,11 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                 confirmText="Yes, Delete Exam"
                 cancelText="Cancel"
                 variant="danger"
+            />
+
+            <FloatingActionButton
+                onClick={() => handleOpenCreateModal()}
+                label="Create Exam"
             />
         </AdminLayout>
     );

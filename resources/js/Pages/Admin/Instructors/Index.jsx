@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import SearchBar from '@/Components/SearchBar';
@@ -58,18 +59,9 @@ export default function InstructorIndex({ instructors, filters }) {
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        Instructors
-                    </h1>
-                    <Link
-                        href={route('admin.instructors.create')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Instructor</span>
-                    </Link>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                    Instructors
+                </h1>
             }
         >
             <Head title="Instructors Directory" />
@@ -183,6 +175,11 @@ export default function InstructorIndex({ instructors, filters }) {
                 </div>
             </div>
 
+
+            <FloatingActionButton
+                href={route('admin.instructors.create')}
+                label="Add Instructor"
+            />
         </AdminLayout>
     );
 }

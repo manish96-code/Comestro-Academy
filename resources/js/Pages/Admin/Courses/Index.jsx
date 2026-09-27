@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
@@ -208,18 +209,9 @@ export default function CourseIndex({ courses, categories = [], students = [], f
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        Courses
-                    </h1>
-                    <Link
-                        href={route('admin.courses.create')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Course</span>
-                    </Link>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                    Courses
+                </h1>
             }
         >
             <Head title="Course Management" />
@@ -807,6 +799,11 @@ export default function CourseIndex({ courses, categories = [], students = [], f
                 }
                 confirmText="Yes, Delete Course"
                 variant="danger"
+            />
+
+            <FloatingActionButton
+                href={route('admin.courses.create')}
+                label="Add Course"
             />
         </AdminLayout>
     );

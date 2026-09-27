@@ -1,3 +1,4 @@
+import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
@@ -69,18 +70,9 @@ export default function CategoryIndex({ categories, filters }) {
     return (
         <AdminLayout
             header={
-                <div className="flex items-center gap-3 min-w-0">
-                    <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                        Categories
-                    </h1>
-                    <Link
-                        href={route('admin.categories.create')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-2xs transition shrink-0 cursor-pointer"
-                    >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Category</span>
-                    </Link>
-                </div>
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                    Categories
+                </h1>
             }
         >
             <Head title="Course Categories" />
@@ -224,6 +216,11 @@ export default function CategoryIndex({ categories, filters }) {
                 }
                 confirmText="Yes, Delete Category"
                 variant="danger"
+            />
+
+            <FloatingActionButton
+                href={route('admin.categories.create')}
+                label="Add Category"
             />
         </AdminLayout>
     );
