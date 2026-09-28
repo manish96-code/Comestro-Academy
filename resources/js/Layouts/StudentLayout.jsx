@@ -28,7 +28,7 @@ export default function StudentLayout({
     title,
     header,
     backUrl,
-    showBack,
+    showBack = true,
     headerActions = null,
     children,
 }) {
@@ -47,11 +47,6 @@ export default function StudentLayout({
     };
 
     const pageTitle = title || (typeof header === 'string' ? header : null);
-    const isDashboard = Boolean(
-        pageTitle === 'Dashboard' ||
-        (typeof route === 'function' && (route().current('student.dashboard') || route().current('dashboard')))
-    );
-    const shouldShowBack = showBack !== undefined ? showBack : !isDashboard;
 
     // Theme state with localStorage persistence
     const [theme, setTheme] = useState(() => {
@@ -361,7 +356,7 @@ export default function StudentLayout({
                             <Menu className="h-5 w-5" />
                         </button>
 
-                        {shouldShowBack && (
+                        {showBack !== false && (
                             backUrl ? (
                                 <Link
                                     href={backUrl}

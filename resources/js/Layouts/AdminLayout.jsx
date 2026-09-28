@@ -30,7 +30,7 @@ export default function AdminLayout({
     title,
     header,
     backUrl,
-    showBack,
+    showBack = true,
     headerActions = null,
     children,
 }) {
@@ -49,11 +49,6 @@ export default function AdminLayout({
     };
 
     const pageTitle = title || (typeof header === 'string' ? header : null);
-    const isDashboard = Boolean(
-        pageTitle === 'Dashboard' ||
-        (typeof route === 'function' && (route().current('admin.dashboard') || route().current('dashboard')))
-    );
-    const shouldShowBack = showBack !== undefined ? showBack : !isDashboard;
 
     useEffect(() => {
         if (flash?.success) {
@@ -367,7 +362,7 @@ export default function AdminLayout({
                             <Menu className="h-5 w-5" />
                         </button>
 
-                        {shouldShowBack && (
+                        {showBack !== false && (
                             backUrl ? (
                                 <Link
                                     href={backUrl}

@@ -45,7 +45,7 @@ export default function AdminDashboard({ stats, recent_users }) {
     };
 
     return (
-        <AdminLayout title="Dashboard" showBack={false}>
+        <AdminLayout title="Dashboard">
             <Head title="Admin Dashboard" />
 
             <div className="py-6">
