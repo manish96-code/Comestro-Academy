@@ -30,7 +30,7 @@ export default function AdminLayout({
     title,
     header,
     backUrl,
-    showBack = true,
+    showBack,
     headerActions = null,
     children,
 }) {
@@ -49,6 +49,11 @@ export default function AdminLayout({
     };
 
     const pageTitle = title || (typeof header === 'string' ? header : null);
+    const isDashboard = Boolean(
+        pageTitle === 'Dashboard' ||
+        (typeof route === 'function' && (route().current('admin.dashboard') || route().current('dashboard')))
+    );
+    const shouldShowBack = showBack !== undefined ? showBack : !isDashboard;
 
     useEffect(() => {
         if (flash?.success) {
@@ -362,11 +367,11 @@ export default function AdminLayout({
                             <Menu className="h-5 w-5" />
                         </button>
 
-                        {showBack !== false && (
+                        {shouldShowBack && (
                             backUrl ? (
                                 <Link
                                     href={backUrl}
-                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0"
+                                    className="hidden sm:inline-flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0"
                                     title="Go back"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
@@ -375,7 +380,7 @@ export default function AdminLayout({
                                 <button
                                     type="button"
                                     onClick={handleBack}
-                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0 cursor-pointer"
+                                    className="hidden sm:inline-flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition shrink-0 cursor-pointer"
                                     title="Go back"
                                 >
                                     <ArrowLeft className="h-4 w-4" />

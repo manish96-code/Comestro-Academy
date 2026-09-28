@@ -62,13 +62,13 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Overview Header Banner - Flat & Clean */}
-                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
                         <div className="space-y-1.5 max-w-2xl">
                             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold font-mono uppercase tracking-wider">
                                 <Sparkles className="h-3.5 w-3.5" />
                                 Certification Center
                             </div>
-                            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <h2 className="text-base sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                 Validate Your Skills & Earn Certificates
                             </h2>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -77,13 +77,13 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="flex items-center gap-3 shrink-0">
-                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
-                                <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.passed || 0}</p>
+                        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 shrink-0 w-full sm:w-auto">
+                            <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-2.5 sm:p-3 text-center sm:min-w-[100px]">
+                                <p className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.passed || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Certificates</p>
                             </div>
-                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[100px]">
-                                <p className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400">{stats.ready || 0}</p>
+                            <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-2.5 sm:p-3 text-center sm:min-w-[100px]">
+                                <p className="text-lg sm:text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400">{stats.ready || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Ready to Take</p>
                             </div>
                         </div>
@@ -91,50 +91,50 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
 
                     {/* Top Metrics Cards */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-2xs transition">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="p-2 sm:p-2.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/60 shrink-0">
                                     <FileCheck className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Exams</p>
-                                    <p className="text-lg font-bold text-slate-900 dark:text-white font-mono">{stats.total || exams.length}</p>
+                                    <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-mono">{stats.total || exams.length}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-2xs transition">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="p-2 sm:p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/60 shrink-0">
                                     <Unlock className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Ready to Take</p>
-                                    <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">{stats.ready || 0}</p>
+                                    <p className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">{stats.ready || 0}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-2xs transition">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="p-2 sm:p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/60 shrink-0">
                                     <Award className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Passed & Certified</p>
-                                    <p className="text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">{stats.passed || 0}</p>
+                                    <p className="text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400 font-mono">{stats.passed || 0}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 shadow-2xs transition">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-2xs transition">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="p-2 sm:p-2.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
                                     <Lock className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Locked</p>
-                                    <p className="text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">{stats.locked || 0}</p>
+                                    <p className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">{stats.locked || 0}</p>
                                 </div>
                             </div>
                         </div>
@@ -143,11 +143,11 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                     {/* Filter and Search Bar */}
                     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                         {/* Filter Tabs */}
-                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
+                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto scrollbar-none max-w-full">
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('all')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'all'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -161,7 +161,7 @@ export default function StudentExamsIndex({ exams = [], stats = {} }) {
                             <button
                                 type="button"
                                 onClick={() => setFilterTab('ready')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     filterTab === 'ready'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

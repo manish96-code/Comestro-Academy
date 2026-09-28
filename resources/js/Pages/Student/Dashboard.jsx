@@ -23,7 +23,7 @@ export default function StudentDashboard({ student, enrolledCoursesCount = 0, re
     const mostRecent = recentEnrollments.length > 0 ? recentEnrollments[0] : null;
 
     return (
-        <StudentLayout title="Dashboard">
+        <StudentLayout title="Dashboard" showBack={false}>
             <Head title="Student Dashboard - Comestro Academy" />
 
             <div className="py-6">

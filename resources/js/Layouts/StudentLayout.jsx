@@ -28,7 +28,7 @@ export default function StudentLayout({
     title,
     header,
     backUrl,
-    showBack = true,
+    showBack,
     headerActions = null,
     children,
 }) {
@@ -47,6 +47,11 @@ export default function StudentLayout({
     };
 
     const pageTitle = title || (typeof header === 'string' ? header : null);
+    const isDashboard = Boolean(
+        pageTitle === 'Dashboard' ||
+        (typeof route === 'function' && (route().current('student.dashboard') || route().current('dashboard')))
+    );
+    const shouldShowBack = showBack !== undefined ? showBack : !isDashboard;
 
     // Theme state with localStorage persistence
     const [theme, setTheme] = useState(() => {
@@ -344,22 +349,23 @@ export default function StudentLayout({
             <div className="flex-1 lg:pl-64 flex flex-col min-w-0 z-10">
                 
                 {/* Top Navbar */}
-                <header className="h-16 bg-white/85 dark:bg-[#0c101c]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+                <header className="h-14 sm:h-16 bg-white/85 dark:bg-[#0c101c]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-20 flex items-center justify-between px-3 sm:px-6 lg:px-8 transition-colors duration-200">
                     
                     {/* Left: Mobile Toggle, Back Button & Page Header Title */}
                     <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                            className="lg:hidden p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                            aria-label="Open navigation menu"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
 
-                        {showBack !== false && (
+                        {shouldShowBack && (
                             backUrl ? (
                                 <Link
                                     href={backUrl}
-                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                                    className="hidden sm:inline-flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
                                     title="Go back"
                                 >
                                     <ArrowLeft className="h-4 w-4" />
@@ -368,7 +374,7 @@ export default function StudentLayout({
                                 <button
                                     type="button"
                                     onClick={handleBack}
-                                    className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
+                                    className="hidden sm:inline-flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
                                     title="Go back"
                                 >
                                     <ArrowLeft className="h-4 w-4" />

@@ -51,13 +51,13 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
 
                     {/* Overview Header Banner - Flat & Clean */}
-                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
                         <div className="space-y-1.5 max-w-2xl">
                             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold font-mono uppercase tracking-wider">
                                 <Sparkles className="h-3.5 w-3.5" />
                                 Hands-On Learning
                             </div>
-                            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <h2 className="text-base sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                 Practical Tasks & Real-World Projects
                             </h2>
                             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -66,13 +66,13 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="flex items-center gap-3 shrink-0">
-                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[95px]">
-                                <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.graded || 0}</p>
+                        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 shrink-0 w-full sm:w-auto">
+                            <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-2.5 sm:p-3 text-center sm:min-w-[95px]">
+                                <p className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats.graded || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Evaluated</p>
                             </div>
-                            <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-3 text-center min-w-[95px]">
-                                <p className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">{stats.pending || 0}</p>
+                            <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-2.5 sm:p-3 text-center sm:min-w-[95px]">
+                                <p className="text-lg sm:text-xl font-bold font-mono text-amber-600 dark:text-amber-400">{stats.pending || 0}</p>
                                 <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mt-0.5">Action Needed</p>
                             </div>
                         </div>
@@ -81,11 +81,11 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                     {/* Filter and Search Bar */}
                     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                         {/* Filter Tabs */}
-                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
+                        <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto scrollbar-none max-w-full">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('all')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     activeTab === 'all'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -99,7 +99,7 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('pending')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     activeTab === 'pending'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -113,7 +113,7 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('review')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     activeTab === 'review'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -127,7 +127,7 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('graded')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
+                                className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5 ${
                                     activeTab === 'graded'
                                         ? 'bg-indigo-600 text-white'
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -156,12 +156,12 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                             {filteredAssignments.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xs transition hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between gap-5 relative"
+                                    className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-2xs transition hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between gap-4 sm:gap-5 relative"
                                 >
                                     <div className="space-y-3.5">
                                         {/* Top Tag & Status */}
                                         <div className="flex items-center justify-between gap-2">
-                                            <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 max-w-[170px] sm:max-w-xs truncate">
                                                 {item.course?.title}
                                             </span>
 
@@ -256,7 +256,7 @@ export default function StudentAssignmentsIndex({ assignments = [], stats = {} }
                                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
                                         <Link
                                             href={route('student.assignments.show', item.id)}
-                                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition"
+                                            className="w-full inline-flex items-center justify-center gap-2 py-2 sm:py-2.5 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition"
                                         >
                                             <span>
                                                 {item.status === 'reviewed'
