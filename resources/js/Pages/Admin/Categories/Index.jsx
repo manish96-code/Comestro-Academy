@@ -4,7 +4,7 @@ import Pagination from '@/Components/Pagination';
 import ConfirmModal from '@/Components/ConfirmModal';
 import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Edit3,
     Plus,
@@ -35,13 +35,24 @@ export default function CategoryIndex({ categories, filters }) {
     };
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         router.get(
             route('admin.categories.index'),
             { search: search || undefined },
             { preserveState: true }
         );
     };
+
+    // Live debounced search
+    useEffect(() => {
+        if (search === (filters?.search || '')) return;
+
+        const timer = setTimeout(() => {
+            handleSearch();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleReset = () => {
         setSearch('');

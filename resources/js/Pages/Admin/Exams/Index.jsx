@@ -8,7 +8,7 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import SearchBar from '@/Components/SearchBar';
 import FilterSelect from '@/Components/FilterSelect';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     GraduationCap,
     Clock,
@@ -49,15 +49,20 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
         );
     };
 
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        handleFilter(search, courseId);
-    };
+    // Live debounced search
+    useEffect(() => {
+        if (search === (filters.search || '')) return;
 
-    const clearFilters = () => {
-        setSearch('');
-        setCourseId('');
-        router.get(route('admin.exams.index'), {}, { preserveState: true, replace: true });
+        const timer = setTimeout(() => {
+            handleFilter(search, courseId);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const handleSearchSubmit = (e) => {
+        if (e) e.preventDefault();
+        handleFilter(search, courseId);
     };
 
     // Create Exam Form
@@ -195,6 +200,7 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                             <SearchBar
                                 onSubmit={handleSearchSubmit}
                                 size="md"
+                                showButton={false}
                                 inputClassName="rounded-md"
                                 placeholder="Search by exam title or course title..."
                                 value={search}
@@ -211,22 +217,13 @@ export default function AdminExamsIndex({ exams = { data: [] }, courses = [], st
                                     value={courseId}
                                     size="md"
                                     onChange={(e) => {
-                                        setCourseId(e.target.value);
-                                        handleFilter(search || undefined, e.target.value || undefined);
+                                        const newCourseId = e.target.value;
+                                        setCourseId(newCourseId);
+                                        handleFilter(search || undefined, newCourseId || undefined);
                                     }}
                                     placeholder="All Courses"
                                     options={courses}
                                 />
-
-                                {(search || courseId) && (
-                                    <button
-                                        type="button"
-                                        onClick={clearFilters}
-                                        className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition"
-                                    >
-                                        Reset
-                                    </button>
-                                )}
                             </div>
                         </div>
                     </div>

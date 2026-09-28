@@ -5,7 +5,7 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import SearchBar from '@/Components/SearchBar';
 import FilterSelect from '@/Components/FilterSelect';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Search,
     Edit3,
@@ -160,6 +160,17 @@ export default function CourseIndex({ courses, categories = [], students = [], f
             { preserveState: true }
         );
     };
+
+    // Live debounced search
+    useEffect(() => {
+        if (search === (filters?.search || '')) return;
+
+        const timer = setTimeout(() => {
+            applyFilters({ search, category_id: categoryId, status });
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();

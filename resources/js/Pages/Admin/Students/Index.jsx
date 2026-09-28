@@ -2,7 +2,7 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Pagination from '@/Components/Pagination';
 import SearchBar from '@/Components/SearchBar';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Eye,
     GraduationCap,
@@ -15,13 +15,24 @@ export default function StudentIndex({ students, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         router.get(
             route('admin.students.index'),
             { search: search || undefined },
             { preserveState: true }
         );
     };
+
+    // Live debounced search
+    useEffect(() => {
+        if (search === (filters?.search || '')) return;
+
+        const timer = setTimeout(() => {
+            handleSearch();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleReset = () => {
         setSearch('');

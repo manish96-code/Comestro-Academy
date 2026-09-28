@@ -19,7 +19,7 @@ const SearchBar = forwardRef(function SearchBar(
         clearable = false,
         disabled = false,
         loading = false,
-        showButton = true,
+        showButton = false,
         buttonText = 'Search',
         buttonClassName = '',
         buttonIcon: ButtonIcon = null,
@@ -48,7 +48,7 @@ const SearchBar = forwardRef(function SearchBar(
         }
     };
 
-    const showClear = (clearable || Boolean(onClear)) && Boolean(value);
+    const showClear = (clearable !== false && (clearable || Boolean(onClear) || Boolean(onChange))) && Boolean(value);
 
     const sizeClasses =
         {
