@@ -1,3 +1,4 @@
+import ConfirmModal from '@/Components/ConfirmModal';
 import FloatingActionButton from '@/Components/FloatingActionButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
@@ -27,6 +28,18 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState(null);
     const [gradingSubmission, setGradingSubmission] = useState(null);
+    const [revokeModal, setRevokeModal] = useState({
+        isOpen: false,
+        submissionId: null,
+        studentName: '',
+        processing: false,
+    });
+    const [deleteAssignmentModal, setDeleteAssignmentModal] = useState({
+        isOpen: false,
+        assignmentId: null,
+        title: '',
+        processing: false,
+    });
 
     // Active assignment
     const activeAssignment = assignments.find((a) => a.id === selectedAssignmentId) || assignments[0] || null;
@@ -87,10 +100,26 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
         }
     };
 
-    const handleDeleteAssignment = (assignmentId) => {
-        if (!confirm('Are you sure you want to delete this assignment and all student submissions?')) return;
-        router.delete(route('admin.courses.assignments.destroy', [course.id, assignmentId]), {
+    const handleOpenDeleteAssignment = (assignment) => {
+        setDeleteAssignmentModal({
+            isOpen: true,
+            assignmentId: assignment.id,
+            title: assignment.title,
+            processing: false,
+        });
+    };
+
+    const handleConfirmDeleteAssignment = () => {
+        if (!deleteAssignmentModal.assignmentId) return;
+        setDeleteAssignmentModal((prev) => ({ ...prev, processing: true }));
+        router.delete(route('admin.courses.assignments.destroy', [course.id, deleteAssignmentModal.assignmentId]), {
             preserveScroll: true,
+            onSuccess: () => {
+                setDeleteAssignmentModal({ isOpen: false, assignmentId: null, title: '', processing: false });
+            },
+            onError: () => {
+                setDeleteAssignmentModal((prev) => ({ ...prev, processing: false }));
+            },
         });
     };
 
@@ -103,12 +132,31 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
         gradeForm.clearErrors();
     };
 
-    const handleRevokeSubmission = (submissionId) => {
-        if (!confirm('Are you sure you want to revoke this submission? The assignment submission will be permanently deleted from the database and the student will be allowed to submit a new assignment.')) {
-            return;
-        }
-        router.delete(route('admin.assignments.submissions.revoke', submissionId), {
+    const handleOpenRevokeModal = (submission) => {
+        setRevokeModal({
+            isOpen: true,
+            submissionId: submission.id,
+            studentName: submission.student?.name || submission.user?.name || 'this student',
+            processing: false,
+        });
+    };
+
+    const handleConfirmRevoke = () => {
+        if (!revokeModal.submissionId) return;
+        setRevokeModal((prev) => ({ ...prev, processing: true }));
+        router.delete(route('admin.assignments.submissions.revoke', revokeModal.submissionId), {
             preserveScroll: true,
+            onSuccess: () => {
+                setRevokeModal({
+                    isOpen: false,
+                    submissionId: null,
+                    studentName: '',
+                    processing: false,
+                });
+            },
+            onError: () => {
+                setRevokeModal((prev) => ({ ...prev, processing: false }));
+            },
         });
     };
 
@@ -218,7 +266,7 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleDeleteAssignment(activeAssignment.id)}
+                                                    onClick={() => handleOpenDeleteAssignment(activeAssignment)}
                                                     className="p-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-rose-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                                                     title="Delete Assignment"
                                                 >
@@ -377,7 +425,7 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                                                         </button>
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleRevokeSubmission(sub.id)}
+                                                                            onClick={() => handleOpenRevokeModal(sub)}
                                                                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 text-xs font-semibold transition"
                                                                             title="Revoke submission (deletes from database)"
                                                                         >
@@ -645,6 +693,44 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                 </div>
             )}
 
+
+            {/* Confirm Revoke Submission Modal */}
+            <ConfirmModal
+                isOpen={revokeModal.isOpen}
+                onClose={() => setRevokeModal({ isOpen: false, submissionId: null, studentName: '', processing: false })}
+                onConfirm={handleConfirmRevoke}
+                title="Revoke Assignment Submission?"
+                message={
+                    <p>
+                        Are you sure you want to revoke this submission for{' '}
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{revokeModal.studentName}</span>?
+                        The assignment submission will be permanently deleted from the database and the student will be allowed to submit a new assignment.
+                    </p>
+                }
+                confirmText="Yes, Revoke Submission"
+                cancelText="Cancel"
+                processing={revokeModal.processing}
+                variant="danger"
+            />
+
+            {/* Confirm Delete Assignment Modal */}
+            <ConfirmModal
+                isOpen={deleteAssignmentModal.isOpen}
+                onClose={() => setDeleteAssignmentModal({ isOpen: false, assignmentId: null, title: '', processing: false })}
+                onConfirm={handleConfirmDeleteAssignment}
+                title="Delete Assignment?"
+                message={
+                    <p>
+                        Are you sure you want to permanently delete{' '}
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{deleteAssignmentModal.title}</span>?
+                        All student submissions and files linked to this assignment will also be permanently deleted.
+                    </p>
+                }
+                confirmText="Yes, Delete Assignment"
+                cancelText="Cancel"
+                processing={deleteAssignmentModal.processing}
+                variant="danger"
+            />
 
             <FloatingActionButton
                 onClick={openCreateModal}
