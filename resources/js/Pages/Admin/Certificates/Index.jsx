@@ -14,7 +14,8 @@ import {
     XCircle,
     User,
     Calendar,
-    BookOpen
+    BookOpen,
+    Eye
 } from 'lucide-react';
 
 export default function AdminCertificateIndex({ certificates = { data: [] }, stats = {}, courses = [], filters = {} }) {
@@ -187,9 +188,12 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                                             className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition"
                                         >
                                             <td className="py-3 px-4">
-                                                <div className="font-mono font-bold text-slate-900 dark:text-white">
+                                                <Link
+                                                    href={route('admin.certificates.show', cert.id)}
+                                                    className="font-mono font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline transition"
+                                                >
                                                     {cert.certificate_number}
-                                                </div>
+                                                </Link>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <div className="font-semibold text-slate-800 dark:text-slate-200">
@@ -234,6 +238,13 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
                                             </td>
                                             <td className="py-3 px-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
+                                                    <Link
+                                                        href={route('admin.certificates.show', cert.id)}
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-indigo-400 dark:hover:bg-slate-800 transition"
+                                                    >
+                                                        <Eye className="w-3.5 h-3.5" />
+                                                        <span>View</span>
+                                                    </Link>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleOpenToggleModal(cert)}
@@ -301,3 +312,4 @@ export default function AdminCertificateIndex({ certificates = { data: [] }, sta
     </AdminLayout>
 );
 }
+

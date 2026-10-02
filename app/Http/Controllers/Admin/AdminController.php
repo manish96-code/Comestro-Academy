@@ -76,6 +76,7 @@ class AdminController extends Controller
             'studentProfile',
             'enrollments.course.category',
             'enrollments.batch',
+            'enrollments.certificate',
         ]);
 
         $enrolledCourseIds = $student->enrollments->pluck('course_id');

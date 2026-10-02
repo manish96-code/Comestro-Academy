@@ -275,4 +275,35 @@ class CertificateService
             })
             ->all();
     }
+
+    /**
+     * Format a certificate model for frontend rendering.
+     *
+     * @return array<string, mixed>
+     */
+    public function formatCertificate(Certificate $certificate): array
+    {
+        $certificate->loadMissing(['course.category', 'user']);
+
+        return [
+            'id' => $certificate->id,
+            'certificate_number' => $certificate->certificate_number,
+            'uuid' => $certificate->uuid,
+            'status' => $certificate->status,
+            'issued_at' => $certificate->issued_at ? $certificate->issued_at->format('F d, Y') : '',
+            'final_score' => $certificate->final_score,
+            'metadata' => $certificate->metadata,
+            'student' => [
+                'name' => $certificate->metadata['student_name'] ?? $certificate->user?->name,
+                'email' => $certificate->metadata['student_email'] ?? $certificate->user?->email,
+            ],
+            'course' => [
+                'id' => $certificate->course_id,
+                'title' => $certificate->metadata['course_title'] ?? $certificate->course?->title,
+                'category' => $certificate->metadata['course_category'] ?? $certificate->course?->category?->name,
+                'duration' => $certificate->metadata['course_duration'] ?? $certificate->course?->duration,
+                'instructor_name' => $certificate->metadata['instructor_name'] ?? 'Comestro Faculty Team',
+            ],
+        ];
+    }
 }

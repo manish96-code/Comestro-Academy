@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Course;
+use App\Services\CertificateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -62,6 +63,14 @@ class CertificateController extends Controller
                 'course_id' => $courseId ?? '',
                 'status' => $status ?? '',
             ],
+        ]);
+    }
+
+    // View specific certificate
+    public function show(Certificate $certificate, CertificateService $certificateService): Response
+    {
+        return Inertia::render('Admin/Certificates/Show', [
+            'certificate' => $certificateService->formatCertificate($certificate),
         ]);
     }
 

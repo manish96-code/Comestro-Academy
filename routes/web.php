@@ -148,6 +148,7 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
 
     // Admin Certificates
     Route::get('/certificates', [AdminCertificateController::class, 'index'])->name('certificates.index');
+    Route::get('/certificates/{certificate}', [AdminCertificateController::class, 'show'])->name('certificates.show');
     Route::patch('/certificates/{certificate}/toggle-status', [AdminCertificateController::class, 'toggleStatus'])->name('certificates.toggle-status');
 });
 
