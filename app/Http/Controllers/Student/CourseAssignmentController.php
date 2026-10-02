@@ -157,6 +157,15 @@ class CourseAssignmentController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
+        // Student cannot submit again if a submission exists in the database
+        if ($existing) {
+            $errorMsg = $existing->status === 'reviewed'
+                ? 'This assignment has already been evaluated and graded. Resubmission is not permitted.'
+                : 'Your assignment is currently under review. Resubmission is only allowed if your instructor revokes your submission.';
+
+            return back()->withErrors(['pdf_file' => $errorMsg]);
+        }
+
         // Ensure at least one submission item is provided
         if (! $request->hasFile('pdf_file') && empty($request->github_url) && ! $existing?->file_path && ! $existing?->github_url) {
             return back()->withErrors([
@@ -186,21 +195,17 @@ class CourseAssignmentController extends Controller
         // Automatically determine if submitted after due date
         $isLate = $assignment->due_date !== null && now()->greaterThan($assignment->due_date);
 
-        AssignmentSubmission::updateOrCreate(
-            [
-                'course_assignment_id' => $assignment->id,
-                'user_id' => $user->id,
-            ],
-            [
-                'submission_text' => $request->submission_text,
-                'github_url' => $request->github_url,
-                'file_path' => $filePath,
-                'file_name' => $fileName,
-                'submitted_at' => now(),
-                'is_late' => $isLate,
-                'status' => 'submitted',
-            ]
-        );
+        AssignmentSubmission::create([
+            'course_assignment_id' => $assignment->id,
+            'user_id' => $user->id,
+            'submission_text' => $request->submission_text,
+            'github_url' => $request->github_url,
+            'file_path' => $filePath,
+            'file_name' => $fileName,
+            'submitted_at' => now(),
+            'is_late' => $isLate,
+            'status' => 'submitted',
+        ]);
 
         $msg = $isLate
             ? 'Assignment submitted successfully (marked as submitted after due date).'

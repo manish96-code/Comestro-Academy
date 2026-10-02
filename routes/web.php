@@ -135,6 +135,7 @@ Route::middleware(['auth', 'verified', 'role:admin,instructor'])->prefix('admin'
     Route::post('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'update'])->name('courses.assignments.update');
     Route::delete('/courses/{course}/assignments/{assignment}', [AdminCourseAssignmentController::class, 'destroy'])->name('courses.assignments.destroy');
     Route::post('/assignments/submissions/{submission}/grade', [AdminCourseAssignmentController::class, 'grade'])->name('assignments.submissions.grade');
+    Route::delete('/assignments/submissions/{submission}/revoke', [AdminCourseAssignmentController::class, 'revokeSubmission'])->name('assignments.submissions.revoke');
 
     // Admin Coupons & Promotions
     Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');

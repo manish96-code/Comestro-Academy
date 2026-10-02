@@ -326,3 +326,124 @@ test('admin can replace attachment with new imagekit upload on update', function
         'attachment_path' => 'https://ik.imagekit.io/comestro/assignments/new_revised_guide.pdf',
     ]);
 });
+
+test('student cannot resubmit assignment while it is under review', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $this->course->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $assignment = CourseAssignment::create([
+        'course_id' => $this->course->id,
+        'title' => 'Pending Review Assignment',
+        'description' => 'Instructions',
+        'total_marks' => 100,
+        'passing_marks' => 40,
+    ]);
+
+    AssignmentSubmission::create([
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'github_url' => 'https://github.com/student/repo',
+        'submitted_at' => now(),
+        'status' => 'submitted',
+    ]);
+
+    $response = $this->actingAs($student)->post(route('student.assignments.submit', $assignment->id), [
+        'github_url' => 'https://github.com/student/updated-repo',
+    ]);
+
+    $response->assertSessionHasErrors(['pdf_file']);
+    $this->assertDatabaseHas('assignment_submissions', [
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'github_url' => 'https://github.com/student/repo',
+        'status' => 'submitted',
+    ]);
+});
+
+test('student cannot resubmit assignment that is already graded', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $this->course->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $assignment = CourseAssignment::create([
+        'course_id' => $this->course->id,
+        'title' => 'Graded Assignment',
+        'description' => 'Instructions',
+        'total_marks' => 100,
+        'passing_marks' => 40,
+    ]);
+
+    AssignmentSubmission::create([
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'github_url' => 'https://github.com/student/repo',
+        'submitted_at' => now(),
+        'status' => 'reviewed',
+        'marks_obtained' => 90,
+    ]);
+
+    $response = $this->actingAs($student)->post(route('student.assignments.submit', $assignment->id), [
+        'github_url' => 'https://github.com/student/new-repo',
+    ]);
+
+    $response->assertSessionHasErrors(['pdf_file']);
+    $this->assertDatabaseHas('assignment_submissions', [
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'marks_obtained' => 90,
+        'status' => 'reviewed',
+    ]);
+});
+
+test('student can submit fresh assignment after instructor revokes previous submission', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    Enrollment::create([
+        'user_id' => $student->id,
+        'course_id' => $this->course->id,
+        'status' => 'active',
+        'enrolled_at' => now(),
+    ]);
+
+    $assignment = CourseAssignment::create([
+        'course_id' => $this->course->id,
+        'title' => 'Revoked Assignment',
+        'description' => 'Instructions',
+        'total_marks' => 100,
+        'passing_marks' => 40,
+    ]);
+
+    $submission = AssignmentSubmission::create([
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'github_url' => 'https://github.com/student/initial-repo',
+        'submitted_at' => now()->subDay(),
+        'status' => 'submitted',
+    ]);
+
+    // Admin revokes the submission (deletes from DB)
+    $submission->delete();
+
+    // Student can now submit fresh
+    $response = $this->actingAs($student)->post(route('student.assignments.submit', $assignment->id), [
+        'github_url' => 'https://github.com/student/fixed-repo',
+        'submission_text' => 'Fresh submission after revoke.',
+    ]);
+
+    $response->assertSessionHas('success');
+    $this->assertDatabaseHas('assignment_submissions', [
+        'course_assignment_id' => $assignment->id,
+        'user_id' => $student->id,
+        'github_url' => 'https://github.com/student/fixed-repo',
+        'submission_text' => 'Fresh submission after revoke.',
+        'status' => 'submitted',
+    ]);
+});

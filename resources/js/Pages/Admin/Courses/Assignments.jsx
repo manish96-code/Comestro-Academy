@@ -18,7 +18,8 @@ import {
     Send,
     User,
     X,
-    FolderGit2
+    FolderGit2,
+    RotateCcw
 } from 'lucide-react';
 
 export default function AdminCourseAssignments({ course, assignments = [] }) {
@@ -43,7 +44,6 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
     // Grading Form
     const gradeForm = useForm({
         marks_obtained: '',
-        status: 'reviewed',
         feedback: '',
     });
 
@@ -97,9 +97,18 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
     const openGradeModal = (submission) => {
         setGradingSubmission(submission);
         gradeForm.setData({
-            marks_obtained: submission.marks_obtained !== null ? submission.marks_obtained : '',
-            status: submission.status === 'resubmit' ? 'resubmit' : 'reviewed',
+            marks_obtained: submission.marks_obtained !== null && submission.marks_obtained !== undefined ? submission.marks_obtained : '',
             feedback: submission.feedback || '',
+        });
+        gradeForm.clearErrors();
+    };
+
+    const handleRevokeSubmission = (submissionId) => {
+        if (!confirm('Are you sure you want to revoke this submission? The assignment submission will be permanently deleted from the database and the student will be allowed to submit a new assignment.')) {
+            return;
+        }
+        router.delete(route('admin.assignments.submissions.revoke', submissionId), {
+            preserveScroll: true,
         });
     };
 
@@ -352,13 +361,30 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                                                     )}
                                                                 </td>
                                                                 <td className="py-3 px-4 text-right">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => openGradeModal(sub)}
-                                                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-semibold text-xs transition"
-                                                                    >
-                                                                        <span>{sub.status === 'reviewed' ? 'Re-grade' : 'Grade'}</span>
-                                                                    </button>
+                                                                    <div className="flex items-center justify-end gap-1.5">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => openGradeModal(sub)}
+                                                                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition ${
+                                                                                sub.status === 'reviewed'
+                                                                                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
+                                                                                    : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                                                            }`}
+                                                                            title="Grade or re-grade submission"
+                                                                        >
+                                                                            <CheckCircle2 className="h-3.5 w-3.5" />
+                                                                            <span>{sub.status === 'reviewed' ? 'Re-grade' : 'Grade'}</span>
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleRevokeSubmission(sub.id)}
+                                                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 text-xs font-semibold transition"
+                                                                            title="Revoke submission (deletes from database)"
+                                                                        >
+                                                                            <RotateCcw className="h-3.5 w-3.5" />
+                                                                            <span>Revoke</span>
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         ))}
@@ -536,14 +562,14 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
             {/* Grade Submission Modal */}
             {gradingSubmission && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-                    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden flex flex-col shadow-xl">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                         <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <div>
                                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                     Grade Submission
                                 </h3>
-                                <p className="text-[11px] text-slate-400">
-                                    {gradingSubmission.student?.name} ({gradingSubmission.student?.email})
+                                <p className="text-xs text-slate-400">
+                                    {gradingSubmission.student?.name || gradingSubmission.user?.name} ({gradingSubmission.student?.email || gradingSubmission.user?.email})
                                 </p>
                             </div>
                             <button
@@ -584,29 +610,18 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
 
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                    Status Assessment *
-                                </label>
-                                <select
-                                    value={gradeForm.data.status}
-                                    onChange={(e) => gradeForm.setData('status', e.target.value)}
-                                    className="w-full text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                                >
-                                    <option value="reviewed">Evaluated & Approved (Reviewed)</option>
-                                    <option value="resubmit">Request Resubmission (Needs Revision)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                    Qualitative Feedback & Comments
+                                    Qualitative Feedback & Comments (Optional)
                                 </label>
                                 <textarea
                                     rows={3}
                                     value={gradeForm.data.feedback}
                                     onChange={(e) => gradeForm.setData('feedback', e.target.value)}
-                                    placeholder="Explain strengths, improvements, code quality, or why revision is requested..."
+                                    placeholder="Explain strengths, improvements, code quality, or feedback..."
                                     className="w-full text-xs rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
                                 />
+                                {gradeForm.errors.feedback && (
+                                    <p className="text-[11px] text-rose-500 mt-0.5">{gradeForm.errors.feedback}</p>
+                                )}
                             </div>
 
                             <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
@@ -620,9 +635,9 @@ export default function AdminCourseAssignments({ course, assignments = [] }) {
                                 <button
                                     type="submit"
                                     disabled={gradeForm.processing}
-                                    className="px-4 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-xs font-semibold text-white shadow-2xs transition"
+                                    className="px-4 py-1.5 rounded-md text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-2xs transition disabled:opacity-50"
                                 >
-                                    {gradeForm.processing ? 'Saving...' : 'Submit Grade'}
+                                    {gradeForm.processing ? 'Saving...' : 'Save Grade'}
                                 </button>
                             </div>
                         </form>

@@ -21,6 +21,7 @@ import {
 export default function StudentAssignmentShow({ assignment, submission }) {
     const fileInputRef = useRef(null);
     const [selectedPdfName, setSelectedPdfName] = useState(submission?.file_name || null);
+    const canSubmit = !submission;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         pdf_file: null,
@@ -265,10 +266,11 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                     )}
 
                     {/* Submission / Resubmission Form */}
+                    {canSubmit && (
                     <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 sm:p-6 space-y-4 shadow-2xs">
                         <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
                             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                {submission ? 'Update or Resubmit Your Solution' : 'Submit Your Solution'}
+                                Submit Your Solution
                             </h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                 Upload your solution PDF document and/or paste your GitHub project repository link.
@@ -365,11 +367,12 @@ export default function StudentAssignmentShow({ assignment, submission }) {
                                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold shadow-2xs transition"
                                 >
                                     <Send className="h-3.5 w-3.5" />
-                                    <span>{processing ? 'Submitting...' : submission ? 'Submit Revision' : 'Submit Assignment'}</span>
+                                    <span>{processing ? 'Submitting...' : 'Submit Assignment'}</span>
                                 </button>
                             </div>
                         </form>
                     </div>
+                    )}
 
                 </div>
             </div>

@@ -175,33 +175,52 @@ class CourseAssignmentController extends Controller
 
         $validated = $request->validate([
             'marks_obtained' => "required|integer|min:0|max:{$maxMarks}",
-            'status' => 'required|in:reviewed,resubmit',
             'feedback' => 'nullable|string',
+        ], [
+            'marks_obtained.required' => 'Please enter the marks awarded for this submission.',
         ]);
 
         $submission->update([
             'marks_obtained' => $validated['marks_obtained'],
-            'status' => $validated['status'],
-            'feedback' => $validated['feedback'],
+            'status' => 'reviewed',
+            'feedback' => $validated['feedback'] ?? null,
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
         ]);
 
-        if ($submission->status === 'reviewed') {
-            $student = $submission->user;
-            $course = $submission->assignment?->course;
-            if ($student && $course) {
-                $certificateService = app(CertificateService::class);
-                if ($certificateService->checkEligibility($student, $course)['eligible']) {
-                    try {
-                        $certificateService->issueCertificate($student, $course);
-                    } catch (Throwable) {
-                        // ignore
-                    }
+        $student = $submission->student ?? $submission->user;
+        $course = $submission->assignment?->course;
+        if ($student && $course) {
+            $certificateService = app(CertificateService::class);
+            if ($certificateService->checkEligibility($student, $course)['eligible']) {
+                try {
+                    $certificateService->issueCertificate($student, $course);
+                } catch (Throwable) {
+                    // ignore
                 }
             }
         }
 
-        return back()->with('success', 'Submission evaluated and graded successfully.');
+        return back()->with('success', 'Assignment evaluated and graded successfully.');
+    }
+
+    // Revoke a submission (delete from DB so student can resubmit)
+    public function revokeSubmission(AssignmentSubmission $submission, ImageKitService $imageKit): RedirectResponse
+    {
+        if ($submission->file_path) {
+            if (! Str::startsWith($submission->file_path, ['http://', 'https://']) && Storage::disk('public')->exists($submission->file_path)) {
+                Storage::disk('public')->delete($submission->file_path);
+            } else {
+                try {
+                    $imageKit->deleteFile($submission->file_path);
+                } catch (Throwable) {
+                    // ignore
+                }
+            }
+        }
+
+        $submission->delete();
+
+        return back()->with('success', 'Assignment submission revoked and deleted successfully. The student can now submit a fresh assignment.');
     }
 }
